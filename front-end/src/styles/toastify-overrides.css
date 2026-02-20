@@ -1,0 +1,24 @@
+/* Compact Toastify styling: keep theme colors, reduce footprint */
+.Toastify__toast {
+  min-height: 40px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+.Toastify__toast-body {
+  margin: 0;
+}
+.Toastify__close-button {
+  width: 28px;
+  height: 28px;
+}
+.Toastify__toast-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Ensure text stays visible on themed backgrounds */
+.Toastify__toast--success,
+.Toastify__toast--error,
+.Toastify__toast--warning {
+  color: var(--text-light);
+}

@@ -1,0 +1,164 @@
+@import "tailwindcss";
+@import "./styles/colors.css";
+
+/* Fluid Typography Base */
+html {
+    /* Scales base font-size between ~14px and ~18px using viewport width */
+    font-size: clamp(0.875rem, 1vw + 0.5rem, 1.125rem);
+}
+
+/* Base styles */
+body {
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Hide horizontal scrollbar across browsers */
+.no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari */
+}
+
+/* Helper alias used by components to hide scrollbars */
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Global slide-in/out animations for right-side panels */
+@keyframes slide-in-right {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in-right {
+    animation: slide-in-right 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes slide-out-right {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(100%);
+    }
+}
+
+.animate-slide-out-right {
+    animation: slide-out-right 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.gallery-transition {
+    transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1), transform 700ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes gallery-enter-right {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes gallery-enter-left {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes gallery-exit-right {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes gallery-exit-left {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+.gallery-enter-right {
+    animation: gallery-enter-right 700ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.gallery-enter-left {
+    animation: gallery-enter-left 700ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.gallery-exit-right {
+    animation: gallery-exit-right 700ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.gallery-exit-left {
+    animation: gallery-exit-left 700ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gallery-transition {
+        transition: none !important;
+    }
+
+    .gallery-enter-right,
+    .gallery-enter-left,
+    .gallery-exit-right,
+    .gallery-exit-left {
+        animation: none !important;
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}

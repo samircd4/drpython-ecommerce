@@ -1,0 +1,293 @@
+[
+    {
+        "id": 1,
+        "name": "Wireless Bluetooth Headphones",
+        "price": 89.99,
+        "category": "Electronics",
+        "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.5,
+        "reviews": 128,
+        "description": "High-quality wireless headphones with noise cancellation",
+        "is_featured": true,
+        "specifications": {
+            "Connectivity": "Bluetooth 5.0",
+            "Battery Life": "20 Hours",
+            "Charging Port": "USB-C",
+            "Noise Cancellation": "Active",
+            "Warranty": "1 Year",
+            "RAM": "4GB",
+            "Storage": "64GB"
+        }
+    },
+    {
+        "id": 2,
+        "name": "Smartphone Case",
+        "price": 24000,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.2,
+        "reviews": 89,
+        "description": "Durable protective case for smartphones",
+        "is_featured": false,
+        "specifications": {
+            "Material": "TPU + Polycarbonate",
+            "Wireless Charging Support": "Yes",
+            "Drop Protection": "Up to 2 meters",
+            "Finish": "Matte Anti-Slip"
+        }
+    },
+    {
+        "id": 3,
+        "name": "Laptop Stand",
+        "price": 45.49,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.7,
+        "reviews": 156,
+        "description": "Adjustable laptop stand for better ergonomics",
+        "is_featured": true,
+        "specifications": {
+            "Material": "Aluminum",
+            "Adjustable Height": "Yes",
+            "Weight Capacity": "10 kg",
+            "Compatibility": "Laptops up to 17 inches"
+        }
+    },
+    {
+        "id": 4,
+        "name": "Wireless Mouse",
+        "price": 32.99,
+        "category": "Electronics",
+        "image": "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.3,
+        "reviews": 203,
+        "description": "Ergonomic wireless mouse with precision tracking",
+        "is_featured": false,
+        "specifications": {
+            "Connectivity": "2.4G Wireless",
+            "Battery Life": "6 Months",
+            "Sensor": "Optical",
+            "DPI": "800 / 1200 / 1600"
+        }
+    },
+    {
+        "id": 5,
+        "name": "Coffee Mug",
+        "price": 15.99,
+        "category": "Home",
+        "image": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.6,
+        "reviews": 342,
+        "description": "Ceramic coffee mug with elegant design",
+        "is_featured": true,
+        "specifications": {
+            "Material": "Ceramic",
+            "Capacity": "350 ml",
+            "Microwave Safe": "Yes",
+            "Dishwasher Safe": "Yes"
+        }
+    },
+    {
+        "id": 6,
+        "name": "Desk Lamp",
+        "price": 67.99,
+        "category": "Home",
+        "image": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.4,
+        "reviews": 178,
+        "description": "LED desk lamp with adjustable brightness",
+        "is_featured": false,
+        "specifications": {
+            "Light Type": "LED",
+            "Power": "8W",
+            "Brightness Levels": "3-Step Adjustable",
+            "USB Charging Port": "Included"
+        }
+    },
+    {
+        "id": 7,
+        "name": "Bluetooth Speaker",
+        "price": 79.99,
+        "category": "Electronics",
+        "image": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.8,
+        "reviews": 267,
+        "description": "Portable Bluetooth speaker with deep bass",
+        "is_featured": true,
+        "specifications": {
+            "Connectivity": "Bluetooth 5.1",
+            "Play Time": "12 Hours",
+            "Water Resistance": "IPX5",
+            "Charging Port": "USB-C"
+        }
+    },
+    {
+        "id": 8,
+        "name": "Notebook Set",
+        "price": 19.99,
+        "category": "Office",
+        "image": "https://images.unsplash.com/photo-1531346680769-a1d79b57de5c?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1531346680769-a1d79b57de5c?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1531346680769-a1d79b57de5c?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1531346680769-a1d79b57de5c?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.1,
+        "reviews": 95,
+        "description": "Premium notebook set with various sizes",
+        "is_featured": false,
+        "specifications": {
+            "Paper Type": "A5 / A6 Set",
+            "Pages per Notebook": "80 Pages",
+            "Paper Weight": "100 GSM",
+            "Binding": "Soft Cover"
+        }
+    },
+    {
+        "id": 9,
+        "name": "Plant Pot",
+        "price": 28.99,
+        "category": "Home",
+        "image": "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.5,
+        "reviews": 134,
+        "description": "Ceramic plant pot with drainage holes",
+        "is_featured": true,
+        "specifications": {
+            "Material": "Ceramic",
+            "Diameter": "15 cm",
+            "Drainage": "Yes",
+            "Surface Finish": "Gloss"
+        }
+    },
+    {
+        "id": 10,
+        "name": "USB Cable",
+        "price": 12.99,
+        "category": "Electronics",
+        "image": "https://images.unsplash.com/photo-1586816879360-004f5b0c51e3?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1586816879360-004f5b0c51e3?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1586816879360-004f5b0c51e3?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1586816879360-004f5b0c51e3?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.0,
+        "reviews": 289,
+        "description": "High-speed USB-C cable for fast charging",
+        "is_featured": false,
+        "specifications": {
+            "Connector Type": "USB-C",
+            "Length": "1 Meter",
+            "Fast Charging Support": "Yes",
+            "Data Transfer Speed": "480 Mbps"
+        }
+    },
+    {
+        "id": 11,
+        "name": "Sticky Notes",
+        "price": 8.99,
+        "category": "Office",
+        "image": "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.3,
+        "reviews": 167,
+        "description": "Colorful sticky notes for organization",
+        "is_featured": false,
+        "specifications": {
+            "Sheet Size": "3 x 3 inches",
+            "Sheets per Pad": "100",
+            "Number of Colors": "5",
+            "Adhesive Strength": "Reusable Removable Glue"
+        }
+    },
+    {
+        "id": 12,
+        "name": "Wall Clock",
+        "price": 34.99,
+        "category": "Home",
+        "image": "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.6,
+        "reviews": 98,
+        "description": "Modern wall clock with silent movement",
+        "is_featured": true,
+        "specifications": {
+            "Movement": "Silent Quartz",
+            "Diameter": "30 cm",
+            "Power Source": "AA Battery",
+            "Frame Material": "Plastic"
+        }
+    },
+    {
+        "id": 13,
+        "name": "Wireless Bluetooth Headphones",
+        "price": 89.99,
+        "category": "Electronics",
+        "image": "https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=400&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=1600&q=80"
+        ],
+        "rating": 4.5,
+        "reviews": 128,
+        "description": "High-quality wireless headphones with noise cancellation",
+        "is_featured": true,
+        "specifications": {
+            "Connectivity": "Bluetooth 5.2",
+            "Battery Life": "25 Hours",
+            "Noise Cancellation": "Hybrid ANC",
+            "Charging Port": "USB-C"
+        }
+    }
+]
+
+
