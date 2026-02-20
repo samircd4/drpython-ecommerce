@@ -67,7 +67,7 @@ services:
     container_name: sarker_frontend_prod
     restart: always
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - backend_static_prod:/var/www/static
       - backend_media_prod:/var/www/media
