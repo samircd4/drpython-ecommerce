@@ -1,12 +1,10 @@
 services:
   redis_dev:
     image: redis:alpine
-    container_name: sarker_redis_dev
     restart: always
 
   db_dev:
     image: postgres:15-alpine
-    container_name: sarker_db_dev
     restart: always
     environment:
       - POSTGRES_DB=sarker_dev
@@ -19,7 +17,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: sarker_backend_dev
     restart: always
     networks:
       default:
@@ -42,7 +39,6 @@ services:
     build:
       context: ./front-end
       dockerfile: Dockerfile
-    container_name: sarker_frontend_dev
     restart: always
     ports:
       - "9090:80"
