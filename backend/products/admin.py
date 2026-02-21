@@ -7,82 +7,65 @@ from .models import (
 class ProductSpecificationInline(admin.TabularInline):
     model = ProductSpecification
     extra = 1
-    autocomplete_fields = ['product']
 
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 1
-    fields = ('image', 'alt_text', 'is_primary', 'order')
 
 class ProductVariantInline(admin.TabularInline):
     model = ProductVariant
     extra = 0
-    fields = ('sku', 'price', 'wholesale_price', 'discount_price',
-              'stock_quantity', 'ram', 'storage', 'color', 'is_active')
+    fields = ('sku', 'price', 'stock_quantity', 'ram', 'storage', 'color', 'is_active')
     readonly_fields = ('sku',)
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    # 1. THE LIST VIEW (THE TABLE)
+    # We put stock_quantity here so it's editable in the table
     list_display = (
-        'name',
-        'product_id',
-        'stock_quantity',
-        'display_price',
-        'is_active',
-        'is_featured',
-        'brand',
-        'category',
+        'name', 
+        'stock_quantity', 
+        'price', 
+        'product_id', 
+        'is_active', 
+        'category', 
+        'brand'
     )
     
-    # This makes the fields editable directly in the table
-    list_editable = ('stock_quantity', 'is_active', 'is_featured')
+    # These fields can be edited directly in the table
+    # IMPORTANT: The field MUST be in list_display but NOT in list_display_links
+    list_editable = ('stock_quantity', 'price', 'is_active')
     
-    # These become the clickable links to open the product
+    # These are the clickable links to open the product
     list_display_links = ('name', 'product_id')
 
-    list_filter = ('brand', 'category', 'is_active', 'is_featured', 'is_bestseller')
-    search_fields = ('name', 'product_id', 'sku')
-    filter_horizontal = ('related_products',)
-
-    readonly_fields = ('product_id', 'slug', 'sku', 'created_at', 'updated_at')
-
-    inlines = [
-        ProductSpecificationInline,
-        ProductImageInline,
-        ProductVariantInline,
-    ]
-
+    # 2. THE ADD/EDIT FORM
+    # We move the stock field to the VERY TOP of the first section
     fieldsets = (
-        ('Product Inventory & Pricing', {
+        ('STOCKS & PRICING (SIMPLE PRODUCTS)', {
             'fields': ('stock_quantity', 'price', 'wholesale_price', 'discount_price'),
-            'description': 'NOTE: For simple products, set stock here. For variants, use the section below.'
+            'description': 'Enter stock here ONLY if this product has NO variants.'
         }),
-        ('Basic Information', {
+        ('MAIN INFO', {
             'fields': ('name', 'slug', 'product_id', 'sku', 'brand', 'category', 'related_products')
         }),
-        ('Status & Flags', {
-            'fields': ('is_active', 'is_featured', 'is_bestseller')
-        }),
-        ('Media & Content', {
-            'fields': ('image', 'short_description', 'description')
-        }),
-        ('Social Proof', {
-            'fields': ('rating', 'reviews_count')
-        }),
-        ('Time Info', {
-            'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',)
+        ('SETTINGS', {
+            'fields': ('is_active', 'is_featured', 'is_bestseller', 'image', 'short_description', 'description')
         }),
     )
 
-    @admin.display(description="Price")
-    def display_price(self, obj):
-        if obj.variants.exists():
-            return "Variant Based"
-        return obj.price
+    readonly_fields = ('product_id', 'slug', 'sku')
+    search_fields = ('name', 'product_id', 'sku')
+    list_filter = ('category', 'brand', 'is_active')
+    
+    inlines = [ProductSpecificationInline, ProductImageInline, ProductVariantInline]
 
-    @admin.display(description="Total Stock")
-    def display_stock(self, obj):
-        if obj.variants.exists():
-            return sum(v.stock_quantity for v in obj.variants.all())
-        return obj.stock_quantity
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'parent')
+    readonly_fields = ('slug',)
+
+@admin.register(Brand)
+class BrandAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug')
+    readonly_fields = ('slug',)
