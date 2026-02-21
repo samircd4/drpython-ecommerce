@@ -203,10 +203,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # =========================
 # ALLOWED HOSTS
 # =========================
-# We split by comma and strip any accidental whitespace.
-# If '*' is found, we allow everything (useful for dev/staging).
-_allowed = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,backend,"*"').split(',')
-ALLOWED_HOSTS = [host.strip() for host in _allowed]
+_allowed_env = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,backend,*')
+ALLOWED_HOSTS = [h.strip().strip('"').strip("'") for h in _allowed_env.split(',')]
+
 if '*' in ALLOWED_HOSTS:
     ALLOWED_HOSTS = ['*']
 
