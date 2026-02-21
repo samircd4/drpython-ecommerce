@@ -52,9 +52,11 @@ class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
     client_class = OAuth2Client
     callback_url = settings.FRONTEND_URL  # Read from FRONTEND_URL in .env
+    authentication_classes = [] # Disable CSRF for social login
 
 class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
+    authentication_classes = [] # Disable CSRF for social login
 
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 
