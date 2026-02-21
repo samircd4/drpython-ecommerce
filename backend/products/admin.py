@@ -1,24 +1,18 @@
 from django.contrib import admin
-# from django.forms.models import BaseInlineFormSet
 from .models import (
     Category, Brand, Product, ProductImage, ProductSpecification,
     ProductVariant
 )
-
-# --- Inlines (Manage these inside the Product Page) ---
-
 
 class ProductSpecificationInline(admin.TabularInline):
     model = ProductSpecification
     extra = 1
     autocomplete_fields = ['product']
 
-
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 1
     fields = ('image', 'alt_text', 'is_primary', 'order')
-
 
 class ProductVariantInline(admin.TabularInline):
     model = ProductVariant
@@ -27,44 +21,30 @@ class ProductVariantInline(admin.TabularInline):
               'stock_quantity', 'ram', 'storage', 'color', 'is_active')
     readonly_fields = ('sku',)
 
-
-# --- Main Admin Classes ---
-
-
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'product_id',
-        'brand',
-        'category',
+        'stock_quantity',
         'display_price',
-        'stock_quantity',  # Show the raw field for list_editable
         'is_active',
         'is_featured',
-        'is_bestseller'
-    )
-
-    list_editable = ('stock_quantity', 'is_active', 'is_featured', 'is_bestseller')
-
-    list_filter = (
         'brand',
         'category',
-        'is_active',
-        'is_featured',
-        'is_bestseller',
-        'created_at'
     )
+    
+    # This makes the fields editable directly in the table
+    list_editable = ('stock_quantity', 'is_active', 'is_featured')
+    
+    # These become the clickable links to open the product
+    list_display_links = ('name', 'product_id')
 
+    list_filter = ('brand', 'category', 'is_active', 'is_featured', 'is_bestseller')
     search_fields = ('name', 'product_id', 'sku')
+    filter_horizontal = ('related_products',)
 
-    readonly_fields = (
-        'product_id',
-        'slug',
-        'sku',
-        'created_at',
-        'updated_at'
-    )
+    readonly_fields = ('product_id', 'slug', 'sku', 'created_at', 'updated_at')
 
     inlines = [
         ProductSpecificationInline,
@@ -73,17 +53,14 @@ class ProductAdmin(admin.ModelAdmin):
     ]
 
     fieldsets = (
-        ('Identification', {
-            'fields': ('name', 'slug', 'product_id', 'sku')
+        ('Product Inventory & Pricing', {
+            'fields': ('stock_quantity', 'price', 'wholesale_price', 'discount_price'),
+            'description': 'NOTE: For simple products, set stock here. For variants, use the section below.'
         }),
-        ('Relationships', {
-            'fields': ('brand', 'category', 'related_products')
+        ('Basic Information', {
+            'fields': ('name', 'slug', 'product_id', 'sku', 'brand', 'category', 'related_products')
         }),
-        ('Inventory & Pricing (Simple Products)', {
-            'fields': ('price', 'wholesale_price', 'discount_price', 'stock_quantity'),
-            'description': 'These fields are primarily for products WITHOUT variants.'
-        }),
-        ('Status', {
+        ('Status & Flags', {
             'fields': ('is_active', 'is_featured', 'is_bestseller')
         }),
         ('Media & Content', {
@@ -92,12 +69,11 @@ class ProductAdmin(admin.ModelAdmin):
         ('Social Proof', {
             'fields': ('rating', 'reviews_count')
         }),
-        ('Timestamps', {
-            'fields': ('created_at', 'updated_at')
+        ('Time Info', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
         }),
     )
-
-    filter_horizontal = ('related_products',)
 
     @admin.display(description="Price")
     def display_price(self, obj):
@@ -110,21 +86,3 @@ class ProductAdmin(admin.ModelAdmin):
         if obj.variants.exists():
             return sum(v.stock_quantity for v in obj.variants.all())
         return obj.stock_quantity
-
-
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'parent')
-    search_fields = ('name',)
-    readonly_fields = ('slug',)  # Auto-generated
-
-
-@admin.register(Brand)
-class BrandAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug')
-    search_fields = ('name',)
-    readonly_fields = ('slug',)  # Auto-generated
-
-
-# --- 4. REVIEW ADMIN ---
-# Moved to reviews app
