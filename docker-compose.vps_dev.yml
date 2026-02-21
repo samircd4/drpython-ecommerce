@@ -26,6 +26,8 @@ services:
       - DATABASE_URL=postgres://sarker_dev_user:sarker_dev_pass@db_dev:5432/sarker_dev
       - DEBUG=True
       - DOMAIN=dev.sarker.shop
+      - ALLOWED_HOSTS=dev.sarker.shop,localhost,127.0.0.1
+      - CSRF_TRUSTED_ORIGINS=https://dev.sarker.shop
     env_file:
       - ./backend/.env
     depends_on:
