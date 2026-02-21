@@ -203,8 +203,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # =========================
 # ALLOWED HOSTS
 # =========================
-# We split by comma and strip any accidental whitespace
-ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,backend,*').split(',')]
+# We split by comma and strip any accidental whitespace.
+# If '*' is found, we allow everything (useful for dev/staging).
+_allowed = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,backend,"*"').split(',')
+ALLOWED_HOSTS = [host.strip() for host in _allowed]
+if '*' in ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['*']
 
 # =========================
 # CORS (Frontend Access)
