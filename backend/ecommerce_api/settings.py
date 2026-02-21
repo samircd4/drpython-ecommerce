@@ -203,9 +203,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # =========================
 # ALLOWED HOSTS
 # =========================
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,backend,*').split(',')
-
-
+# We split by comma and strip any accidental whitespace
+ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,backend,*').split(',')]
 
 # =========================
 # CORS (Frontend Access)
@@ -215,6 +214,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost",           # Frontend (Docker/Nginx)
     "http://127.0.0.1",
+    "https://sarker.shop",        # Production
+    "https://www.sarker.shop",
+    "https://dev.sarker.shop",    # Dev/Staging
 ]
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
@@ -223,7 +225,11 @@ CORS_ALLOW_CREDENTIALS = True
 # =========================
 # CSRF (Admin / Cookies)
 # =========================
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://127.0.0.1:8000,http://localhost:8000').split(',')
+# Important: CSRF_TRUSTED_ORIGINS must include the protocol (https://)
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv(
+    'CSRF_TRUSTED_ORIGINS', 
+    'http://127.0.0.1:8000,http://localhost:8000,https://sarker.shop,https://dev.sarker.shop'
+).split(',')]
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
