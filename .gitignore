@@ -53,7 +53,7 @@
 Thumbs.db
 
 # --- Project Specific ---
-tools/
+**/tools/
 .agent/
 temp/
 tmp/
