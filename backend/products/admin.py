@@ -39,11 +39,13 @@ class ProductAdmin(admin.ModelAdmin):
         'brand',
         'category',
         'display_price',
-        'display_stock',
+        'stock_quantity',  # Show the raw field for list_editable
         'is_active',
         'is_featured',
         'is_bestseller'
     )
+
+    list_editable = ('stock_quantity', 'is_active', 'is_featured', 'is_bestseller')
 
     list_filter = (
         'brand',
@@ -77,9 +79,9 @@ class ProductAdmin(admin.ModelAdmin):
         ('Relationships', {
             'fields': ('brand', 'category', 'related_products')
         }),
-        ('Pricing (Non-Variant Only)', {
-            'fields': ('price',),
-            'description': 'Used only if the product has NO variants'
+        ('Inventory & Pricing (Simple Products)', {
+            'fields': ('price', 'wholesale_price', 'discount_price', 'stock_quantity'),
+            'description': 'These fields are primarily for products WITHOUT variants.'
         }),
         ('Status', {
             'fields': ('is_active', 'is_featured', 'is_bestseller')
@@ -103,11 +105,11 @@ class ProductAdmin(admin.ModelAdmin):
             return "Variant Based"
         return obj.price
 
-    @admin.display(description="Stock")
+    @admin.display(description="Total Stock")
     def display_stock(self, obj):
         if obj.variants.exists():
             return sum(v.stock_quantity for v in obj.variants.all())
-        return 0
+        return obj.stock_quantity
 
 
 @admin.register(Category)
