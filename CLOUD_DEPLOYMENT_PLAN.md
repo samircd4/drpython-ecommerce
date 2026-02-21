@@ -87,3 +87,4 @@ Create a workflow that:
 
 1. Would you like me to start with **Phase 1.3** and create the `docker-compose.prod.yml`?
 2. Shall we add **PostgreSQL** now, or stick with **SQLite** for the initial cloud push?
+3.
