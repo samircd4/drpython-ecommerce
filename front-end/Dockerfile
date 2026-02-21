@@ -15,6 +15,8 @@ COPY . .
 # Set API URL for production (defaults to /api which works with our Nginx proxy)
 ARG VITE_API_URL=/api
 ENV VITE_API_URL=$VITE_API_URL
+ARG VITE_GOOGLE_CLIENT_ID
+ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
 
 # Build the app
 RUN npm run build
