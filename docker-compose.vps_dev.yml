@@ -24,7 +24,7 @@ services:
     networks:
       default:
         aliases:
-          - backend-dev # <--- Changed from 'backend' to be unique
+          - backend # Inside the 'dev' project, this IS the backend
     environment:
       - REDIS_URL=redis://redis_dev:6379/0
       - DATABASE_URL=postgres://sarker_dev_user:sarker_dev_pass@db_dev:5432/sarker_dev
@@ -42,14 +42,10 @@ services:
     build:
       context: ./front-end
       dockerfile: Dockerfile
-      args:
-        - VITE_API_URL=/api
     container_name: sarker_frontend_dev
     restart: always
     ports:
       - "9090:80"
-    environment:
-      - BACKEND_HOST=backend-dev # <--- Tell Nginx where to look
     depends_on:
       - backend_dev
 
