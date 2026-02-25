@@ -289,6 +289,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/admin/login/'
 API_BASE_URL = "http://127.0.0.1:8000/api"
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
+BACKEND_URL = os.getenv('BACKEND_URL', f"https://{os.getenv('DOMAIN', 'sarker.shop')}")
 
 REST_AUTH = {
     'USE_JWT': True,

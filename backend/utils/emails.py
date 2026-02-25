@@ -16,6 +16,9 @@ def send_order_email(order, template_name, subject):
     # Determine frontend URL from settings (set via FRONTEND_URL in .env)
     frontend_url = settings.FRONTEND_URL
 
+    # Logo URL (Hosted)
+    logo_url = f"{settings.BACKEND_URL}/static/images/logo.png"
+
     context = {
         'order': order,
         'full_name': order.full_name or (order.customer.name if order.customer else 'Valued Customer'),
@@ -23,7 +26,8 @@ def send_order_email(order, template_name, subject):
         'total_amount': order.total_amount,
         'tracking_url': f"{frontend_url}/order-tracking/{order.id}",
         'feedback_url': f"{frontend_url}/reviews/{order.id}", # Link to reviews page
-        'frontend_url': frontend_url
+        'frontend_url': frontend_url,
+        'logo_url': logo_url
     }
 
     html_content = render_to_string(f'emails/{template_name}', context)
@@ -36,16 +40,6 @@ def send_order_email(order, template_name, subject):
         [recipient_email]
     )
     email.attach_alternative(html_content, "text/html")
-    
-    # Optional: Attach logo if needed for the template's cid
-    logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo.png')
-    if os.path.exists(logo_path):
-        from email.mime.image import MIMEImage
-        with open(logo_path, 'rb') as f:
-            logo_data = f.read()
-        logo = MIMEImage(logo_data)
-        logo.add_header('Content-ID', '<logo_image>')
-        email.attach(logo)
 
     # 🔥 Attach Invoice PDF
     try:

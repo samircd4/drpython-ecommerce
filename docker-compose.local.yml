@@ -35,7 +35,7 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_SECRET=${GOOGLE_SECRET}
       - UV_COMPILE_BYTECODE=0
-    command: uv run manage.py runserver 0.0.0.0:8000
+    command: uv run python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     depends_on:

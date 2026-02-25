@@ -16,20 +16,6 @@ from rest_framework.permissions import IsAuthenticated
 from email.mime.image import MIMEImage
 import os
 
-def attach_logo(email_message):
-    """
-    Attaches the brand logo to an EmailMessage for CID embedding.
-    """
-    logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo.png')
-    if os.path.exists(logo_path):
-        try:
-            with open(logo_path, 'rb') as f:
-                logo_data = f.read()
-                logo_image = MIMEImage(logo_data)
-                logo_image.add_header('Content-ID', '<logo_image>')
-                email_message.attach(logo_image)
-        except Exception:
-            pass # Fallback to no logo if file is missing or corrupted
 
 from .models import Customer, Address, Division, District, SubDistrict
 from .serializers import (
@@ -106,6 +92,7 @@ class RegisterView(generics.CreateAPIView):
                 html_content = render_to_string('emails/welcome_email.html', {
                     'full_name': full_name,
                     'verify_link': verify_link,
+                    'logo_url': f"{settings.BACKEND_URL}/static/images/logo.png",
                 })
                 text_content = strip_tags(html_content)
 
@@ -116,7 +103,6 @@ class RegisterView(generics.CreateAPIView):
                     to=[email]
                 )
                 email_message.attach_alternative(html_content, "text/html")
-                attach_logo(email_message)
                 email_message.send(fail_silently=True)
 
                 # 4. Check for order linking
@@ -264,6 +250,7 @@ class ForgotPasswordView(generics.GenericAPIView):
             html_content = render_to_string('emails/password_reset_email.html', {
                 'user': user,
                 'reset_link': reset_link,
+                'logo_url': f"{settings.BACKEND_URL}/static/images/logo.png",
             })
             text_content = strip_tags(html_content)
 
@@ -274,7 +261,6 @@ class ForgotPasswordView(generics.GenericAPIView):
                 to=[email]
             )
             email_message.attach_alternative(html_content, "text/html")
-            attach_logo(email_message)
             email_message.send(fail_silently=False)
             
         except User.DoesNotExist:
@@ -394,6 +380,7 @@ class ResendVerificationEmailView(generics.GenericAPIView):
         html_content = render_to_string('emails/verification_email.html', {
             'full_name': getattr(user, 'customer', None).name if hasattr(user, 'customer') else user.username,
             'verify_link': verify_link,
+            'logo_url': f"{settings.BACKEND_URL}/static/images/logo.png",
         })
         text_content = strip_tags(html_content)
 
@@ -406,7 +393,6 @@ class ResendVerificationEmailView(generics.GenericAPIView):
                 to=[user.email]
             )
             email_message.attach_alternative(html_content, "text/html")
-            attach_logo(email_message)
             email_message.send(fail_silently=False)
             print(f"Verification email sent to {user.email}")
         except Exception as e:
