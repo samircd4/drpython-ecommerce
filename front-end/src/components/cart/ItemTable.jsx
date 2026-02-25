@@ -1,6 +1,7 @@
 import React from "react";
 import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom"
+import { fixImage } from "../../context/CartContext";
 
 const ItemTable = ({
     items,
@@ -27,7 +28,7 @@ const ItemTable = ({
                     >
                         <div className="col-span-2 flex items-center">
                             <img
-                                src={item.image}
+                                src={fixImage(item.image)}
                                 alt={item.name}
                                 className="w-12 h-12 object-cover rounded"
                             />

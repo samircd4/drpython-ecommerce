@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useCart } from '../context/CartContext.jsx'
+import { useCart, fixImage } from '../context/CartContext.jsx'
 import { Link } from 'react-router-dom'
 import EmptyCart from './cart/EmptyCart'
 
@@ -47,7 +47,7 @@ const CartPanel = ({ open, onClose }) => {
                         )}
                         {cartItem.map((item) => (
                             <div key={`${item.id}:${item.variant?.id ?? 'base'}`} className="flex items-center gap-3 border rounded-md p-3">
-                                <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded" />
+                                <img src={fixImage(item.image)} alt={item.name} className="w-16 h-16 object-cover rounded" />
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between">
                                         <h4 className="text-sm font-semibold text-gray-800">

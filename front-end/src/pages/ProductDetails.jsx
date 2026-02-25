@@ -17,6 +17,7 @@ import RelatedProducts from "../components/RelatedProducts";
 const ProductDetails = () => {
     const { id } = useParams();
     const { addToCart } = useCart();
+    const containerRef = useRef(null);
 
     // ALL HOOKS AT THE TOP — NO CONDITIONALS BEFORE THEM!
     const [product, setProduct] = useState(null);
@@ -209,6 +210,12 @@ const ProductDetails = () => {
     useEffect(() => {
         if (prefersReducedMotion || zoomOpen || paused || images.length <= 1) return;
         const interval = setInterval(() => {
+            // Only advance if the gallery container is actually visible
+            if (containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+                if (!isVisible) return;
+            }
             next();
         }, 3000);
         return () => clearInterval(interval);
@@ -301,8 +308,10 @@ const ProductDetails = () => {
     };
 
 
+
+
     return (
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div ref={containerRef} className="max-w-7xl mx-auto px-4 py-8">
             <ProductBreadcrumbs category={categoryObj} productName={name} />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

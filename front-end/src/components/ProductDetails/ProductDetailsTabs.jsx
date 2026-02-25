@@ -17,7 +17,7 @@ const ProductDetailsTabs = ({ product, productReviews = [], onProductUpdate }) =
         if (tab) {
             setActiveTab(tab);
             setTimeout(() => {
-                tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }, 100);
         }
     }, [searchParams]);

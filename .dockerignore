@@ -1,14 +1,26 @@
-**/.venv
-backend/.venv
-front-end/.venv
-node_modules
-**/node_modules
-**/.git
-**/.env
+# Virtual Environments
+.venv/
+**/.venv/
+backend/.venv/
+front-end/.venv/
+venv/
+env/
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Files and Folders
+.git/
+.env
 **/db.sqlite3
-**/staticfiles
-**/media
-**/.DS_Store
-backend/staticfiles
-backend/media
-front-end/dist
+**/staticfiles/
+**/media/
+static/
+media/
+staticfiles/
+
+# System
+.DS_Store
+Thumbs.db
+desktop.ini

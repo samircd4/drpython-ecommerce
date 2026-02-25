@@ -50,8 +50,10 @@ services:
       - "5173:5173"
     environment:
       - VITE_API_URL=http://localhost:8000/api
-      - VITE_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} # same var, baked into Vite at dev-server start
-    command: sh -c "npm install && npm run dev -- --host" # Install missing modules if any
+      - VITE_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    command: sh -c "npm install && npm run dev -- --host"
 
 volumes:
   postgres_data_local:

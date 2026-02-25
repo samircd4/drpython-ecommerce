@@ -1,5 +1,5 @@
 import { FaStar, FaShoppingCart } from "react-icons/fa";
-import { useCart } from "../context/CartContext.jsx";
+import { useCart, fixImage } from "../context/CartContext.jsx";
 import { IoFlashOutline } from "react-icons/io5";
 import { Link } from 'react-router-dom'
 
@@ -10,7 +10,7 @@ const Product = ({ product }) => {
             <div className="relative">
                 <Link to={`/products/${product.slug}`}>
                     <img
-                        src={product.image || "https://via.placeholder.com/800x800?text=No+Image"}
+                        src={fixImage(product.image)}
                         alt={product.name}
                         className="w-full h-64 object-cover"
                         onError={(e) => {

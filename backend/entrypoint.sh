@@ -35,6 +35,10 @@ uv run manage.py migrate --noinput
 echo "Collecting static files..."
 uv run manage.py collectstatic --noinput
 
-echo "Starting server..."
-# Using uvicorn as it's already in dependencies
-uv run uvicorn ecommerce_api.asgi:application --host 0.0.0.0 --port 8000
+# Using uvicorn with conditional reload for development
+if [ "$DEBUG" = "True" ]; then
+    echo "Starting server with --reload..."
+    uv run uvicorn ecommerce_api.asgi:application --host 0.0.0.0 --port 8000 --reload
+else
+    uv run uvicorn ecommerce_api.asgi:application --host 0.0.0.0 --port 8000
+fi
