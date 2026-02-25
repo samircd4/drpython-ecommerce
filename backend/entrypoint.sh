@@ -30,10 +30,10 @@ while True:
 END
 
 echo "Applying database migrations..."
-uv run manage.py migrate --noinput
+uv run python manage.py migrate --noinput
 
 echo "Collecting static files..."
-uv run manage.py collectstatic --noinput
+uv run python manage.py collectstatic --noinput
 
 # If a command is passed to the entrypoint, run it
 if [ $# -gt 0 ]; then

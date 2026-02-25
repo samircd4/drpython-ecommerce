@@ -22,6 +22,7 @@ services:
     container_name: sarker_backend_local
     volumes:
       - ./backend:/app
+      - /app/.venv # Protect container's venv from being overwritten by local volume
       - backend_static_local:/app/staticfiles
       - backend_media_local:/app/media
     environment:
@@ -29,12 +30,12 @@ services:
       - DATABASE_URL=postgres://sarker_user:sarker_pass@db:5432/sarker_shop
       - DEBUG=True
       - DOMAIN=localhost
-      - ALLOWED_HOSTS=* # Force allow all for local dev
+      - ALLOWED_HOSTS=*
       - FRONTEND_URL=http://localhost:5173
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} # set in your shell or a .env file
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_SECRET=${GOOGLE_SECRET}
       - UV_COMPILE_BYTECODE=0
-    command: python manage.py runserver 0.0.0.0:8000
+    command: uv run manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     depends_on:
