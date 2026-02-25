@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import api from '../api/client';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useUser } from '../context/UserContext';
+import { getErrorMessage } from '../utils/errorUtils';
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";
 
@@ -118,7 +119,7 @@ const Account = () => {
                 setIsLogin(true);
             }
         } catch (error) {
-            const msg = error.response?.data?.detail || "Authentication failed. check your credentials.";
+            const msg = getErrorMessage(error, "Authentication failed. check your credentials.");
             toast.error(msg);
         } finally {
             setLoading(false);

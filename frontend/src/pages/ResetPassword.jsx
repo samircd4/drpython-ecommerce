@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { BASE_URL } from '../api/client';
+import { getErrorMessage } from '../utils/errorUtils';
 
 const ResetPassword = () => {
     const [searchParams] = useSearchParams();
@@ -40,7 +41,7 @@ const ResetPassword = () => {
             toast.success("Password reset successfully! Please login.");
             navigate('/account');
         } catch (error) {
-            toast.error(error.response?.data?.token?.[0] || error.response?.data?.uidb64?.[0] || "Invalid or expired link.");
+            toast.error(getErrorMessage(error, "Invalid or expired link."));
         } finally {
             setLoading(false);
         }

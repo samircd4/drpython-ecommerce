@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { BASE_URL } from '../api/client';
+import { getErrorMessage } from '../utils/errorUtils';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -20,7 +21,7 @@ const ForgotPassword = () => {
             setSubmitted(true);
             toast.success("Reset link sent! Check your email.");
         } catch (error) {
-            toast.error(error.response?.data?.error || error.response?.data?.message || "Failed to send reset link. Please try again.");
+            toast.error(getErrorMessage(error, "Failed to send reset link. Please try again."));
         } finally {
             setLoading(false);
         }
