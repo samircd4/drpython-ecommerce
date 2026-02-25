@@ -44,7 +44,7 @@ services:
     container_name: sarker_frontend_local
     working_dir: /app
     volumes:
-      - ./front-end:/app
+      - ./frontend:/app
       - /app/node_modules
     ports:
       - "5173:5173"
