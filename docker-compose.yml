@@ -7,9 +7,9 @@ services:
     image: postgres:15-alpine
     restart: always
     environment:
-      - POSTGRES_DB=sarker_dev
-      - POSTGRES_USER=sarker_user
-      - POSTGRES_PASSWORD=sarker_pass
+      - POSTGRES_DB=${POSTGRES_DB:-sarker_shop}
+      - POSTGRES_USER=${POSTGRES_USER:-sarker_prod_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -20,17 +20,21 @@ services:
     restart: always
     environment:
       - REDIS_URL=redis://redis:6379/0
-      - DATABASE_URL=postgres://sarker_user:sarker_pass@db:5432/sarker_dev
-      - DEBUG=False
-      - SECRET_KEY=django-insecure-dev-secret-key-change-this-in-prod
-      - DOMAIN=dev.sarker.shop
-      - ALLOWED_HOSTS=dev.sarker.shop,www.dev.sarker.shop,backend
-      - CSRF_TRUSTED_ORIGINS=https://dev.sarker.shop,https://www.dev.sarker.shop
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sarker_prod_user}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-sarker_shop}
+      - DEBUG=${DEBUG:-False}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+      - FRONTEND_URL=https://${DOMAIN:-sarker.shop}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_SECRET=${GOOGLE_SECRET}
+      - SECRET_KEY=${SECRET_KEY}
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+    env_file:
+      - ./.env
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8000}:8000"
     depends_on:
       - redis
       - db
@@ -41,11 +45,13 @@ services:
       dockerfile: Dockerfile
     restart: always
     command: /usr/local/bin/uv run celery -A ecommerce_api worker --loglevel=info
+    volumes:
+      - media_volume:/app/media
+    env_file:
+      - ./.env
     environment:
       - REDIS_URL=redis://redis:6379/0
-      - DATABASE_URL=postgres://sarker_user:sarker_pass@db:5432/sarker_dev
-      - DEBUG=False
-      - SECRET_KEY=django-insecure-dev-secret-key-change-this-in-prod
+      - DATABASE_URL=postgres://${POSTGRES_USER:-sarker_prod_user}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-sarker_shop}
     depends_on:
       - redis
       - db
@@ -54,18 +60,19 @@ services:
     build:
       context: ./front-end
       dockerfile: Dockerfile
+      args:
+        - VITE_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+        - VITE_API_URL=${VITE_API_URL:-/api}
     restart: always
     ports:
-      - "9090:80"
+      - "${FRONTEND_PORT:-8080}:80"
     volumes:
       - static_volume:/var/www/static
       - media_volume:/var/www/media
-    environment:
-      - VITE_API_URL=https://dev.sarker.shop/api
     depends_on:
       - backend
 
 volumes:
-  postgres_data:
   static_volume:
   media_volume:
+  postgres_data:
