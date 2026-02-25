@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { fixImage } from "../../context/CartContext";
 
 const ProductGallery = ({
     images = [],
@@ -26,11 +27,20 @@ const ProductGallery = ({
         if (thumbnailsRef.current) {
             const activeThumbnail = thumbnailsRef.current.children[activeIndex];
             if (activeThumbnail) {
-                activeThumbnail.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest",
-                    inline: "center",
-                });
+                const container = thumbnailsRef.current;
+                const scrollLeft = activeThumbnail.offsetLeft - container.offsetWidth / 2 + activeThumbnail.offsetWidth / 2;
+
+                const rect = container.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+
+                if (isVisible) {
+                    container.scrollTo({
+                        left: scrollLeft,
+                        behavior: "smooth"
+                    });
+                } else {
+                    container.scrollLeft = scrollLeft;
+                }
             }
         }
     }, [activeIndex]);
@@ -51,7 +61,7 @@ const ProductGallery = ({
                 {/* Image layers */}
                 {isAnimating && prevIndex !== activeIndex && (
                     <img
-                        src={images[prevIndex]}
+                        src={fixImage(images[prevIndex])}
                         alt=""
                         className={`absolute inset-0 w-full h-full ${direction === "right" ? "gallery-exit-left" : "gallery-exit-right"
                             }`}
@@ -59,7 +69,7 @@ const ProductGallery = ({
                     />
                 )}
                 <img
-                    src={images[activeIndex]}
+                    src={fixImage(images[activeIndex])}
                     alt={name}
                     className={`absolute inset-0 w-full h-full ${isAnimating
                         ? direction === "right" ? "gallery-enter-right" : "gallery-enter-left"
@@ -96,15 +106,15 @@ const ProductGallery = ({
             {images.length > 1 && (
                 <div
                     ref={thumbnailsRef}
-                    className="mt-4 flex gap-2 overflow-x-auto snap-x snap-mandatory pb-4 px-2 no-scrollbar"
+                    className="mt-4 flex gap-2 overflow-x-auto pb-4 px-2 no-scrollbar"
                 >
                     {images.map((src, i) => (
                         <button
                             key={i}
                             onClick={() => preloadAndAnimate(i)}
-                            className={`w-20 h-20 sm:w-24 sm:h-24 border-2 rounded-lg overflow-hidden snap-start shrink-0 cursor-pointer ${i === activeIndex ? "border-purple-600" : "border-gray-300"}`}
+                            className={`w-20 h-20 sm:w-24 sm:h-24 border-2 rounded-lg overflow-hidden shrink-0 cursor-pointer ${i === activeIndex ? "border-purple-600" : "border-gray-300"}`}
                         >
-                            <img src={src} alt="" className="w-full h-full object-cover" onError={handleImageError} />
+                            <img src={fixImage(src)} alt="" className="w-full h-full object-cover" onError={handleImageError} />
                         </button>
                     ))}
                 </div>
@@ -117,7 +127,7 @@ const ProductGallery = ({
                     onClick={() => setZoomOpen(false)}
                 >
                     <img
-                        src={images[activeIndex]}
+                        src={fixImage(images[activeIndex])}
                         alt="Zoomed"
                         className="max-w-full max-h-full object-contain"
                         onError={handleImageError}

@@ -7,7 +7,7 @@ export const CartContext = createContext(null)
 // BASE_URL is e.g. "http://localhost:8000/api" – media files live one level up
 const MEDIA_BASE = BASE_URL.replace(/\/api\/?$/, '');
 
-const fixImage = (img) => {
+export const fixImage = (img) => {
     if (!img) return "";
     if (img.startsWith("http")) return img;
     // img is a relative path like /media/products/foo.jpg
