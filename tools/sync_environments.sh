@@ -30,8 +30,13 @@ DEST_DB_NAME=$(grep POSTGRES_DB /root/sarker_${DEST_ENV}/.env | cut -d '=' -f2 |
 
 echo "  Dumping $SOURCE_DB_NAME ($SOURCE_DB_USER) -> Restoring to $DEST_DB_NAME ($DEST_DB_USER)"
 
-# Added --clean --if-exists to wipe dest first, and --no-owner to avoid permission errors
-docker exec -t $SOURCE_DB_CONT pg_dump -U $SOURCE_DB_USER --clean --if-exists --no-owner --no-privileges $SOURCE_DB_NAME | \
+# 1a. Wipe the destination schema first for a truly clean sync
+echo "  🧹 Wiping destination schema (public)..."
+docker exec -i $DEST_DB_CONT psql -U $DEST_DB_USER -d $DEST_DB_NAME -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" > /dev/null
+
+# 1b. Restore from source
+# Added --no-owner and --no-privileges to avoid permission errors
+docker exec -t $SOURCE_DB_CONT pg_dump -U $SOURCE_DB_USER --no-owner --no-privileges $SOURCE_DB_NAME | \
 docker exec -i $DEST_DB_CONT psql -U $DEST_DB_USER -d $DEST_DB_NAME
 
 # 2. Media Sync
