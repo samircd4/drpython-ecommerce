@@ -21,10 +21,11 @@ services:
     environment:
       - REDIS_URL=redis://redis:6379/0
       - DATABASE_URL=postgres://sarker_user:sarker_pass@db:5432/sarker_dev
-      - DEBUG=True
+      - DEBUG=False
+      - SECRET_KEY=django-insecure-dev-secret-key-change-this-in-prod
       - DOMAIN=dev.sarker.shop
-      - ALLOWED_HOSTS=*
-      - CSRF_TRUSTED_ORIGINS=https://dev.sarker.shop
+      - ALLOWED_HOSTS=dev.sarker.shop,www.dev.sarker.shop,backend
+      - CSRF_TRUSTED_ORIGINS=https://dev.sarker.shop,https://www.dev.sarker.shop
     ports:
       - "8000:8000"
     depends_on:
