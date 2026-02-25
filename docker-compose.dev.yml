@@ -1,0 +1,79 @@
+services:
+  redis:
+    image: redis:alpine
+    restart: always
+
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - dev_postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - DEBUG=${DEBUG:-True}
+      - SECRET_KEY=${SECRET_KEY}
+      - DOMAIN=${DOMAIN}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_SECRET=${GOOGLE_SECRET}
+    volumes:
+      - dev_static:/app/staticfiles
+      - dev_media:/app/media
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      - redis
+      - db
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    command: /usr/local/bin/uv run celery -A ecommerce_api worker --loglevel=info
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - DEBUG=${DEBUG:-True}
+      - SECRET_KEY=${SECRET_KEY}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_SECRET=${GOOGLE_SECRET}
+    volumes:
+      - dev_media:/app/media
+    depends_on:
+      - redis
+      - db
+
+  frontend:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+        - VITE_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+    restart: always
+    ports:
+      - "${FRONTEND_PORT:-9090}:80"
+    volumes:
+      - dev_static:/var/www/static
+      - dev_media:/var/www/media
+    depends_on:
+      - backend
+
+volumes:
+  dev_postgres_data:
+  dev_static:
+  dev_media:
