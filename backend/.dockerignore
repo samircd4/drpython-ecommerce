@@ -1,0 +1,17 @@
+# Ignore local virtual environment
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore local data/static
+db.sqlite3
+staticfiles/
+media/
+
+# Windows system files
+Thumbs.db
+desktop.ini

@@ -1,0 +1,9 @@
+# Ignore local dependencies
+node_modules/
+dist/
+build/
+
+# Windows system files
+Thumbs.db
+desktop.ini
+.DS_Store

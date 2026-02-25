@@ -2,6 +2,7 @@ import React from "react";
 import { FaStar } from "react-icons/fa";
 import ProductAttributes from "../ProductAttributes";
 import { Link } from "react-router-dom";
+import { fixImage } from "../../context/CartContext.jsx";
 
 const ProductInfo = ({
     name,
@@ -36,7 +37,7 @@ const ProductInfo = ({
             <div className="mt-1 flex items-center gap-3">
                 {brandObj?.logo && (
                     <img
-                        src={brandObj.logo}
+                        src={fixImage(brandObj.logo)}
                         alt={brand}
                         className="w-6 h-6 object-contain rounded"
                         onError={handleImageError}

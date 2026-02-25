@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables
-load_dotenv(BASE_DIR / '.env', override=True)
+load_dotenv(BASE_DIR / '.env', override=False)
 
 
 # Quick-start development settings - unsuitable for production
@@ -203,7 +203,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # =========================
 # ALLOWED HOSTS
 # =========================
-_allowed_env = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,backend,*')
+_allowed_env = os.getenv('ALLOWED_HOSTS', 'sarker.shop,www.sarker.shop,dev.sarker.shop,localhost,127.0.0.1,backend,*')
 ALLOWED_HOSTS = [h.strip().strip('"').strip("'") for h in _allowed_env.split(',')]
 
 if '*' in ALLOWED_HOSTS:
@@ -213,13 +213,13 @@ if '*' in ALLOWED_HOSTS:
 # CORS (Frontend Access)
 # =========================
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",      # Frontend (Vite dev)
+    "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "http://localhost",           # Frontend (Docker/Nginx)
+    "http://localhost",
     "http://127.0.0.1",
-    "https://sarker.shop",        # Production
+    "https://sarker.shop",
     "https://www.sarker.shop",
-    "https://dev.sarker.shop",    # Dev/Staging
+    "https://dev.sarker.shop",
 ]
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
@@ -229,13 +229,15 @@ CORS_ALLOW_CREDENTIALS = True
 # CSRF (Admin / Cookies)
 # =========================
 # Important: CSRF_TRUSTED_ORIGINS must include the protocol (https://)
-CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv(
-    'CSRF_TRUSTED_ORIGINS', 
-    'http://127.0.0.1:8000,http://localhost:8000,https://sarker.shop,https://dev.sarker.shop'
-).split(',')]
+_csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://sarker.shop,https://www.sarker.shop,https://dev.sarker.shop,http://localhost:8080,http://localhost:5173')
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(',')]
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = False  # Allows frontend to read cookie for CSRF header
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
 
 
@@ -345,6 +347,11 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
+        },
+        'APP': {
+            'client_id': os.getenv('GOOGLE_CLIENT_ID', ''),
+            'secret': os.getenv('GOOGLE_SECRET', ''),
+            'key': ''
         }
     },
     'facebook': {
