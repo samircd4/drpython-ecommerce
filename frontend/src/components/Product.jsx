@@ -2,6 +2,7 @@ import { FaStar, FaShoppingCart } from "react-icons/fa";
 import { useCart, fixImage } from "../context/CartContext.jsx";
 import { IoFlashOutline } from "react-icons/io5";
 import { Link } from 'react-router-dom'
+import TakaIcon from "./TakaIcon";
 
 const Product = ({ product }) => {
     const { addToCart } = useCart();
@@ -44,21 +45,36 @@ const Product = ({ product }) => {
                 </h3>
                 {/* <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p> */}
                 <div className="mt-auto">
-                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                    <div className="mb-2 flex items-center gap-2 whitespace-nowrap">
                         {product.wholesale_price ? (
                             <>
-                                <span className="text-md font-bold text-purple-700">BDT {product.wholesale_price}</span>
-                                <span className="text-xs text-gray-500 line-through decoration-gray-400">
-                                    {product.discount_price ? `BDT ${product.discount_price}` : `MRP ${product.price}`}
+                                <span className="flex items-baseline gap-0.5 text-lg font-bold text-purple-700">
+                                    <TakaIcon size={14} />
+                                    {product.wholesale_price}
+                                </span>
+
+                                <span className="flex items-baseline gap-0.5 text-xs text-gray-400 line-through">
+                                    <TakaIcon size={12} />
+                                    {product.discount_price ?? product.price}
                                 </span>
                             </>
                         ) : product.discount_price ? (
                             <>
-                                <span className="text-lg font-bold text-purple-700">BDT {product.discount_price}</span>
-                                <span className="text-sm text-gray-500 line-through decoration-gray-400">BDT {product.price}</span>
+                                <span className="flex items-baseline gap-0.5 text-lg font-bold text-purple-700">
+                                    <TakaIcon size={14} />
+                                    {product.discount_price}
+                                </span>
+
+                                <span className="flex items-baseline gap-0.5 text-sm text-gray-400 line-through">
+                                    <TakaIcon size={12} />
+                                    {product.price}
+                                </span>
                             </>
                         ) : (
-                            <span className="text-lg font-bold text-purple-700">BDT {product.price}</span>
+                            <span className="flex items-baseline gap-0.5 text-lg font-bold text-purple-700">
+                                <TakaIcon size={14} />
+                                {product.price}
+                            </span>
                         )}
                     </div>
                     {product.product_type === 'variant' ? (

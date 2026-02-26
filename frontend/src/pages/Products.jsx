@@ -9,6 +9,7 @@ import api, { BASE_URL } from '../api/client'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '../context/CartContext'
+import productsData from '../data/products.json'
 
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -102,6 +103,14 @@ const Products = () => {
             } catch (error) {
                 console.error('Products API error:', error)
                 // Fallback to bundled local data
+                const mapped = productsData.map(p => ({
+                    ...p,
+                    image: fixImage(p.image),
+                    reviews_count: p.reviews
+                }))
+                setProducts(mapped)
+                setFilteredProducts(mapped)
+                setTotalCount(mapped.length)
                 setLoading(false)
             }
         }

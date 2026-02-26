@@ -4,6 +4,7 @@ import { FaSearch, FaBoxOpen, FaTruck, FaCheckCircle, FaMapMarkerAlt, FaClock } 
 import { motion, AnimatePresence } from 'framer-motion';
 
 import api from '../api/client';
+import TakaIcon from '../components/TakaIcon';
 
 const CountdownTimer = ({ targetDate, onComplete }) => {
     const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
@@ -277,8 +278,9 @@ const OrderTracking = () => {
                                                     {item.storage && <span>• {item.storage}GB</span>}
                                                 </div>
                                             </div>
-                                            <div className="text-sm font-bold text-gray-900">
-                                                BDT {parseFloat(item.price).toFixed(2)}
+                                            <div className="text-sm font-bold text-gray-900 flex items-center gap-1 whitespace-nowrap">
+                                                <TakaIcon size={14} />
+                                                {parseFloat(item.price || 0).toFixed(2)}
                                             </div>
                                         </div>
 
@@ -306,7 +308,11 @@ const OrderTracking = () => {
 
                             <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center bg-gray-50 p-4 rounded-xl">
                                 <span className="font-medium text-gray-600">Total Amount</span>
-                                <span className="text-xl font-bold text-purple-600">BDT {parseFloat(trackingResult.totalAmount).toFixed(2)}</span>
+
+                                <div className="flex items-center gap-1 text-xl font-bold text-purple-600 whitespace-nowrap">
+                                    <TakaIcon size={20} />
+                                    {parseFloat(trackingResult.totalAmount).toFixed(2)}
+                                </div>
                             </div>
 
                             <div className="mt-8">

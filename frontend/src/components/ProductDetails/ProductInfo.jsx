@@ -3,6 +3,7 @@ import { FaStar } from "react-icons/fa";
 import ProductAttributes from "../ProductAttributes";
 import { Link } from "react-router-dom";
 import { fixImage } from "../../context/CartContext.jsx";
+import TakaIcon from "../TakaIcon";
 
 const ProductInfo = ({
     name,
@@ -58,16 +59,37 @@ const ProductInfo = ({
             </div>
 
             <div className="mt-4 flex flex-col gap-1">
-                <div className="flex items-center flex-wrap gap-3">
-                    <span className="text-3xl font-bold" style={{ color: PRICE_COLOR_HEX }}>
-                        BDT {displayWholesalePrice ? Number(displayWholesalePrice).toFixed(0) : Number(displayPrice).toFixed(0)}
-                    </span>
-                    {(displayWholesalePrice || (product?.discount_price && !selectedVariant) || (selectedVariant?.discount_price)) && (
-                        <span className="text-xl text-gray-400 line-through decoration-gray-400">
-                            BDT {Number(originalPrice).toFixed(0)}
+                <div className="flex items-center gap-4">
+                    {/* Price Section */}
+                    <div className="flex items-baseline gap-3 whitespace-nowrap">
+
+                        <span
+                            className="flex items-baseline gap-1 text-3xl font-extrabold"
+                            style={{ color: PRICE_COLOR_HEX }}
+                        >
+                            <TakaIcon size={20} />
+                            {displayWholesalePrice
+                                ? Number(displayWholesalePrice).toFixed(0)
+                                : Number(displayPrice).toFixed(0)}
                         </span>
-                    )}
-                    <span className={`px-2 py-1 rounded text-sm ${stockStatus === "in_stock" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+
+                        {(displayWholesalePrice ||
+                            (product?.discount_price && !selectedVariant) ||
+                            selectedVariant?.discount_price) && (
+                                <span className="flex items-baseline gap-1 text-xl text-gray-400 line-through">
+                                    <TakaIcon size={16} />
+                                    {Number(originalPrice).toFixed(0)}
+                                </span>
+                            )}
+                    </div>
+
+                    {/* Stock Badge */}
+                    <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${stockStatus === "in_stock"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                    >
                         {stockStatus === "in_stock" ? "In Stock" : "Out of Stock"}
                     </span>
                 </div>

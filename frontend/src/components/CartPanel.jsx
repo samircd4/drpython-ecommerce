@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useCart, fixImage } from '../context/CartContext.jsx'
 import { Link } from 'react-router-dom'
 import EmptyCart from './cart/EmptyCart'
+import TakaIcon from './TakaIcon'
+import { FaTrash } from "react-icons/fa";
 
 const CartPanel = ({ open, onClose }) => {
     const { cartItem, updateQuantity, deleteItem } = useCart()
@@ -46,38 +48,86 @@ const CartPanel = ({ open, onClose }) => {
                             </div>
                         )}
                         {cartItem.map((item) => (
-                            <div key={`${item.id}:${item.variant?.id ?? 'base'}`} className="flex items-center gap-3 border rounded-md p-3">
-                                <img src={fixImage(item.image)} alt={item.name} className="w-16 h-16 object-cover rounded" />
-                                <div className="flex-1">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-sm font-semibold text-gray-800">
-                                            <Link to={`/products/${item.slug}`} className="hover:underline">{item.name}</Link>
-                                        </h4>
-                                        <h3 className='text-sm font-semibold text-gray-800'>BDT {item.price}</h3>
+                            <div
+                                key={`${item.id}:${item.variant?.id ?? "base"}`}
+                                className="flex gap-4 border border-purple-100 bg-purple-50/40 rounded-xl p-4 hover:shadow-md hover:border-purple-200 transition-all duration-200"
+                            >
+                                {/* Product Image */}
+                                <img
+                                    src={fixImage(item.image)}
+                                    alt={item.name}
+                                    className="w-20 h-20 object-cover rounded-lg border border-purple-100"
+                                />
 
-                                        <button className="text-xs text-red-600 hover:text-red-700 cursor-pointer" onClick={() => deleteItem(item.id, item.variant?.id ?? null)}>Remove</button>
+                                {/* Content */}
+                                <div className="flex-1 flex flex-col justify-between">
+
+                                    {/* Top Row */}
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h4 className="text-sm font-semibold text-gray-800 leading-snug">
+                                                <Link
+                                                    to={`/products/${item.slug}`}
+                                                    className="hover:text-purple-600 transition-colors"
+                                                >
+                                                    {item.name}
+                                                </Link>
+                                            </h4>
+
+                                            {item.variant && (
+                                                <p className="text-xs text-purple-600/70 mt-1">
+                                                    {item.variant?.color ?? ""}
+                                                    {item.variant?.ram ? ` • ${item.variant.ram}GB` : ""}
+                                                    {item.variant?.storage ? ` / ${item.variant.storage}GB` : ""}
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        {/* Delete Button */}
+                                        <button
+                                            onClick={() => deleteItem(item.id, item.variant?.id ?? null)}
+                                            className="p-2 rounded-full text-purple-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 cursor-pointer"
+                                            aria-label="Remove item"
+                                        >
+                                            <FaTrash size={14} />
+                                        </button>
                                     </div>
-                                    <div className="text-sm text-gray-600">{item.variant && (
-                                        <span className="ml-1 text-xs text-gray-600">
-                                            {item.variant?.color ? `${item.variant?.color}` : ''} {item.variant?.ram ? `${item.variant?.ram}GB` : ''}{item.variant?.storage ? `/${item.variant?.storage}GB` : ''}
+
+                                    {/* Bottom Row */}
+                                    <div className="flex items-center justify-between mt-3">
+
+                                        {/* Price */}
+                                        <span className="flex items-baseline gap-1 text-lg font-extrabold text-purple-700 whitespace-nowrap">
+                                            <TakaIcon size={14} />
+                                            {item.price}
                                         </span>
-                                    )}</div>
-                                    <div className="mt-2 flex items-center gap-2">
-                                        <button
-                                            aria-label="Decrease quantity"
-                                            className="px-2 py-1 rounded-md border border-gray-300 hover:bg-gray-50 cursor-pointer"
-                                            onClick={() => updateQuantity(item.id, 'decrease', undefined, item.variant?.id ?? null)}
-                                        >
-                                            -
-                                        </button>
-                                        <span className="min-w-8 text-center text-sm">{item.quantity}</span>
-                                        <button
-                                            aria-label="Increase quantity"
-                                            className="px-2 py-1 rounded-md border border-gray-300 hover:bg-gray-50 cursor-pointer"
-                                            onClick={() => updateQuantity(item.id, 'increase', undefined, item.variant?.id ?? null)}
-                                        >
-                                            +
-                                        </button>
+
+                                        {/* Quantity Controls */}
+                                        <div className="flex items-center border border-purple-200 rounded-lg overflow-hidden bg-white">
+                                            <button
+                                                aria-label="Decrease quantity"
+                                                className="px-3 py-1 text-purple-600 hover:bg-purple-100 transition-colors cursor-pointer"
+                                                onClick={() =>
+                                                    updateQuantity(item.id, "decrease", undefined, item.variant?.id ?? null)
+                                                }
+                                            >
+                                                −
+                                            </button>
+
+                                            <span className="px-3 text-sm font-semibold text-gray-800">
+                                                {item.quantity}
+                                            </span>
+
+                                            <button
+                                                aria-label="Increase quantity"
+                                                className="px-3 py-1 text-purple-600 hover:bg-purple-100 transition-colors cursor-pointer"
+                                                onClick={() =>
+                                                    updateQuantity(item.id, "increase", undefined, item.variant?.id ?? null)
+                                                }
+                                            >
+                                                +
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -86,8 +136,14 @@ const CartPanel = ({ open, onClose }) => {
                     {cartItem.length > 0 && (
                         <div className="border-t p-4 sticky bottom-0 bg-white shadow-lg">
                             <div className="flex items-center justify-between mb-3">
-                                <span className="text-gray-700 font-medium">Subtotal</span>
-                                <span className="text-gray-900 font-semibold">BDT {subtotal.toFixed(2)}</span>
+                                <span className="text-gray-700 font-medium">
+                                    Subtotal
+                                </span>
+
+                                <span className="flex items-baseline gap-1 whitespace-nowrap text-gray-900 font-semibold">
+                                    <TakaIcon size={14} />
+                                    {subtotal.toFixed(2)}
+                                </span>
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <button

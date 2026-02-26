@@ -229,7 +229,7 @@ const ProfileSettings = ({
                         <button
                             onClick={handlePasswordChange}
                             disabled={changingPassword}
-                            className={`px-6 py-2.5 rounded-lg text-white font-medium shadow-md transition-all ${changingPassword
+                            className={`px-6 py-2.5 rounded-lg text-white font-medium shadow-md transition-all cursor-pointer ${changingPassword
                                 ? 'bg-gray-800 cursor-wait'
                                 : 'bg-gray-900 hover:bg-gray-800 hover:shadow-lg'}`}
                         >

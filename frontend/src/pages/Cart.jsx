@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { useCart } from '../context/CartContext.jsx'
 import ItemTable from '../components/cart/ItemTable.jsx'
 import EmptyCart from '../components/cart/EmptyCart.jsx'
+import TakaIcon from '../components/TakaIcon.jsx'
 
 const Cart = () => {
     const { cartItem, updateQuantity, deleteItem } = useCart()
@@ -61,15 +62,18 @@ const Cart = () => {
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Subtotal</span>
-                                <span className="font-medium">BDT {subtotal.toFixed(2)}</span>
+                                <span className="font-medium flex items-center gap-1 whitespace-nowrap">
+                                    <TakaIcon size={14} />
+                                    {subtotal?.toFixed(2)}
+                                </span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Tax ({(taxRate * 100).toFixed(0)}%)</span>
-                                <span className="font-medium">BDT {tax.toFixed(2)}</span>
+                                <span className="font-medium flex items-center gap-1 whitespace-nowrap"><TakaIcon size={14} /> {tax.toFixed(2)}</span>
                             </div>
                             <div className="border-t pt-2 flex justify-between">
                                 <span className="text-gray-800 font-semibold">Total</span>
-                                <span className="text-gray-900 font-bold">BDT {total.toFixed(2)}</span>
+                                <span className="text-gray-900 font-bold flex items-center gap-1 whitespace-nowrap"><TakaIcon size={16} /> {total.toFixed(2)}</span>
                             </div>
                         </div>
                         <button

@@ -154,18 +154,18 @@ const Navbar = () => {
                                 ))}
                             </ul>
                             <button className='relative cursor-pointer' onClick={() => setIsCartOpen(true)} aria-label="Open cart">
-                                <IoCartOutline className='h-7 w-7' />
+                                <IoCartOutline className='h-8 w-8 sm:h-7 sm:w-7' />
                                 <span className='bg-purple-600 px-2 rounded-full absolute -top-3 -right-3 text-white text-xs'>{totalCount}</span>
                             </button>
                             <button className='relative cursor-pointer' onClick={() => setIsNotifOpen(true)} aria-label="Open notifications">
                                 <motion.div whileHover={{ rotate: 15 }}>
-                                    <Bell className='h-6 w-6 text-gray-700' />
+                                    <Bell className='h-7 w-7 sm:h-6 sm:w-6 text-gray-700' />
                                 </motion.div>
                                 <span className='bg-red-500 px-1.5 rounded-full absolute -top-2 -right-2 text-white text-[10px] font-bold border-2 border-white'>
                                     {notificationsData.filter(n => !n.is_read).length}
                                 </span>
                             </button>
-                            <button onClick={handleUserClick} className='text-neutral-900 hover:text-purple-600 transition-colors flex items-center cursor-pointer' aria-label="Account">
+                            <button onClick={handleUserClick} className='hidden md:flex text-neutral-900 hover:text-purple-600 transition-colors items-center cursor-pointer' aria-label="Account">
                                 {(user?.avatar || user?.social_avatar_url) ? (
                                     <img src={user.avatar || user.social_avatar_url} alt="User" className="h-8 w-8 rounded-full border border-purple-200 object-cover shadow-sm" />
                                 ) : (
@@ -197,7 +197,7 @@ const Navbar = () => {
                         </button>
 
                         <div className="flex-1 overflow-y-auto">
-                            <CategoryList onNavigate={() => setDrawerOpen(false)} />
+                            <CategoryList onNavigate={() => setIsDrawerOpen(false)} />
                         </div>
                     </div>
                 </div>

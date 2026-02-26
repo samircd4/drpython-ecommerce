@@ -49,7 +49,7 @@ const NotificationPanel = ({ open, onClose, notifications }) => {
                             </div>
                             <button
                                 onClick={onClose}
-                                className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-400 hover:text-gray-900"
+                                className="p-2 hover:bg-purple-100 rounded-xl transition-colors text-purple-600 hover:text-purple-600 cursor-pointer"
                             >
                                 <X className="w-6 h-6" />
                             </button>

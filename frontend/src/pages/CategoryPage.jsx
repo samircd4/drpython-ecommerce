@@ -123,8 +123,23 @@ const CategoryPage = () => {
                 setFilteredProducts(mapped)
             } catch (error) {
                 console.error("Error fetching products:", error)
-                setProducts([])
-                setFilteredProducts([])
+                // Fallback to local data
+                let base = localProducts.map(p => ({
+                    ...p,
+                    image: fixImage(p.image),
+                    reviews_count: p.reviews
+                }))
+
+                if (slug && slug !== 'all') {
+                    if (isBrandRoute) {
+                        base = base.filter(p => slugify(getBrandName(p)) === slug)
+                    } else {
+                        base = base.filter(p => slugify(getCategoryName(p)) === slug)
+                    }
+                }
+                setProducts(base)
+                setFilteredProducts(base)
+                setTotalCount(base.length)
             } finally {
                 setLoading(false)
             }
