@@ -12,24 +12,12 @@ from rest_framework.decorators import action
 from django.templatetags.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated
 from email.mime.image import MIMEImage
 import os
 
-def attach_logo(email_message):
-    """
-    Attaches the brand logo to an EmailMessage for CID embedding.
-    """
-    logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo.png')
-    if os.path.exists(logo_path):
-        try:
-            with open(logo_path, 'rb') as f:
-                logo_data = f.read()
-                logo_image = MIMEImage(logo_data)
-                logo_image.add_header('Content-ID', '<logo_image>')
-                email_message.attach(logo_image)
-        except Exception:
-            pass # Fallback to no logo if file is missing or corrupted
 
 from .models import Customer, Address, Division, District, SubDistrict
 from .serializers import (
@@ -63,6 +51,7 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 
 from orders.models import Order
 
+@method_decorator(csrf_exempt, name='dispatch')
 class RegisterView(generics.CreateAPIView):
     """
     Handles user registration.
@@ -70,6 +59,7 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
+    authentication_classes = []
 
     @extend_schema(
         summary="Register a new user",
@@ -108,6 +98,7 @@ class RegisterView(generics.CreateAPIView):
                 html_content = render_to_string('emails/welcome_email.html', {
                     'full_name': full_name,
                     'verify_link': verify_link,
+                    'logo_url': f"{settings.BACKEND_URL}/static/images/logo.png",
                 })
                 text_content = strip_tags(html_content)
 
@@ -118,7 +109,6 @@ class RegisterView(generics.CreateAPIView):
                     to=[email]
                 )
                 email_message.attach_alternative(html_content, "text/html")
-                attach_logo(email_message)
                 email_message.send(fail_silently=True)
 
                 # 4. Check for order linking
@@ -231,8 +221,10 @@ class LogoutView(generics.GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ForgotPasswordView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
+    authentication_classes = []
     serializer_class = ForgotPasswordSerializer
 
     @extend_schema(
@@ -266,6 +258,7 @@ class ForgotPasswordView(generics.GenericAPIView):
             html_content = render_to_string('emails/password_reset_email.html', {
                 'user': user,
                 'reset_link': reset_link,
+                'logo_url': f"{settings.BACKEND_URL}/static/images/logo.png",
             })
             text_content = strip_tags(html_content)
 
@@ -276,7 +269,6 @@ class ForgotPasswordView(generics.GenericAPIView):
                 to=[email]
             )
             email_message.attach_alternative(html_content, "text/html")
-            attach_logo(email_message)
             email_message.send(fail_silently=False)
             
         except User.DoesNotExist:
@@ -285,8 +277,10 @@ class ForgotPasswordView(generics.GenericAPIView):
         return Response({"message": "Password reset link has been sent to your email."}, status=status.HTTP_200_OK)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ResetPasswordView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
+    authentication_classes = []
     serializer_class = ResetPasswordSerializer
 
     @extend_schema(
@@ -309,8 +303,10 @@ class ResetPasswordView(generics.GenericAPIView):
         return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class VerifyEmailView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
+    authentication_classes = []
     # Reuse ResetPasswordSerializer logic for uid/token validation or create a new one
     # We can handle it manually here to avoid creating another serializer just for this
     
@@ -352,8 +348,10 @@ class VerifyEmailView(generics.GenericAPIView):
 
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ResendVerificationEmailView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.AllowAny] # Changed to AllowAny for resend
+    authentication_classes = []
     serializer_class = ResendVerificationEmailSerializer
 
     @extend_schema(
@@ -396,6 +394,7 @@ class ResendVerificationEmailView(generics.GenericAPIView):
         html_content = render_to_string('emails/verification_email.html', {
             'full_name': getattr(user, 'customer', None).name if hasattr(user, 'customer') else user.username,
             'verify_link': verify_link,
+            'logo_url': f"{settings.BACKEND_URL}/static/images/logo.png",
         })
         text_content = strip_tags(html_content)
 
@@ -408,7 +407,6 @@ class ResendVerificationEmailView(generics.GenericAPIView):
                 to=[user.email]
             )
             email_message.attach_alternative(html_content, "text/html")
-            attach_logo(email_message)
             email_message.send(fail_silently=False)
             print(f"Verification email sent to {user.email}")
         except Exception as e:

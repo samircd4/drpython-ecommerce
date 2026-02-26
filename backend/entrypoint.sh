@@ -30,15 +30,21 @@ while True:
 END
 
 echo "Applying database migrations..."
-uv run manage.py migrate --noinput
+uv run python manage.py migrate --noinput
 
 echo "Collecting static files..."
-uv run manage.py collectstatic --noinput
+uv run python manage.py collectstatic --noinput
 
-# Using uvicorn with conditional reload for development
+# If a command is passed to the entrypoint, run it
+if [ $# -gt 0 ]; then
+    echo "Running provided command: $@"
+    exec "$@"
+fi
+
+# Otherwise, start the default server
 if [ "$DEBUG" = "True" ]; then
     echo "Starting server with --reload..."
-    uv run uvicorn ecommerce_api.asgi:application --host 0.0.0.0 --port 8000 --reload
+    exec uv run uvicorn ecommerce_api.asgi:application --host 0.0.0.0 --port 8000 --reload
 else
-    uv run uvicorn ecommerce_api.asgi:application --host 0.0.0.0 --port 8000
+    exec uv run uvicorn ecommerce_api.asgi:application --host 0.0.0.0 --port 8000
 fi

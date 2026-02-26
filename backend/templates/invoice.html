@@ -114,6 +114,14 @@
         border-top: 1px dashed #000;
         padding-top: 10px;
       }
+
+      /* Taka Icon Styling */
+      .taka-icon {
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 2px;
+        margin-top: -2px;
+      }
     </style>
   </head>
 
@@ -123,9 +131,9 @@
       <div class="header">
         <div class="brand">
           <h1>Sarker Shop</h1>
-          <p>Electronic Gadgets & Accessories</p>
-          <p>Poshu Hospital Road, Botrish, Kishoreganj</p>
-          <p>Phone: 01781-355 377</p>
+          <p>Smart gadgets, Smarter prices</p>
+          <p>Islami Super Market, Kishoreganj</p>
+          <p>Phone/WhatsApp: 01708-601002</p>
           <p>Email: support@sarker.shop</p>
         </div>
 
@@ -180,8 +188,14 @@
               {% endif %}
             </td>
             <td>{{ item.quantity }}</td>
-            <td>৳ {{ item.price|floatformat:2 }}</td>
-            <td>৳ {{ item.subtotal|floatformat:2 }}</td>
+            <td>
+              <svg class="taka-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15.5 15.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 7a2 2 0 1 1 4 0v9a3 3 0 0 0 6 0v-.5" /><path d="M8 11h6" /></svg>
+              {{ item.price|floatformat:2 }}
+            </td>
+            <td>
+              <svg class="taka-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15.5 15.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 7a2 2 0 1 1 4 0v9a3 3 0 0 0 6 0v-.5" /><path d="M8 11h6" /></svg>
+              {{ item.subtotal|floatformat:2 }}
+            </td>
           </tr>
           {% empty %}
           <tr>
@@ -192,7 +206,10 @@
       </table>
 
       <!-- Total -->
-      <div class="total">Total: ৳ {{ order.total_amount|floatformat:2 }}</div>
+      <div class="total">Total: 
+        <svg class="taka-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15.5 15.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 7a2 2 0 1 1 4 0v9a3 3 0 0 0 6 0v-.5" /><path d="M8 11h6" /></svg>
+        {{ order.total_amount|floatformat:2 }}
+      </div>
 
       <!-- Shipping Address -->
       <div class="address">
@@ -215,7 +232,8 @@
 
       <!-- Footer -->
       <div class="footer">
-        Website: www.sarker.shop | Facebook: facebook.com/sarkershop
+        Website: www.sarker.shop | Facebook: facebook.com/shopsarker
+        <p>WhatsApp: 01708-601002</p>
       </div>
     </div>
   </body>

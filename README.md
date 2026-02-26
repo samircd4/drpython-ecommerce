@@ -25,9 +25,9 @@ loc → dev → prod
 
 | File                       | Used For         | Command                                         |
 |----------------------------|------------------|-------------------------------------------------|
-| `docker-compose.local.yml` | Local dev        | `docker-compose -f docker-compose.local.yml up` |
-| `docker-compose.dev.yml`   | Staging (VPS)    | `docker-compose -f docker-compose.dev.yml up`   |
-| `docker-compose.prod.yml`  | Production (VPS) | `docker-compose -f docker-compose.prod.yml up`  |
+| `docker-compose.local.yml` | Local dev        | `docker compose -f docker-compose.local.yml up` |
+| `docker-compose.dev.yml`   | Staging (VPS)    | `docker compose -f docker-compose.dev.yml up`   |
+| `docker-compose.prod.yml`  | Production (VPS) | `docker compose -f docker-compose.prod.yml up`  |
 
 ---
 
@@ -72,9 +72,9 @@ git clone https://github.com/samircd4/sarker_shop_2026.git .
 git checkout dev
 cp .env.example .env
 nano .env   # Fill in your values
-docker-compose -f docker-compose.dev.yml up -d --build
-docker-compose -f docker-compose.dev.yml exec backend python manage.py migrate
-docker-compose -f docker-compose.dev.yml exec backend python manage.py createsuperuser
+docker compose -f docker-compose.dev.yml up -d --build
+docker compose -f docker-compose.dev.yml exec backend python manage.py migrate
+docker compose -f docker-compose.dev.yml exec backend python manage.py createsuperuser
 ```
 
 ### Update Dev After Code Change
@@ -82,8 +82,8 @@ docker-compose -f docker-compose.dev.yml exec backend python manage.py createsup
 ```bash
 cd /root/sarker_dev
 git pull origin dev
-docker-compose -f docker-compose.dev.yml down
-docker-compose -f docker-compose.dev.yml up -d --build
+docker compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml up -d --build
 ```
 
 ### First-Time Setup (Prod)
@@ -94,9 +94,9 @@ git clone https://github.com/samircd4/sarker_shop_2026.git .
 git checkout prod
 cp .env.example .env
 nano .env   # Fill in your PRODUCTION values (strong passwords, real secret key)
-docker-compose -f docker-compose.prod.yml up -d --build
-docker-compose -f docker-compose.prod.yml exec backend python manage.py migrate
-docker-compose -f docker-compose.prod.yml exec backend python manage.py createsuperuser
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml exec backend python manage.py migrate
+docker compose -f docker-compose.prod.yml exec backend python manage.py createsuperuser
 ```
 
 ### Update Prod After Code Change
@@ -104,8 +104,8 @@ docker-compose -f docker-compose.prod.yml exec backend python manage.py createsu
 ```bash
 cd /root/sarker_prod
 git pull origin prod
-docker-compose -f docker-compose.prod.yml down
-docker-compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml down
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 > ⚠ **Always backup the production database before updating:**
@@ -139,7 +139,8 @@ nginx -t && systemctl reload nginx
 
 ```bash
 git checkout loc
-docker-compose -f docker-compose.local.yml up -d --build
+git pull origin loc
+docker compose -f docker-compose.local.yml up -d --build
 ```
 
 - Frontend: <http://localhost:5173> (with hot-reload ✅)
@@ -152,14 +153,17 @@ docker-compose -f docker-compose.local.yml up -d --build
 
 ```bash
 # View logs
-docker-compose -f docker-compose.dev.yml logs -f backend
+docker compose -f docker-compose.dev.yml logs -f backend
 
 # Run Django shell
-docker-compose -f docker-compose.dev.yml exec backend python manage.py shell
+docker compose -f docker-compose.dev.yml exec backend python manage.py shell
 
 # Run migrations
-docker-compose -f docker-compose.dev.yml exec backend python manage.py migrate
+docker compose -f docker-compose.dev.yml exec backend python manage.py migrate
 
 # Collect static files manually
-docker-compose -f docker-compose.dev.yml exec backend python manage.py collectstatic --noinput
+docker compose -f docker-compose.dev.yml exec backend python manage.py collectstatic --noinput
+
+# Sync with repository
+git pull
 ```
