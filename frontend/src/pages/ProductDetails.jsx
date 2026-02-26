@@ -11,6 +11,7 @@ import ProductGallery from "../components/ProductDetails/ProductGallery";
 import ProductInfo from "../components/ProductDetails/ProductInfo";
 import ProductDetailsTabs from "../components/ProductDetails/ProductDetailsTabs";
 import RelatedProducts from "../components/RelatedProducts";
+import productsData from "../data/products.json";
 
 
 
@@ -123,8 +124,13 @@ const ProductDetails = () => {
                 const response = await api.get(`/products/${encodeURIComponent(id)}/`);
                 setProduct(response.data);
             } catch (err) {
-                setError(err.response?.data?.message || "Failed to load product");
-                console.error(err);
+                console.error("Error fetching product:", err);
+                const localProduct = productsData.find(p => String(p.id) === String(id));
+                if (localProduct) {
+                    setProduct({ ...localProduct, reviews_count: localProduct.reviews });
+                } else {
+                    setError("Failed to load product and no demo data found.");
+                }
             } finally {
                 setLoading(false);
             }

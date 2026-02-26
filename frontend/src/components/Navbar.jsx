@@ -3,12 +3,14 @@ import { FaCaretDown, FaUser } from 'react-icons/fa'
 import { IoCartOutline } from 'react-icons/io5'
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { FiMenu } from 'react-icons/fi';
-import { UserLock } from 'lucide-react';
+import { UserLock, Bell } from 'lucide-react';
 import CategoryList from './CategoryList';
 import SearchBar from './SearchBar';
 import { useCart } from '../context/CartContext'
 import { useUser } from '../context/UserContext'
 import CartPanel from './CartPanel'
+import NotificationPanel from './NotificationPanel'
+import notificationsData from '../data/notifications.json'
 import axios from 'axios';
 import { motion } from 'framer-motion';
 
@@ -65,6 +67,7 @@ const Navbar = () => {
     const [showDrawer, setShowDrawer] = useState(false); // New state for controlling drawer visibility
     const [animationClass, setAnimationClass] = useState(''); // New state for animation class
     const [searchFocused, setSearchFocused] = useState(false); // NEW
+    const [isNotifOpen, setIsNotifOpen] = useState(false); // NEW
     const { cartItem, isCartOpen, setIsCartOpen } = useCart();
     const { user } = useUser();
     const navigate = useNavigate();
@@ -154,6 +157,14 @@ const Navbar = () => {
                                 <IoCartOutline className='h-7 w-7' />
                                 <span className='bg-purple-600 px-2 rounded-full absolute -top-3 -right-3 text-white text-xs'>{totalCount}</span>
                             </button>
+                            <button className='relative cursor-pointer' onClick={() => setIsNotifOpen(true)} aria-label="Open notifications">
+                                <motion.div whileHover={{ rotate: 15 }}>
+                                    <Bell className='h-6 w-6 text-gray-700' />
+                                </motion.div>
+                                <span className='bg-red-500 px-1.5 rounded-full absolute -top-2 -right-2 text-white text-[10px] font-bold border-2 border-white'>
+                                    {notificationsData.filter(n => !n.is_read).length}
+                                </span>
+                            </button>
                             <button onClick={handleUserClick} className='text-neutral-900 hover:text-purple-600 transition-colors flex items-center cursor-pointer' aria-label="Account">
                                 {(user?.avatar || user?.social_avatar_url) ? (
                                     <img src={user.avatar || user.social_avatar_url} alt="User" className="h-8 w-8 rounded-full border border-purple-200 object-cover shadow-sm" />
@@ -167,6 +178,12 @@ const Navbar = () => {
             </div>
             {/* Cart Panel */}
             <CartPanel open={isCartOpen} onClose={() => setIsCartOpen(false)} />
+            {/* Notification Panel */}
+            <NotificationPanel
+                open={isNotifOpen}
+                onClose={() => setIsNotifOpen(false)}
+                notifications={notificationsData}
+            />
             {showDrawer && (
                 <div className="fixed inset-0 z-50 flex" onClick={() => setIsDrawerOpen(false)}>
                     {/* Drawer */}

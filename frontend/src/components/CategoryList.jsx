@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { MdApps } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
+import categoriesData from '../data/categories.json';
 
 const CategoryList = ({ onNavigate }) => {
     const [categories, setCategories] = useState([]);
@@ -28,6 +29,7 @@ const CategoryList = ({ onNavigate }) => {
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching categories:", error);
+                setCategories(categoriesData);
                 setLoading(false);
             }
         };
@@ -44,7 +46,7 @@ const CategoryList = ({ onNavigate }) => {
     const handleMoreClick = () => {
         if (listRef.current) {
             listRef.current.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
-            
+
         }
     };
 

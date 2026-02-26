@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "name": "Mobiles",
+        "slug": "mobiles",
+        "logo": "https://cdn-icons-png.flaticon.com/512/644/644458.png"
+    },
+    {
+        "id": 2,
+        "name": "Laptops",
+        "slug": "laptops",
+        "logo": "https://cdn-icons-png.flaticon.com/512/428/428001.png"
+    },
+    {
+        "id": 3,
+        "name": "Tablets",
+        "slug": "tablets",
+        "logo": "https://cdn-icons-png.flaticon.com/512/688/688467.png"
+    },
+    {
+        "id": 4,
+        "name": "Wearables",
+        "slug": "wearables",
+        "logo": "https://cdn-icons-png.flaticon.com/512/1000/1000994.png"
+    },
+    {
+        "id": 5,
+        "name": "Audio",
+        "slug": "audio",
+        "logo": "https://cdn-icons-png.flaticon.com/512/590/590484.png"
+    },
+    {
+        "id": 6,
+        "name": "Accessories",
+        "slug": "accessories",
+        "logo": "https://cdn-icons-png.flaticon.com/512/2965/2965250.png"
+    },
+    {
+        "id": 7,
+        "name": "Gaming",
+        "slug": "gaming",
+        "logo": "https://cdn-icons-png.flaticon.com/512/3408/3408506.png"
+    },
+    {
+        "id": 8,
+        "name": "Cameras",
+        "slug": "cameras",
+        "logo": "https://cdn-icons-png.flaticon.com/512/685/685655.png"
+    }
+]
