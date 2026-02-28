@@ -3,21 +3,21 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import samsungImg from "../assets/samsung.webp";
+import samsungImg_2 from "../assets/samsung-2.webp";
 
 const slides = [
     {
         id: 1,
         title: "Welcome to Sarker Shop",
         subtitle: "Find the best electronics and accessories here!",
-        image:
-            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
+        image: samsungImg,
     },
     {
         id: 2,
         title: "Exclusive Deals",
         subtitle: "Save big on headphones, laptops, and more.",
-        image:
-            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
+        image: samsungImg_2,
     },
     {
         id: 3,
