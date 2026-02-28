@@ -139,6 +139,18 @@ SPECTACULAR_SETTINGS = {
     },
 }
 
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),     # 1 day of uninterrupted browsing
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),    # Stay logged in for a week
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'UPDATE_LAST_LOGIN': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+}
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
