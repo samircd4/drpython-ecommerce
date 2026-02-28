@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle, ArrowRight, Loader } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import api, { BASE_URL } from '../api/client';
+import api from '../api/client';
 
 const EmailVerification = () => {
     const [searchParams] = useSearchParams();

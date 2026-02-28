@@ -6,7 +6,6 @@ import {
     Eye, EyeOff, ArrowRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
 import { useCart } from '../context/CartContext.jsx';
 import { toast } from 'react-toastify';
 import api from '../api/client';
