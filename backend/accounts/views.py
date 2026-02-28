@@ -36,11 +36,13 @@ from allauth.account.models import EmailAddress
 
 # --- Auth Views ---
 
+@method_decorator(csrf_exempt, name='dispatch')
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
     client_class = OAuth2Client
     callback_url = settings.FRONTEND_URL  # Read from FRONTEND_URL in .env
 
+@method_decorator(csrf_exempt, name='dispatch')
 class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
 
@@ -128,6 +130,7 @@ class RegisterView(generics.CreateAPIView):
         return Response()
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class CustomTokenObtainPairView(TokenObtainPairView):
     """
     Login View: Extends SimpleJWT.

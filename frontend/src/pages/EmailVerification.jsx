@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, XCircle, ArrowRight, Loader } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
-import { BASE_URL } from '../api/client';
+import api, { BASE_URL } from '../api/client';
 
 const EmailVerification = () => {
     const [searchParams] = useSearchParams();
@@ -23,7 +22,7 @@ const EmailVerification = () => {
             }
 
             try {
-                await axios.post(`${BASE_URL}/auth/verify-email/`, {
+                await api.post(`/auth/verify-email/`, {
                     uidb64: uid,
                     token: token
                 });
