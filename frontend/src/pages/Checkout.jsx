@@ -58,8 +58,37 @@ const Checkout = () => {
     // Voucher/discount
     const [voucher, setVoucher] = useState("");
     const [discount, setDiscount] = useState(0);
-    const applyVoucher = () => {
-        setDiscount(voucher.trim().toUpperCase() === "SAVE300" ? 300 : 0);
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
+
+    const applyVoucher = async () => {
+        if (!voucher.trim()) return;
+
+        try {
+            setLoading(true);
+            const response = await axios.post(`${API_URL}/orders/validate-coupon/`, {
+                code: voucher.trim(),
+                subtotal: subtotal
+            });
+
+            const data = response.data;
+            setDiscount(parseFloat(data.discount_amount));
+            setAppliedCoupon(data);
+            toast.success(data.message || "Coupon applied!");
+        } catch (error) {
+            console.error("Coupon error:", error);
+            const msg = error.response?.data?.detail || "Invalid coupon code.";
+            toast.error(msg);
+            setDiscount(0);
+            setAppliedCoupon(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const removeVoucher = () => {
+        setVoucher("");
+        setDiscount(0);
+        setAppliedCoupon(null);
     };
 
     // Terms
@@ -126,7 +155,19 @@ const Checkout = () => {
             0
         );
     }, [cartItem]);
-    const deliveryCharge = 120;
+    const deliveryCharge = useMemo(() => {
+        const d_name = (district || "").toLowerCase().trim();
+        const s_name = (subDistrict || "").toLowerCase().trim();
+
+        if (d_name.includes("kishoreganj")) {
+            if (s_name.includes("sadar")) {
+                return 0;
+            }
+            return 60;
+        }
+        return 120;
+    }, [district, subDistrict]);
+
     const deliveryDiscount = 0;
     const totalPayable = Math.max(
         0,
@@ -184,9 +225,9 @@ const Checkout = () => {
             // Prepare Final Payment Details
             let finalPaymentDetails = { ...paymentDetails };
 
-            // For COD, the amount is usually the delivery charge (120) as per UI
+            // For COD, the amount is usually the delivery charge as per UI
             if (paymentMethod === 'cod') {
-                finalPaymentDetails.amount = 120;
+                finalPaymentDetails.amount = deliveryCharge;
             } else if (!finalPaymentDetails.amount) {
                 // If not COD and amount missing, maybe default to total? 
                 // But usually user inputs it. Leaving as is if user didn't input.
@@ -205,6 +246,11 @@ const Checkout = () => {
                 save_address: saveAddress,
 
                 payment_method: paymentMethod,
+
+                // Financial fields
+                delivery_charge: deliveryCharge,
+                discount: discount,
+                coupon_code: appliedCoupon ? appliedCoupon.code : null,
 
                 // Send details if we have any relevant info (trx, paid_from, or amount)
                 // We send it even for COD now because user inputs "Paid From" / "Trx ID" for delivery fee
@@ -368,6 +414,7 @@ const Checkout = () => {
                             if (details.transaction_id) clearError('transaction_id');
                         }}
                         totalPayable={totalPayable}
+                        deliveryCharge={deliveryCharge}
                         errors={errors}
                     />
 
@@ -377,10 +424,12 @@ const Checkout = () => {
                         deliveryDiscount={deliveryDiscount}
                         discount={discount}
                         voucher={voucher}
+                        appliedCoupon={appliedCoupon}
                         accepted={accepted}
                         loading={loading}
                         onVoucherChange={(e) => setVoucher(e.target.value)}
                         onApplyVoucher={applyVoucher}
+                        onRemoveVoucher={removeVoucher}
                         onAcceptedChange={(e) => setAccepted(e.target.checked)}
                         onConfirmOrder={handlePlaceOrder}
                         isPaymentValid={true}

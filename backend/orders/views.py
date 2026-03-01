@@ -3,9 +3,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
+from decimal import Decimal
 
-from .models import Order, Cart, Checkout, CartItem, OrderStatus
-from .serializers import OrderSerializer, CartSerializer, CheckoutSerializer, CartItemSerializer
+from .models import Order, Cart, Checkout, CartItem, OrderStatus, Coupon
+from .serializers import OrderSerializer, CartSerializer, CheckoutSerializer, CartItemSerializer, CouponSerializer
 
 # For pdf generator
 from django.http import HttpResponse
@@ -23,7 +24,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     # Permissions
     # --------------------
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action in ['create', 'validate_coupon']:
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated()]
 
@@ -46,8 +47,38 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Order.objects.none()
 
     # --------------------
-    # Create Order
+    # Validate Coupon
     # --------------------
+    @action(detail=False, methods=['post'], url_path='validate-coupon', permission_classes=[permissions.AllowAny], authentication_classes=[])
+    def validate_coupon(self, request):
+        code = request.data.get('code')
+        subtotal = request.data.get('subtotal')
+
+        if not code:
+            return Response({"detail": "Coupon code is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        coupon = Coupon.objects.filter(code__iexact=code).first()
+        if not coupon:
+            return Response({"detail": "Invalid coupon code."}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            subtotal_dec = Decimal(str(subtotal)) if subtotal else Decimal('0.00')
+        except:
+            subtotal_dec = Decimal('0.00')
+
+        is_valid, message = coupon.is_valid(subtotal_dec)
+        if not is_valid:
+            return Response({"detail": message}, status=status.HTTP_400_BAD_REQUEST)
+
+        discount_amount = coupon.calculate_discount(subtotal_dec)
+
+        return Response({
+            "code": coupon.code,
+            "discount_type": coupon.discount_type,
+            "discount_value": coupon.discount_value,
+            "discount_amount": discount_amount,
+            "message": "Coupon applied successfully!"
+        })
     @extend_schema(
         summary="Create Order",
         description="""

@@ -6,7 +6,6 @@ import {
     Eye, EyeOff, ArrowRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
 import { useCart } from '../context/CartContext.jsx';
 import { toast } from 'react-toastify';
 import api from '../api/client';
@@ -28,7 +27,7 @@ const GoogleLoginSection = ({ API_URL, syncLocalCartToServer, refreshUser, setLo
             onSuccess: async (tokenResponse) => {
                 setLoading(true);
                 try {
-                    const res = await axios.post(`${API_URL}/auth/google/`, {
+                    const res = await api.post(`/auth/google/`, {
                         access_token: tokenResponse.access_token
                     });
                     localStorage.setItem('access_token', res.data.access_token || res.data.access);
@@ -101,7 +100,7 @@ const Account = () => {
         setLoading(true);
         try {
             if (isLogin) {
-                const response = await axios.post(`${API_URL}/auth/login/`, { email, password });
+                const response = await api.post(`/auth/login/`, { email, password });
                 localStorage.setItem('access_token', response.data.access);
                 localStorage.setItem('refresh_token', response.data.refresh);
                 await syncLocalCartToServer();
@@ -109,7 +108,7 @@ const Account = () => {
                 toast.success("Welcome back to Sarker Shop!");
                 navigate(from);
             } else {
-                await axios.post(`${API_URL}/auth/register/`, {
+                await api.post(`/auth/register/`, {
                     full_name: name,
                     email,
                     phone_number: phone,
