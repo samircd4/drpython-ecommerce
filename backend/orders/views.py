@@ -10,8 +10,6 @@ from .serializers import OrderSerializer, CartSerializer, CheckoutSerializer, Ca
 
 # For pdf generator
 from django.http import HttpResponse
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from utils.pdf import generate_invoice_pdf
 
 
@@ -51,8 +49,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     # --------------------
     # Validate Coupon
     # --------------------
-    @method_decorator(csrf_exempt, name='dispatch')
-    @action(detail=False, methods=['post'], url_path='validate-coupon', permission_classes=[permissions.AllowAny])
+    @action(detail=False, methods=['post'], url_path='validate-coupon', permission_classes=[permissions.AllowAny], authentication_classes=[])
     def validate_coupon(self, request):
         code = request.data.get('code')
         subtotal = request.data.get('subtotal')
