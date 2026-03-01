@@ -46,6 +46,7 @@ USE_X_FORWARDED_PORT = True
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     # 'unfold',
     'corsheaders',
     'django.contrib.admin',
@@ -390,3 +391,17 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Dhaka'
+
+# ========================
+# Real-time Configuration
+# ========================
+ASGI_APPLICATION = 'ecommerce_api.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.getenv('REDIS_URL', 'redis://redis:6379/0')],
+        },
+    },
+}

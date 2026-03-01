@@ -4,6 +4,7 @@ import Header from './Header';
 import Footer from './Footer';
 import ResponsiveMenu from './ResponsiveMenu';
 import { ToastContainer } from 'react-toastify';
+import React from 'react'
 
 const Layout = () => (
     <div className="flex flex-col min-h-screen w-full overflow-x-hidden">

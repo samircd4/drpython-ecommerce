@@ -5,6 +5,7 @@ import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useCart } from "../context/CartContext.jsx";
 import api from "../api/client";
 import { toast } from "react-toastify";
+import useWebSocket from "../hooks/useWebSocket";
 // Sub-components
 import ProductBreadcrumbs from "../components/ProductDetails/ProductBreadcrumbs";
 import ProductGallery from "../components/ProductDetails/ProductGallery";
@@ -138,6 +139,35 @@ const ProductDetails = () => {
 
         fetchProduct();
     }, [id]);
+
+    const { data: wsData } = useWebSocket(productId ? `/ws/product/${productId}/` : null);
+
+    useEffect(() => {
+        if (wsData) {
+            console.log("Real-time product update received:", wsData);
+            setProduct(prev => {
+                if (!prev) return prev;
+                // Main product or variant update
+                if (wsData.id === prev.id) {
+                    return {
+                        ...prev,
+                        price: wsData.price || prev.price,
+                        discount_price: wsData.discount_price !== undefined ? wsData.discount_price : prev.discount_price,
+                        stock_quantity: wsData.stock !== undefined ? wsData.stock : prev.stock_quantity,
+                    };
+                }
+                if (wsData.variant_id) {
+                    const newVariants = (prev.variants || []).map(v =>
+                        v.id === wsData.variant_id
+                            ? { ...v, price: wsData.variant_price || v.price, stock_quantity: wsData.variant_stock ?? v.stock_quantity }
+                            : v
+                    );
+                    return { ...prev, variants: newVariants };
+                }
+                return prev;
+            });
+        }
+    }, [wsData]);
 
     // Derive variant options and selection
     const variantColors = useMemo(() => {

@@ -10,9 +10,9 @@ import { useCart } from '../context/CartContext'
 import { useUser } from '../context/UserContext'
 import CartPanel from './CartPanel'
 import NotificationPanel from './NotificationPanel'
-import notificationsData from '../data/notifications.json'
-import axios from 'axios';
-import { motion } from 'framer-motion';
+import useWebSocket from '../hooks/useWebSocket'
+import api from '../api/client'
+import { motion, AnimatePresence } from 'framer-motion';
 
 import logo from '../assets/logo.png';
 
@@ -64,15 +64,102 @@ const NavItem = ({ item }) => {
 
 const Navbar = () => {
     const { isDrawerOpen, setIsDrawerOpen } = useCart();
-    const [showDrawer, setShowDrawer] = useState(false); // New state for controlling drawer visibility
-    const [animationClass, setAnimationClass] = useState(''); // New state for animation class
-    const [searchFocused, setSearchFocused] = useState(false); // NEW
-    const [isNotifOpen, setIsNotifOpen] = useState(false); // NEW
+    const [showDrawer, setShowDrawer] = useState(false);
+    const [animationClass, setAnimationClass] = useState('');
+    const [searchFocused, setSearchFocused] = useState(false);
+    const [isNotifOpen, setIsNotifOpen] = useState(false);
     const { cartItem, isCartOpen, setIsCartOpen } = useCart();
     const { user } = useUser();
     const navigate = useNavigate();
     const location = useLocation();
     const totalCount = cartItem.reduce((sum, item) => sum + (item.quantity || 0), 0);
+
+    // ─── Real-time Notifications ──────────────────────────
+    const [notifications, setNotifications] = useState([]);
+    const [bellShake, setBellShake] = useState(false);
+
+    // Load persisted notifications from API when user is logged in
+    useEffect(() => {
+        const loadNotifications = async () => {
+            if (!user) {
+                setNotifications([]);
+                return;
+            }
+            try {
+                const res = await api.get('/notifications/');
+                if (res.data?.results?.length > 0) {
+                    setNotifications(res.data.results);
+                } else if (res.data?.length > 0) {
+                    setNotifications(res.data);
+                } else {
+                    setNotifications([]);
+                }
+            } catch {
+                setNotifications([]);
+            }
+        };
+        loadNotifications();
+    }, [user]);
+
+    // Connect to notification WebSocket when logged in
+    const { data: wsNotification } = useWebSocket(
+        user?.user ? `/ws/notifications/${user.user}/` : null
+    );
+
+    // When a new notification arrives via WebSocket
+    useEffect(() => {
+        if (wsNotification) {
+            setNotifications(prev => {
+                // Prevent duplicate entries (e.g., from React Strict Mode double-invocation)
+                if (prev.some(n => n.id === wsNotification.id)) return prev;
+                return [wsNotification, ...prev];
+            });
+            // Trigger bell shake animation
+            setBellShake(true);
+            setTimeout(() => setBellShake(false), 1500);
+        }
+    }, [wsNotification]);
+
+    // Mark all as read handler
+    const handleMarkAllRead = async () => {
+        setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+        if (user) {
+            try {
+                await api.post('/notifications/mark_all_read/');
+            } catch { /* silently fail for demo data */ }
+        }
+    };
+
+    // Delete single notification handler
+    const handleDelete = async (id) => {
+        setNotifications(prev => prev.filter(n => n.id !== id));
+        if (user) {
+            try {
+                await api.post(`/notifications/${id}/mark_read/`);
+            } catch { /* silently fail */ }
+        }
+    };
+
+    const unreadCount = notifications.filter(n => !n.is_read).length;
+
+    // Clear all notifications with staggered animation
+    const handleClearAll = async () => {
+        const ids = notifications.map(n => n.id);
+
+        // Remove one by one with a delay
+        ids.forEach((id, index) => {
+            setTimeout(() => {
+                setNotifications(prev => prev.filter(n => n.id !== id));
+            }, index * 100); // 100ms delay between each removal
+        });
+
+        if (user) {
+            try {
+                await api.delete('/notifications/clear_all/');
+            } catch { /* silently fail */ }
+        }
+    };
+    // ──────────────────────────────────────────────────────
 
     const handleUserClick = (e) => {
         e.preventDefault();
@@ -92,7 +179,7 @@ const Navbar = () => {
             setAnimationClass('animate-slide-out-left');
             const timer = setTimeout(() => {
                 setShowDrawer(false);
-            }, 300); // Duration of slide-out animation
+            }, 300);
             return () => clearTimeout(timer);
         }
     }, [isDrawerOpen]);
@@ -158,12 +245,29 @@ const Navbar = () => {
                                 <span className='bg-purple-600 px-2 rounded-full absolute -top-3 -right-3 text-white text-xs'>{totalCount}</span>
                             </button>
                             <button className='relative cursor-pointer' onClick={() => setIsNotifOpen(true)} aria-label="Open notifications">
-                                <motion.div whileHover={{ rotate: 15 }}>
-                                    <Bell className='h-7 w-7 sm:h-6 sm:w-6 text-gray-700' />
+                                <motion.div
+                                    animate={bellShake ? {
+                                        rotate: [0, 20, -20, 15, -15, 10, -10, 0],
+                                        scale: [1, 1.2, 1.2, 1.15, 1.15, 1.1, 1.1, 1],
+                                    } : { rotate: 0 }}
+                                    transition={{ duration: 0.8 }}
+                                    whileHover={{ rotate: 15 }}
+                                >
+                                    <Bell className={`h-7 w-7 sm:h-6 sm:w-6 transition-colors duration-300 ${bellShake ? 'text-purple-600' : 'text-gray-700'}`} />
                                 </motion.div>
-                                <span className='bg-red-500 px-1.5 rounded-full absolute -top-2 -right-2 text-white text-[10px] font-bold border-2 border-white'>
-                                    {notificationsData.filter(n => !n.is_read).length}
-                                </span>
+                                <AnimatePresence>
+                                    {unreadCount > 0 && (
+                                        <motion.span
+                                            key={unreadCount}
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            exit={{ scale: 0 }}
+                                            className='bg-red-500 px-1.5 rounded-full absolute -top-2 -right-2 text-white text-[10px] font-bold border-2 border-white'
+                                        >
+                                            {unreadCount}
+                                        </motion.span>
+                                    )}
+                                </AnimatePresence>
                             </button>
                             <button onClick={handleUserClick} className='hidden md:flex text-neutral-900 hover:text-purple-600 transition-colors items-center cursor-pointer' aria-label="Account">
                                 {(user?.avatar || user?.social_avatar_url) ? (
@@ -182,7 +286,10 @@ const Navbar = () => {
             <NotificationPanel
                 open={isNotifOpen}
                 onClose={() => setIsNotifOpen(false)}
-                notifications={notificationsData}
+                notifications={notifications}
+                onMarkAllRead={handleMarkAllRead}
+                onClearAll={handleClearAll}
+                onDelete={handleDelete}
             />
             {showDrawer && (
                 <div className="fixed inset-0 z-50 flex" onClick={() => setIsDrawerOpen(false)}>
