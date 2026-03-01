@@ -19,6 +19,56 @@ class OrderStatus(models.Model):
     def __str__(self) -> str:
         return str(self.display_name)
 
+
+# 2. Coupon Model
+
+class Coupon(models.Model):
+    """
+    Model for discount coupons.
+    """
+    DISCOUNT_CHOICES = (
+        ('percentage', 'Percentage'),
+        ('fixed', 'Fixed Amount'),
+    )
+
+    code = models.CharField(max_length=50, unique=True)
+    discount_type = models.CharField(max_length=20, choices=DISCOUNT_CHOICES, default='fixed')
+    discount_value = models.DecimalField(max_digits=12, decimal_places=2)
+    min_purchase = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
+    
+    valid_from = models.DateTimeField()
+    valid_to = models.DateTimeField()
+    active = models.BooleanField(default=True)
+    
+    usage_limit = models.PositiveIntegerField(null=True, blank=True)
+    times_used = models.PositiveIntegerField(default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.code} ({self.discount_value} {self.discount_type})"
+
+    def is_valid(self, subtotal=None):
+        from django.utils import timezone
+        now = timezone.now()
+        if not self.active:
+            return False, "Coupon is not active."
+        if now < self.valid_from:
+            return False, "Coupon is not yet valid."
+        if now > self.valid_to:
+            return False, "Coupon has expired."
+        if self.usage_limit and self.times_used >= self.usage_limit:
+            return False, "Coupon usage limit reached."
+        if subtotal is not None and subtotal < self.min_purchase:
+            return False, f"Minimum purchase of {self.min_purchase} required."
+        return True, ""
+
+    def calculate_discount(self, subtotal):
+        if self.discount_type == 'percentage':
+            return (self.discount_value / Decimal('100')) * subtotal
+        return min(self.discount_value, subtotal)
+
 # 2. Payment Info Model
 
 
@@ -113,6 +163,13 @@ class Order(models.Model):
         Address, on_delete=models.PROTECT, null=True, blank=True)
 
     total_amount = models.DecimalField(
+        max_digits=12, decimal_places=2, default=Decimal('0.00'), help_text="Final amount to be paid (Grand Total)")
+
+    delivery_charge = models.DecimalField(
+        max_digits=12, decimal_places=2, default=Decimal('0.00'))
+    tax = models.DecimalField(
+        max_digits=12, decimal_places=2, default=Decimal('0.00'))
+    discount = models.DecimalField(
         max_digits=12, decimal_places=2, default=Decimal('0.00'))
 
     # Linked to OrderStatus
@@ -122,6 +179,10 @@ class Order(models.Model):
     # Linked to PaymentInfo
     payment_info = models.OneToOneField(
         PaymentInfo, on_delete=models.PROTECT, null=True, blank=True)
+
+    # Linked to Coupon
+    coupon = models.ForeignKey(
+        Coupon, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -134,9 +195,57 @@ class Order(models.Model):
             self.full_name or "Guest")
         return f"Order #{self.id} - {customer_name}"
 
+    @property
+    def subtotal(self):
+        return sum(item.subtotal for item in self.items.all())
+
+    @property
+    def grand_total(self):
+        """Calculates what the total_amount SHOULD be."""
+        return self.subtotal + self.delivery_charge + self.tax - self.discount
+
+    @property
+    def paid_amount(self):
+        """Returns the amount already paid."""
+        if self.payment_info:
+            # If specifically marked as paid, we assume at least grand_total was paid
+            # But we prefer the actual recorded amount if it exists
+            if self.payment_info.is_paid:
+                return max(self.payment_info.amount, self.grand_total)
+            return self.payment_info.amount
+        return Decimal('0.00')
+
+    @property
+    def due_amount(self):
+        """Remaining balance to be paid."""
+        if self.payment_info and self.payment_info.is_paid:
+            return Decimal('0.00')
+        return self.grand_total - self.paid_amount
+
     def update_total_amount(self):
-        self.total_amount = sum(item.subtotal for item in self.items.all())
+        self.total_amount = self.grand_total
         self.save(update_fields=['total_amount'])
+
+    @staticmethod
+    def get_delivery_charge(district, sub_district):
+        """
+        Calculates delivery charge based on location.
+        - Kishoreganj (District): 60
+        - Kishoreganj Sadar (Sub-district): 0
+        - Others: 120
+        """
+        if not district:
+            return Decimal('120.00')
+
+        d_name = str(district).strip().lower()
+        s_name = str(sub_district).strip().lower() if sub_district else ""
+
+        if "kishoreganj" in d_name:
+            if "sadar" in s_name:
+                return Decimal('0.00')
+            return Decimal('60.00')
+
+        return Decimal('120.00')
 
 
 class OrderItem(models.Model):

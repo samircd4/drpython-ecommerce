@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, ArrowRight, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { BASE_URL } from '../api/client';
+import api from '../api/client';
 import { getErrorMessage } from '../utils/errorUtils';
 
 const ForgotPassword = () => {
@@ -17,7 +15,7 @@ const ForgotPassword = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post(`${BASE_URL}/auth/forgot-password/`, { email });
+            await api.post(`/auth/forgot-password/`, { email });
             setSubmitted(true);
             toast.success("Reset link sent! Check your email.");
         } catch (error) {

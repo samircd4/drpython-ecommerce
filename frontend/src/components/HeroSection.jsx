@@ -3,29 +3,29 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import samsungImg from "../assets/samsung.webp";
+import samsungImg_2 from "../assets/samsung-2.webp";
+import sarker_shop from "../assets/sarker_shop_architecture.png"
 
 const slides = [
     {
         id: 1,
-        title: "Welcome to Sarker Shop",
-        subtitle: "Find the best electronics and accessories here!",
-        image:
-            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
+        title: "Sarker Shop Architecture",
+        subtitle: "Modern E-Commerce Ecosytem",
+        image: sarker_shop,
     },
     {
         id: 2,
-        title: "Exclusive Deals",
-        subtitle: "Save big on headphones, laptops, and more.",
-        image:
-            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
+        title: "Welcome to Sarker Shop",
+        subtitle: "Find the best electronics and accessories here!",
+        image: samsungImg,
     },
     {
         id: 3,
-        title: "Smart Gadgets",
-        subtitle: "Upgrade your life with the latest tech products.",
-        image:
-            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80",
-    },
+        title: "Exclusive Deals",
+        subtitle: "Save big on headphones, laptops, and more.",
+        image: samsungImg_2,
+    }
 ];
 
 const HeroSection = () => {

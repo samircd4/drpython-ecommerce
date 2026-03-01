@@ -53,9 +53,9 @@ const Contact = () => {
         {
             icon: <FaPhoneAlt />,
             title: "Call Us",
-            value: "+880 1781 355 377",
+            value: "+880 1708 601 002",
             color: "bg-green-100 text-green-600",
-            link: "tel:+8801781355377"
+            link: "tel:+8801708601002"
         },
         {
             icon: <FaMapMarkerAlt />,

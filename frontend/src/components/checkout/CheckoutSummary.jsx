@@ -3,13 +3,14 @@ import React from "react";
 const CheckoutSummary = ({
     subtotal,
     deliveryCharge,
-    deliveryDiscount,
     discount,
     voucher,
+    appliedCoupon,
     accepted,
     loading,
     onVoucherChange,
     onApplyVoucher,
+    onRemoveVoucher,
     onAcceptedChange,
     onConfirmOrder,
     onNavigateTerms,
@@ -17,7 +18,7 @@ const CheckoutSummary = ({
 }) => {
     const totalPayable = Math.max(
         0,
-        (subtotal || 0) + (deliveryCharge || 0) - (deliveryDiscount || 0) - (discount || 0)
+        (subtotal || 0) + (deliveryCharge || 0) - (discount || 0)
     );
 
     return (
@@ -35,29 +36,46 @@ const CheckoutSummary = ({
                     <span className="font-medium">৳ {deliveryCharge}</span>
                 </div>
                 <div className="flex justify-between">
-                    <span className="text-gray-600">Delivery Charge Discount</span>
-                    <span className="font-medium">৳ {deliveryDiscount}</span>
-                </div>
-                <div className="flex justify-between">
                     <span className="text-gray-600">Discount</span>
                     <span className="font-medium">৳ {discount}</span>
                 </div>
             </div>
 
-            <div className="mt-3 flex items-center gap-2">
-                <input
-                    className="flex-1 border rounded-md px-3 py-2 text-sm"
-                    placeholder="Have a voucher code"
-                    value={voucher}
-                    onChange={onVoucherChange}
-                />
-                <button
-                    className="px-4 py-2 rounded-md bg-purple-600 hover:bg-purple-700 text-white cursor-pointer"
-                    onClick={onApplyVoucher}
-                >
-                    Apply
-                </button>
-            </div>
+            {appliedCoupon ? (
+                <div className="mt-3 p-2 bg-purple-50 border border-purple-100 rounded-md flex justify-between items-center animate-in fade-in slide-in-from-top-1">
+                    <div className="flex flex-col">
+                        <span className="text-xs text-purple-600 font-semibold uppercase">Coupon Applied</span>
+                        <span className="text-sm font-bold text-neutral-800">{appliedCoupon.code}</span>
+                    </div>
+                    <button
+                        onClick={onRemoveVoucher}
+                        className="p-1 hover:bg-purple-200 rounded-full text-purple-600 transition-colors cursor-pointer"
+                        title="Remove coupon"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            ) : (
+                <div className="mt-3 flex items-center gap-2">
+                    <input
+                        className="flex-1 border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-purple-200 focus:border-purple-600 outline-none transition-all"
+                        placeholder="Have a voucher code?"
+                        value={voucher}
+                        onChange={onVoucherChange}
+                        onKeyPress={(e) => e.key === 'Enter' && onApplyVoucher()}
+                    />
+                    <button
+                        className="px-4 py-2 rounded-md bg-purple-600 hover:bg-purple-700 text-white cursor-pointer transition-colors active:scale-95 font-medium"
+                        onClick={onApplyVoucher}
+                        disabled={!voucher.trim() || loading}
+                    >
+                        Apply
+                    </button>
+                </div>
+            )}
 
             <div className="border-t pt-3 mt-3">
                 <div className="flex justify-between items-center">

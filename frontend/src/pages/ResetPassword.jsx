@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, Eye, EyeOff, ArrowRight, CheckCircle } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { BASE_URL } from '../api/client';
+import api from '../api/client';
 import { getErrorMessage } from '../utils/errorUtils';
 
 const ResetPassword = () => {
@@ -33,7 +31,7 @@ const ResetPassword = () => {
 
         setLoading(true);
         try {
-            await axios.post(`${BASE_URL}/auth/reset-password/`, {
+            await api.post(`/auth/reset-password/`, {
                 uidb64: uid,
                 token: token,
                 new_password: password

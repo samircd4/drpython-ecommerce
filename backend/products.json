@@ -1,0 +1,2824 @@
+[
+    {
+        "id": 1,
+        "name": "Wireless Bluetooth Headphones",
+        "price": 89.99,
+        "category": "Electronics",
+        "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.5,
+        "reviews": 128,
+        "description": "High-quality wireless headphones with noise cancellation",
+        "is_featured": true,
+        "specifications": {
+            "Connectivity": "Bluetooth 5.0",
+            "Battery Life": "20 Hours",
+            "Charging Port": "USB-C",
+            "Noise Cancellation": "Active",
+            "Warranty": "1 Year",
+            "RAM": "4GB",
+            "Storage": "64GB"
+        }
+    },
+    {
+        "id": 2,
+        "name": "Smartphone Case",
+        "price": 24000,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.2,
+        "reviews": 89,
+        "description": "Durable protective case for smartphones",
+        "is_featured": false,
+        "specifications": {
+            "Material": "TPU + Polycarbonate",
+            "Wireless Charging Support": "Yes",
+            "Drop Protection": "Up to 2 meters",
+            "Finish": "Matte Anti-Slip"
+        }
+    },
+    {
+        "id": 3,
+        "name": "Laptop Stand",
+        "price": 45.49,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.7,
+        "reviews": 156,
+        "description": "Adjustable laptop stand for better ergonomics",
+        "is_featured": true,
+        "specifications": {
+            "Material": "Aluminum",
+            "Adjustable Height": "Yes",
+            "Weight Capacity": "10 kg",
+            "Compatibility": "Laptops up to 17 inches"
+        }
+    },
+    {
+        "id": 4,
+        "name": "Wireless Mouse",
+        "price": 32.99,
+        "category": "Electronics",
+        "image": "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.3,
+        "reviews": 203,
+        "description": "Ergonomic wireless mouse with precision tracking",
+        "is_featured": false,
+        "specifications": {
+            "Connectivity": "2.4G Wireless",
+            "Battery Life": "6 Months",
+            "Sensor": "Optical",
+            "DPI": "800 / 1200 / 1600"
+        }
+    },
+    {
+        "id": 5,
+        "name": "Coffee Mug",
+        "price": 15.99,
+        "category": "Home",
+        "image": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.6,
+        "reviews": 342,
+        "description": "Ceramic coffee mug with elegant design",
+        "is_featured": true,
+        "specifications": {
+            "Material": "Ceramic",
+            "Capacity": "350 ml",
+            "Microwave Safe": "Yes",
+            "Dishwasher Safe": "Yes"
+        }
+    },
+    {
+        "id": 6,
+        "name": "Desk Lamp",
+        "price": 67.99,
+        "category": "Home",
+        "image": "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.4,
+        "reviews": 178,
+        "description": "LED desk lamp with adjustable brightness",
+        "is_featured": false,
+        "specifications": {
+            "Light Type": "LED",
+            "Power": "8W",
+            "Brightness Levels": "3-Step Adjustable",
+            "USB Charging Port": "Included"
+        }
+    },
+    {
+        "id": 7,
+        "name": "Bluetooth Speaker",
+        "price": 79.99,
+        "category": "Electronics",
+        "image": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.8,
+        "reviews": 267,
+        "description": "Portable Bluetooth speaker with deep bass",
+        "is_featured": true,
+        "specifications": {
+            "Connectivity": "Bluetooth 5.1",
+            "Play Time": "12 Hours",
+            "Water Resistance": "IPX5",
+            "Charging Port": "USB-C"
+        }
+    },
+    {
+        "id": 8,
+        "name": "Notebook Set",
+        "price": 19.99,
+        "category": "Office",
+        "image": "https://images.unsplash.com/photo-1531346680769-a1d79b57de5c?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1531346680769-a1d79b57de5c?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1531346680769-a1d79b57de5c?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1531346680769-a1d79b57de5c?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.1,
+        "reviews": 95,
+        "description": "Premium notebook set with various sizes",
+        "is_featured": false,
+        "specifications": {
+            "Paper Type": "A5 / A6 Set",
+            "Pages per Notebook": "80 Pages",
+            "Paper Weight": "100 GSM",
+            "Binding": "Soft Cover"
+        }
+    },
+    {
+        "id": 9,
+        "name": "Plant Pot",
+        "price": 28.99,
+        "category": "Home",
+        "image": "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.5,
+        "reviews": 134,
+        "description": "Ceramic plant pot with drainage holes",
+        "is_featured": true,
+        "specifications": {
+            "Material": "Ceramic",
+            "Diameter": "15 cm",
+            "Drainage": "Yes",
+            "Surface Finish": "Gloss"
+        }
+    },
+    {
+        "id": 10,
+        "name": "USB Cable",
+        "price": 12.99,
+        "category": "Electronics",
+        "image": "https://images.unsplash.com/photo-1586816879360-004f5b0c51e3?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1586816879360-004f5b0c51e3?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1586816879360-004f5b0c51e3?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1586816879360-004f5b0c51e3?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.0,
+        "reviews": 289,
+        "description": "High-speed USB-C cable for fast charging",
+        "is_featured": false,
+        "specifications": {
+            "Connector Type": "USB-C",
+            "Length": "1 Meter",
+            "Fast Charging Support": "Yes",
+            "Data Transfer Speed": "480 Mbps"
+        }
+    },
+    {
+        "id": 11,
+        "name": "Sticky Notes",
+        "price": 8.99,
+        "category": "Office",
+        "image": "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.3,
+        "reviews": 167,
+        "description": "Colorful sticky notes for organization",
+        "is_featured": false,
+        "specifications": {
+            "Sheet Size": "3 x 3 inches",
+            "Sheets per Pad": "100",
+            "Number of Colors": "5",
+            "Adhesive Strength": "Reusable Removable Glue"
+        }
+    },
+    {
+        "id": 12,
+        "name": "Wall Clock",
+        "price": 34.99,
+        "category": "Home",
+        "image": "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=400&h=400&fit=crop",
+        "images": [
+            "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=800&h=800&fit=crop",
+            "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=1200&h=1200&fit=crop",
+            "https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=1600&h=1600&fit=crop"
+        ],
+        "rating": 4.6,
+        "reviews": 98,
+        "description": "Modern wall clock with silent movement",
+        "is_featured": true,
+        "specifications": {
+            "Movement": "Silent Quartz",
+            "Diameter": "30 cm",
+            "Power Source": "AA Battery",
+            "Frame Material": "Plastic"
+        }
+    },
+    {
+        "id": 13,
+        "name": "Wireless Bluetooth Headphones",
+        "price": 89.99,
+        "category": "Electronics",
+        "image": "https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=400&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=1200&q=80",
+            "https://images.unsplash.com/photo-1519677100203-a0e668c92439?auto=format&fit=crop&w=1600&q=80"
+        ],
+        "rating": 4.5,
+        "reviews": 128,
+        "description": "High-quality wireless headphones with noise cancellation",
+        "is_featured": true,
+        "specifications": {
+            "Connectivity": "Bluetooth 5.2",
+            "Battery Life": "25 Hours",
+            "Noise Cancellation": "Hybrid ANC",
+            "Charging Port": "USB-C"
+        }
+    },
+    {
+        "id": 14,
+        "name": "Xiaomi Ultra 9",
+        "brand": "Xiaomi",
+        "price": 199.85,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=6"
+        ],
+        "rating": 3.6,
+        "reviews": 322,
+        "description": "High-quality Xiaomi Ultra 9 from Xiaomi. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Xiaomi",
+            "Category": "Mobiles",
+            "Warranty": "2 Years",
+            "Color": "Blue",
+            "Storage": "64GB",
+            "RAM": "12GB"
+        }
+    },
+    {
+        "id": 15,
+        "name": "Acer XPS 12",
+        "brand": "Acer",
+        "price": 652.08,
+        "category": "Laptops",
+        "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=6"
+        ],
+        "rating": 4.8,
+        "reviews": 1314,
+        "description": "High-quality Acer XPS 12 from Acer. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Acer",
+            "Category": "Laptops",
+            "Warranty": "3 Years",
+            "Color": "Red",
+            "Processor": "AMD Ryzen 7",
+            "RAM": "8GB",
+            "Storage": "1TB SSD"
+        }
+    },
+    {
+        "id": 16,
+        "name": "Lenovo Slate 8",
+        "brand": "Lenovo",
+        "price": 1258.62,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=6"
+        ],
+        "rating": 4.5,
+        "reviews": 855,
+        "description": "High-quality Lenovo Slate 8 from Lenovo. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Lenovo",
+            "Category": "Tablets",
+            "Warranty": "2 Years",
+            "Color": "Red",
+            "Storage": "256GB",
+            "RAM": "8GB"
+        }
+    },
+    {
+        "id": 17,
+        "name": "Samsung Watch 14",
+        "brand": "Samsung",
+        "price": 1005.06,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=6"
+        ],
+        "rating": 4.9,
+        "reviews": 1923,
+        "description": "High-quality Samsung Watch 14 from Samsung. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Samsung",
+            "Category": "Wearables",
+            "Warranty": "3 Years",
+            "Color": "Blue"
+        }
+    },
+    {
+        "id": 18,
+        "name": "JBL Speaker 12",
+        "brand": "JBL",
+        "price": 1332.68,
+        "category": "Audio",
+        "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=6"
+        ],
+        "rating": 4.7,
+        "reviews": 849,
+        "description": "High-quality JBL Speaker 12 from JBL. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "JBL",
+            "Category": "Audio",
+            "Warranty": "2 Years",
+            "Color": "Silver",
+            "Connectivity": "Bluetooth 5.0",
+            "Battery Life": "32 Hours"
+        }
+    },
+    {
+        "id": 19,
+        "name": "Razer Stand 8",
+        "brand": "Razer",
+        "price": 719.95,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=6"
+        ],
+        "rating": 4.7,
+        "reviews": 50,
+        "description": "High-quality Razer Stand 8 from Razer. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Razer",
+            "Category": "Accessories",
+            "Warranty": "3 Years",
+            "Color": "Silver"
+        }
+    },
+    {
+        "id": 20,
+        "name": "Razer Desk 10",
+        "brand": "Razer",
+        "price": 257.83,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=6"
+        ],
+        "rating": 4.5,
+        "reviews": 1848,
+        "description": "High-quality Razer Desk 10 from Razer. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Razer",
+            "Category": "Gaming",
+            "Warranty": "2 Years",
+            "Color": "Blue"
+        }
+    },
+    {
+        "id": 21,
+        "name": "Sony Action Cam 3",
+        "brand": "Sony",
+        "price": 1218.5,
+        "category": "Cameras",
+        "image": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=6"
+        ],
+        "rating": 4.3,
+        "reviews": 1916,
+        "description": "High-quality Sony Action Cam 3 from Sony. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Sony",
+            "Category": "Cameras",
+            "Warranty": "1 Years",
+            "Color": "Blue"
+        }
+    },
+    {
+        "id": 22,
+        "name": "Apple Pro 8",
+        "brand": "Apple",
+        "price": 552.84,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=6"
+        ],
+        "rating": 3.6,
+        "reviews": 534,
+        "description": "High-quality Apple Pro 8 from Apple. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Apple",
+            "Category": "Mobiles",
+            "Warranty": "2 Years",
+            "Color": "Blue",
+            "Storage": "128GB",
+            "RAM": "8GB"
+        }
+    },
+    {
+        "id": 23,
+        "name": "Asus XPS 4",
+        "brand": "Asus",
+        "price": 132.42,
+        "category": "Laptops",
+        "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=6"
+        ],
+        "rating": 3.6,
+        "reviews": 1604,
+        "description": "High-quality Asus XPS 4 from Asus. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Asus",
+            "Category": "Laptops",
+            "Warranty": "1 Years",
+            "Color": "White",
+            "Processor": "AMD Ryzen 7",
+            "RAM": "32GB",
+            "Storage": "1TB SSD"
+        }
+    },
+    {
+        "id": 24,
+        "name": "Apple Note 12",
+        "brand": "Apple",
+        "price": 490.7,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=6"
+        ],
+        "rating": 3.5,
+        "reviews": 1068,
+        "description": "High-quality Apple Note 12 from Apple. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Apple",
+            "Category": "Tablets",
+            "Warranty": "3 Years",
+            "Color": "Blue",
+            "Storage": "128GB",
+            "RAM": "12GB"
+        }
+    },
+    {
+        "id": 25,
+        "name": "Garmin Sport 8",
+        "brand": "Garmin",
+        "price": 450.44,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=6"
+        ],
+        "rating": 4.4,
+        "reviews": 1462,
+        "description": "High-quality Garmin Sport 8 from Garmin. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Garmin",
+            "Category": "Wearables",
+            "Warranty": "1 Years",
+            "Color": "White"
+        }
+    },
+    {
+        "id": 26,
+        "name": "Sony Earbuds 1",
+        "brand": "Sony",
+        "price": 158.25,
+        "category": "Audio",
+        "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=6"
+        ],
+        "rating": 4.9,
+        "reviews": 1578,
+        "description": "High-quality Sony Earbuds 1 from Sony. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Sony",
+            "Category": "Audio",
+            "Warranty": "3 Years",
+            "Color": "White",
+            "Connectivity": "Bluetooth 5.0",
+            "Battery Life": "25 Hours"
+        }
+    },
+    {
+        "id": 27,
+        "name": "Belkin Webcam 15",
+        "brand": "Belkin",
+        "price": 809.7,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=6"
+        ],
+        "rating": 4.1,
+        "reviews": 227,
+        "description": "High-quality Belkin Webcam 15 from Belkin. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Belkin",
+            "Category": "Accessories",
+            "Warranty": "1 Years",
+            "Color": "White"
+        }
+    },
+    {
+        "id": 28,
+        "name": "Sony Headset 12",
+        "brand": "Sony",
+        "price": 1331.52,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=6"
+        ],
+        "rating": 4.7,
+        "reviews": 30,
+        "description": "High-quality Sony Headset 12 from Sony. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Sony",
+            "Category": "Gaming",
+            "Warranty": "3 Years",
+            "Color": "Black"
+        }
+    },
+    {
+        "id": 29,
+        "name": "Fujifilm DSLR 15",
+        "brand": "Fujifilm",
+        "price": 1259.06,
+        "category": "Cameras",
+        "image": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=6"
+        ],
+        "rating": 3.9,
+        "reviews": 1255,
+        "description": "High-quality Fujifilm DSLR 15 from Fujifilm. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Fujifilm",
+            "Category": "Cameras",
+            "Warranty": "3 Years",
+            "Color": "White"
+        }
+    },
+    {
+        "id": 30,
+        "name": "OnePlus Plus 8",
+        "brand": "OnePlus",
+        "price": 216.57,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=6"
+        ],
+        "rating": 5.0,
+        "reviews": 832,
+        "description": "High-quality OnePlus Plus 8 from OnePlus. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "OnePlus",
+            "Category": "Mobiles",
+            "Warranty": "2 Years",
+            "Color": "White",
+            "Storage": "512GB",
+            "RAM": "4GB"
+        }
+    },
+    {
+        "id": 31,
+        "name": "Lenovo MacBook 1",
+        "brand": "Lenovo",
+        "price": 1236.6,
+        "category": "Laptops",
+        "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=6"
+        ],
+        "rating": 4.7,
+        "reviews": 1347,
+        "description": "High-quality Lenovo MacBook 1 from Lenovo. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Lenovo",
+            "Category": "Laptops",
+            "Warranty": "1 Years",
+            "Color": "Silver",
+            "Processor": "AMD Ryzen 7",
+            "RAM": "8GB",
+            "Storage": "256GB SSD"
+        }
+    },
+    {
+        "id": 32,
+        "name": "Samsung Slate 9",
+        "brand": "Samsung",
+        "price": 1446.33,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=6"
+        ],
+        "rating": 4.4,
+        "reviews": 1829,
+        "description": "High-quality Samsung Slate 9 from Samsung. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Samsung",
+            "Category": "Tablets",
+            "Warranty": "3 Years",
+            "Color": "Silver",
+            "Storage": "512GB",
+            "RAM": "4GB"
+        }
+    },
+    {
+        "id": 33,
+        "name": "Samsung Band 5",
+        "brand": "Samsung",
+        "price": 1498.86,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=6"
+        ],
+        "rating": 4.8,
+        "reviews": 1112,
+        "description": "High-quality Samsung Band 5 from Samsung. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Samsung",
+            "Category": "Wearables",
+            "Warranty": "2 Years",
+            "Color": "Blue"
+        }
+    },
+    {
+        "id": 34,
+        "name": "Bose Earbuds 14",
+        "brand": "Bose",
+        "price": 1230.75,
+        "category": "Audio",
+        "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=6"
+        ],
+        "rating": 3.7,
+        "reviews": 847,
+        "description": "High-quality Bose Earbuds 14 from Bose. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Bose",
+            "Category": "Audio",
+            "Warranty": "2 Years",
+            "Color": "Silver",
+            "Connectivity": "Bluetooth 5.0",
+            "Battery Life": "31 Hours"
+        }
+    },
+    {
+        "id": 35,
+        "name": "Anker Charger 5",
+        "brand": "Anker",
+        "price": 246.66,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=6"
+        ],
+        "rating": 3.8,
+        "reviews": 1112,
+        "description": "High-quality Anker Charger 5 from Anker. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Anker",
+            "Category": "Accessories",
+            "Warranty": "1 Years",
+            "Color": "Blue"
+        }
+    },
+    {
+        "id": 36,
+        "name": "Sony Controller 4",
+        "brand": "Sony",
+        "price": 1373.88,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=6"
+        ],
+        "rating": 4.1,
+        "reviews": 1816,
+        "description": "High-quality Sony Controller 4 from Sony. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Sony",
+            "Category": "Gaming",
+            "Warranty": "2 Years",
+            "Color": "White"
+        }
+    },
+    {
+        "id": 37,
+        "name": "Fujifilm Action Cam 6",
+        "brand": "Fujifilm",
+        "price": 705.52,
+        "category": "Cameras",
+        "image": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=6"
+        ],
+        "rating": 4.2,
+        "reviews": 1484,
+        "description": "High-quality Fujifilm Action Cam 6 from Fujifilm. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Fujifilm",
+            "Category": "Cameras",
+            "Warranty": "2 Years",
+            "Color": "Blue"
+        }
+    },
+    {
+        "id": 38,
+        "name": "Apple Flip 14",
+        "brand": "Apple",
+        "price": 1355.22,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&q=80&fm=6"
+        ],
+        "rating": 4.2,
+        "reviews": 311,
+        "description": "High-quality Apple Flip 14 from Apple. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Apple",
+            "Category": "Mobiles",
+            "Warranty": "3 Years",
+            "Color": "Blue",
+            "Storage": "64GB",
+            "RAM": "12GB"
+        }
+    },
+    {
+        "id": 39,
+        "name": "Acer Spectre 1",
+        "brand": "Acer",
+        "price": 1344.71,
+        "category": "Laptops",
+        "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=80&fm=6"
+        ],
+        "rating": 4.3,
+        "reviews": 963,
+        "description": "High-quality Acer Spectre 1 from Acer. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Acer",
+            "Category": "Laptops",
+            "Warranty": "1 Years",
+            "Color": "Blue",
+            "Processor": "AMD Ryzen 5",
+            "RAM": "16GB",
+            "Storage": "512GB SSD"
+        }
+    },
+    {
+        "id": 40,
+        "name": "Apple Pad 13",
+        "brand": "Apple",
+        "price": 208.82,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=800&q=80&fm=6"
+        ],
+        "rating": 3.5,
+        "reviews": 1880,
+        "description": "High-quality Apple Pad 13 from Apple. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Apple",
+            "Category": "Tablets",
+            "Warranty": "1 Years",
+            "Color": "Black",
+            "Storage": "64GB",
+            "RAM": "12GB"
+        }
+    },
+    {
+        "id": 41,
+        "name": "Fitbit Sport 12",
+        "brand": "Fitbit",
+        "price": 794.65,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80&fm=6"
+        ],
+        "rating": 4.7,
+        "reviews": 108,
+        "description": "High-quality Fitbit Sport 12 from Fitbit. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Fitbit",
+            "Category": "Wearables",
+            "Warranty": "2 Years",
+            "Color": "Blue"
+        }
+    },
+    {
+        "id": 42,
+        "name": "Sennheiser Soundbar 10",
+        "brand": "Sennheiser",
+        "price": 324.72,
+        "category": "Audio",
+        "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80&fm=6"
+        ],
+        "rating": 4.4,
+        "reviews": 1904,
+        "description": "High-quality Sennheiser Soundbar 10 from Sennheiser. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Sennheiser",
+            "Category": "Audio",
+            "Warranty": "3 Years",
+            "Color": "Red",
+            "Connectivity": "Bluetooth 5.0",
+            "Battery Life": "40 Hours"
+        }
+    },
+    {
+        "id": 43,
+        "name": "Razer Stand 11",
+        "brand": "Razer",
+        "price": 1099.38,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&q=80&fm=6"
+        ],
+        "rating": 4.4,
+        "reviews": 959,
+        "description": "High-quality Razer Stand 11 from Razer. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Razer",
+            "Category": "Accessories",
+            "Warranty": "2 Years",
+            "Color": "White"
+        }
+    },
+    {
+        "id": 44,
+        "name": "Microsoft Console 7",
+        "brand": "Microsoft",
+        "price": 376.11,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800&q=80&fm=6"
+        ],
+        "rating": 4.8,
+        "reviews": 1589,
+        "description": "High-quality Microsoft Console 7 from Microsoft. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Microsoft",
+            "Category": "Gaming",
+            "Warranty": "3 Years",
+            "Color": "White"
+        }
+    },
+    {
+        "id": 45,
+        "name": "Nikon Lens 5",
+        "brand": "Nikon",
+        "price": 447.78,
+        "category": "Cameras",
+        "image": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=1",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=2",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=3",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=4",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=5",
+            "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=80&fm=6"
+        ],
+        "rating": 4.3,
+        "reviews": 1898,
+        "description": "High-quality Nikon Lens 5 from Nikon. Perfect for everyday use with exceptional durability and features.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Nikon",
+            "Category": "Cameras",
+            "Warranty": "1 Years",
+            "Color": "White"
+        }
+    },
+    {
+        "id": 46,
+        "name": "Bose Audi Model 150",
+        "brand": "Bose",
+        "price": 1528.03,
+        "category": "Audio",
+        "image": "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.6,
+        "reviews": 355,
+        "description": "This is a premium audi from Bose. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Bose",
+            "Color": "Silver",
+            "Warranty": "1 Year Official",
+            "Weight": "537g"
+        }
+    },
+    {
+        "id": 47,
+        "name": "Apple Wearable Model 458",
+        "brand": "Apple",
+        "price": 1875.11,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.4,
+        "reviews": 40,
+        "description": "This is a premium wearable from Apple. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Apple",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "1835g"
+        }
+    },
+    {
+        "id": 48,
+        "name": "Razer Gamin Model 203",
+        "brand": "Razer",
+        "price": 678.44,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.8,
+        "reviews": 207,
+        "description": "This is a premium gamin from Razer. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Razer",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "1759g"
+        }
+    },
+    {
+        "id": 49,
+        "name": "Xiaomi Mobile Model 418",
+        "brand": "Xiaomi",
+        "price": 1428.24,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.1,
+        "reviews": 55,
+        "description": "This is a premium mobile from Xiaomi. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Xiaomi",
+            "Color": "Silver",
+            "Warranty": "1 Year Official",
+            "Weight": "1991g",
+            "RAM": "4GB",
+            "Storage": "256GB",
+            "Battery": "4252 mAh"
+        }
+    },
+    {
+        "id": 50,
+        "name": "Lenovo Tablet Model 676",
+        "brand": "Lenovo",
+        "price": 1612.33,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.7,
+        "reviews": 211,
+        "description": "This is a premium tablet from Lenovo. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Lenovo",
+            "Color": "Silver",
+            "Warranty": "1 Year Official",
+            "Weight": "768g",
+            "RAM": "4GB",
+            "Storage": "128GB",
+            "Battery": "5303 mAh"
+        }
+    },
+    {
+        "id": 51,
+        "name": "Microsoft Gamin Model 153",
+        "brand": "Microsoft",
+        "price": 1671.48,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.7,
+        "reviews": 332,
+        "description": "This is a premium gamin from Microsoft. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Microsoft",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "1382g"
+        }
+    },
+    {
+        "id": 52,
+        "name": "Logitech Accessorie Model 743",
+        "brand": "Logitech",
+        "price": 755.79,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.4,
+        "reviews": 29,
+        "description": "This is a premium accessorie from Logitech. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Logitech",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "816g"
+        }
+    },
+    {
+        "id": 53,
+        "name": "Sony Audi Model 212",
+        "brand": "Sony",
+        "price": 1109.04,
+        "category": "Audio",
+        "image": "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.4,
+        "reviews": 422,
+        "description": "This is a premium audi from Sony. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Sony",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "477g"
+        }
+    },
+    {
+        "id": 54,
+        "name": "Lenovo Laptop Model 618",
+        "brand": "Lenovo",
+        "price": 797.4,
+        "category": "Laptops",
+        "image": "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.7,
+        "reviews": 385,
+        "description": "This is a premium laptop from Lenovo. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Lenovo",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "1780g",
+            "Processor": "AMD Ryzen 7",
+            "RAM": "16GB",
+            "Storage": "256GB SSD",
+            "Display": "15.6 inch"
+        }
+    },
+    {
+        "id": 55,
+        "name": "Garmin Wearable Model 638",
+        "brand": "Garmin",
+        "price": 655.99,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 5.0,
+        "reviews": 396,
+        "description": "This is a premium wearable from Garmin. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Garmin",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "1982g"
+        }
+    },
+    {
+        "id": 56,
+        "name": "Apple Wearable Model 292",
+        "brand": "Apple",
+        "price": 930.78,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.5,
+        "reviews": 413,
+        "description": "This is a premium wearable from Apple. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Apple",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "1430g"
+        }
+    },
+    {
+        "id": 57,
+        "name": "Panasonic Camera Model 866",
+        "brand": "Panasonic",
+        "price": 201.6,
+        "category": "Cameras",
+        "image": "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.6,
+        "reviews": 473,
+        "description": "This is a premium camera from Panasonic. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Panasonic",
+            "Color": "Space Gray",
+            "Warranty": "1 Year Official",
+            "Weight": "1384g"
+        }
+    },
+    {
+        "id": 58,
+        "name": "Fitbit Wearable Model 607",
+        "brand": "Fitbit",
+        "price": 873.41,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.7,
+        "reviews": 222,
+        "description": "This is a premium wearable from Fitbit. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Fitbit",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "1953g"
+        }
+    },
+    {
+        "id": 59,
+        "name": "Lenovo Tablet Model 964",
+        "brand": "Lenovo",
+        "price": 38.99,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.3,
+        "reviews": 337,
+        "description": "This is a premium tablet from Lenovo. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Lenovo",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "1306g",
+            "RAM": "12GB",
+            "Storage": "64GB",
+            "Battery": "3247 mAh"
+        }
+    },
+    {
+        "id": 60,
+        "name": "Dell Laptop Model 125",
+        "brand": "Dell",
+        "price": 467.47,
+        "category": "Laptops",
+        "image": "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.3,
+        "reviews": 420,
+        "description": "This is a premium laptop from Dell. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Dell",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "1316g",
+            "Processor": "AMD Ryzen 5",
+            "RAM": "16GB",
+            "Storage": "512GB SSD",
+            "Display": "14 inch"
+        }
+    },
+    {
+        "id": 61,
+        "name": "Apple Mobile Model 619",
+        "brand": "Apple",
+        "price": 1735.15,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.7,
+        "reviews": 369,
+        "description": "This is a premium mobile from Apple. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Apple",
+            "Color": "Silver",
+            "Warranty": "1 Year Official",
+            "Weight": "231g",
+            "RAM": "6GB",
+            "Storage": "64GB",
+            "Battery": "5002 mAh"
+        }
+    },
+    {
+        "id": 62,
+        "name": "Lenovo Tablet Model 352",
+        "brand": "Lenovo",
+        "price": 1847.63,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.0,
+        "reviews": 181,
+        "description": "This is a premium tablet from Lenovo. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Lenovo",
+            "Color": "Silver",
+            "Warranty": "1 Year Official",
+            "Weight": "480g",
+            "RAM": "4GB",
+            "Storage": "512GB",
+            "Battery": "4278 mAh"
+        }
+    },
+    {
+        "id": 63,
+        "name": "Fitbit Wearable Model 236",
+        "brand": "Fitbit",
+        "price": 293.1,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.1,
+        "reviews": 17,
+        "description": "This is a premium wearable from Fitbit. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Fitbit",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "1749g"
+        }
+    },
+    {
+        "id": 64,
+        "name": "Belkin Accessorie Model 657",
+        "brand": "Belkin",
+        "price": 1276.83,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.8,
+        "reviews": 293,
+        "description": "This is a premium accessorie from Belkin. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Belkin",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "1743g"
+        }
+    },
+    {
+        "id": 65,
+        "name": "Microsoft Tablet Model 723",
+        "brand": "Microsoft",
+        "price": 345.39,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.3,
+        "reviews": 243,
+        "description": "This is a premium tablet from Microsoft. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Microsoft",
+            "Color": "Silver",
+            "Warranty": "1 Year Official",
+            "Weight": "1882g",
+            "RAM": "6GB",
+            "Storage": "512GB",
+            "Battery": "4741 mAh"
+        }
+    },
+    {
+        "id": 66,
+        "name": "OnePlus Mobile Model 885",
+        "brand": "OnePlus",
+        "price": 1458.16,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.3,
+        "reviews": 131,
+        "description": "This is a premium mobile from OnePlus. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "OnePlus",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "205g",
+            "RAM": "6GB",
+            "Storage": "128GB",
+            "Battery": "4646 mAh"
+        }
+    },
+    {
+        "id": 67,
+        "name": "Apple Tablet Model 675",
+        "brand": "Apple",
+        "price": 335.1,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.7,
+        "reviews": 240,
+        "description": "This is a premium tablet from Apple. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Apple",
+            "Color": "Silver",
+            "Warranty": "1 Year Official",
+            "Weight": "569g",
+            "RAM": "6GB",
+            "Storage": "128GB",
+            "Battery": "4197 mAh"
+        }
+    },
+    {
+        "id": 68,
+        "name": "Fujifilm Camera Model 517",
+        "brand": "Fujifilm",
+        "price": 561.96,
+        "category": "Cameras",
+        "image": "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.0,
+        "reviews": 292,
+        "description": "This is a premium camera from Fujifilm. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Fujifilm",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "395g"
+        }
+    },
+    {
+        "id": 69,
+        "name": "Lenovo Laptop Model 734",
+        "brand": "Lenovo",
+        "price": 1730.39,
+        "category": "Laptops",
+        "image": "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.8,
+        "reviews": 168,
+        "description": "This is a premium laptop from Lenovo. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Lenovo",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "812g",
+            "Processor": "Intel Core i5",
+            "RAM": "32GB",
+            "Storage": "1TB SSD",
+            "Display": "15.6 inch"
+        }
+    },
+    {
+        "id": 70,
+        "name": "Corsair Gamin Model 901",
+        "brand": "Corsair",
+        "price": 974.2,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.7,
+        "reviews": 409,
+        "description": "This is a premium gamin from Corsair. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Corsair",
+            "Color": "Silver",
+            "Warranty": "1 Year Official",
+            "Weight": "1536g"
+        }
+    },
+    {
+        "id": 71,
+        "name": "Microsoft Gamin Model 943",
+        "brand": "Microsoft",
+        "price": 1446.51,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.5,
+        "reviews": 214,
+        "description": "This is a premium gamin from Microsoft. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Microsoft",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "1363g"
+        }
+    },
+    {
+        "id": 72,
+        "name": "Microsoft Gamin Model 798",
+        "brand": "Microsoft",
+        "price": 1070.23,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.9,
+        "reviews": 114,
+        "description": "This is a premium gamin from Microsoft. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Microsoft",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "1135g"
+        }
+    },
+    {
+        "id": 73,
+        "name": "Canon Camera Model 766",
+        "brand": "Canon",
+        "price": 1629.72,
+        "category": "Cameras",
+        "image": "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.7,
+        "reviews": 45,
+        "description": "This is a premium camera from Canon. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Canon",
+            "Color": "Silver",
+            "Warranty": "1 Year Official",
+            "Weight": "1821g"
+        }
+    },
+    {
+        "id": 74,
+        "name": "Microsoft Tablet Model 657",
+        "brand": "Microsoft",
+        "price": 1269.74,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.1,
+        "reviews": 141,
+        "description": "This is a premium tablet from Microsoft. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Microsoft",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "607g",
+            "RAM": "8GB",
+            "Storage": "256GB",
+            "Battery": "5599 mAh"
+        }
+    },
+    {
+        "id": 75,
+        "name": "Garmin Wearable Model 211",
+        "brand": "Garmin",
+        "price": 987.51,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.5,
+        "reviews": 80,
+        "description": "This is a premium wearable from Garmin. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Garmin",
+            "Color": "Space Gray",
+            "Warranty": "1 Year Official",
+            "Weight": "1303g"
+        }
+    },
+    {
+        "id": 76,
+        "name": "Nintendo Gamin Model 707",
+        "brand": "Nintendo",
+        "price": 221.3,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.5,
+        "reviews": 200,
+        "description": "This is a premium gamin from Nintendo. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Nintendo",
+            "Color": "Space Gray",
+            "Warranty": "1 Year Official",
+            "Weight": "1271g"
+        }
+    },
+    {
+        "id": 77,
+        "name": "Garmin Wearable Model 869",
+        "brand": "Garmin",
+        "price": 469.46,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.6,
+        "reviews": 171,
+        "description": "This is a premium wearable from Garmin. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Garmin",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "1818g"
+        }
+    },
+    {
+        "id": 78,
+        "name": "Razer Gamin Model 435",
+        "brand": "Razer",
+        "price": 1554.79,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.6,
+        "reviews": 11,
+        "description": "This is a premium gamin from Razer. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Razer",
+            "Color": "Silver",
+            "Warranty": "1 Year Official",
+            "Weight": "1666g"
+        }
+    },
+    {
+        "id": 79,
+        "name": "Spigen Accessorie Model 268",
+        "brand": "Spigen",
+        "price": 1109.3,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.6,
+        "reviews": 129,
+        "description": "This is a premium accessorie from Spigen. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Spigen",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "332g"
+        }
+    },
+    {
+        "id": 80,
+        "name": "Belkin Accessorie Model 856",
+        "brand": "Belkin",
+        "price": 1067.58,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.6,
+        "reviews": 459,
+        "description": "This is a premium accessorie from Belkin. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Belkin",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "1177g"
+        }
+    },
+    {
+        "id": 81,
+        "name": "Lenovo Tablet Model 301",
+        "brand": "Lenovo",
+        "price": 1334.17,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.6,
+        "reviews": 450,
+        "description": "This is a premium tablet from Lenovo. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Lenovo",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "565g",
+            "RAM": "8GB",
+            "Storage": "512GB",
+            "Battery": "4345 mAh"
+        }
+    },
+    {
+        "id": 82,
+        "name": "OnePlus Mobile Model 834",
+        "brand": "OnePlus",
+        "price": 1973.81,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.7,
+        "reviews": 92,
+        "description": "This is a premium mobile from OnePlus. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "OnePlus",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "371g",
+            "RAM": "12GB",
+            "Storage": "512GB",
+            "Battery": "4374 mAh"
+        }
+    },
+    {
+        "id": 83,
+        "name": "Canon Camera Model 105",
+        "brand": "Canon",
+        "price": 885.64,
+        "category": "Cameras",
+        "image": "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.7,
+        "reviews": 55,
+        "description": "This is a premium camera from Canon. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Canon",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "1541g"
+        }
+    },
+    {
+        "id": 84,
+        "name": "Garmin Wearable Model 443",
+        "brand": "Garmin",
+        "price": 613.18,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.7,
+        "reviews": 17,
+        "description": "This is a premium wearable from Garmin. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Garmin",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "768g"
+        }
+    },
+    {
+        "id": 85,
+        "name": "Corsair Gamin Model 197",
+        "brand": "Corsair",
+        "price": 1957.75,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.1,
+        "reviews": 45,
+        "description": "This is a premium gamin from Corsair. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Corsair",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "659g"
+        }
+    },
+    {
+        "id": 86,
+        "name": "Microsoft Tablet Model 184",
+        "brand": "Microsoft",
+        "price": 826.33,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.5,
+        "reviews": 255,
+        "description": "This is a premium tablet from Microsoft. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Microsoft",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "274g",
+            "RAM": "4GB",
+            "Storage": "128GB",
+            "Battery": "5789 mAh"
+        }
+    },
+    {
+        "id": 87,
+        "name": "Logitech Accessorie Model 293",
+        "brand": "Logitech",
+        "price": 1061.05,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.8,
+        "reviews": 46,
+        "description": "This is a premium accessorie from Logitech. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Logitech",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "850g"
+        }
+    },
+    {
+        "id": 88,
+        "name": "Xiaomi Mobile Model 453",
+        "brand": "Xiaomi",
+        "price": 1078.21,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.2,
+        "reviews": 108,
+        "description": "This is a premium mobile from Xiaomi. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Xiaomi",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "1099g",
+            "RAM": "8GB",
+            "Storage": "256GB",
+            "Battery": "3142 mAh"
+        }
+    },
+    {
+        "id": 89,
+        "name": "Lenovo Tablet Model 168",
+        "brand": "Lenovo",
+        "price": 389.44,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.7,
+        "reviews": 10,
+        "description": "This is a premium tablet from Lenovo. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Lenovo",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "286g",
+            "RAM": "8GB",
+            "Storage": "512GB",
+            "Battery": "4816 mAh"
+        }
+    },
+    {
+        "id": 90,
+        "name": "Fujifilm Camera Model 357",
+        "brand": "Fujifilm",
+        "price": 1114.65,
+        "category": "Cameras",
+        "image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.8,
+        "reviews": 401,
+        "description": "This is a premium camera from Fujifilm. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Fujifilm",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "1071g"
+        }
+    },
+    {
+        "id": 91,
+        "name": "Canon Camera Model 456",
+        "brand": "Canon",
+        "price": 1569.5,
+        "category": "Cameras",
+        "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.9,
+        "reviews": 315,
+        "description": "This is a premium camera from Canon. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Canon",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "809g"
+        }
+    },
+    {
+        "id": 92,
+        "name": "Fujifilm Camera Model 775",
+        "brand": "Fujifilm",
+        "price": 580.96,
+        "category": "Cameras",
+        "image": "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.9,
+        "reviews": 276,
+        "description": "This is a premium camera from Fujifilm. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Fujifilm",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "222g"
+        }
+    },
+    {
+        "id": 93,
+        "name": "Xiaomi Mobile Model 976",
+        "brand": "Xiaomi",
+        "price": 1887.34,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.9,
+        "reviews": 494,
+        "description": "This is a premium mobile from Xiaomi. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Xiaomi",
+            "Color": "Silver",
+            "Warranty": "1 Year Official",
+            "Weight": "384g",
+            "RAM": "8GB",
+            "Storage": "256GB",
+            "Battery": "3772 mAh"
+        }
+    },
+    {
+        "id": 94,
+        "name": "Microsoft Gamin Model 393",
+        "brand": "Microsoft",
+        "price": 1408.36,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1526738549149-8e89b222fba2?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.0,
+        "reviews": 176,
+        "description": "This is a premium gamin from Microsoft. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Microsoft",
+            "Color": "Space Gray",
+            "Warranty": "1 Year Official",
+            "Weight": "1172g"
+        }
+    },
+    {
+        "id": 95,
+        "name": "Microsoft Gamin Model 802",
+        "brand": "Microsoft",
+        "price": 1333.1,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.8,
+        "reviews": 330,
+        "description": "This is a premium gamin from Microsoft. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Microsoft",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "397g"
+        }
+    },
+    {
+        "id": 96,
+        "name": "Samsung Mobile Model 634",
+        "brand": "Samsung",
+        "price": 1574.25,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.6,
+        "reviews": 260,
+        "description": "This is a premium mobile from Samsung. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Samsung",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "441g",
+            "RAM": "8GB",
+            "Storage": "512GB",
+            "Battery": "5312 mAh"
+        }
+    },
+    {
+        "id": 97,
+        "name": "Google Mobile Model 636",
+        "brand": "Google",
+        "price": 386.43,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.5,
+        "reviews": 437,
+        "description": "This is a premium mobile from Google. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Google",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "665g",
+            "RAM": "8GB",
+            "Storage": "512GB",
+            "Battery": "5069 mAh"
+        }
+    },
+    {
+        "id": 98,
+        "name": "Logitech Accessorie Model 697",
+        "brand": "Logitech",
+        "price": 1089.96,
+        "category": "Accessories",
+        "image": "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1585336261022-6a07851ee667?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.7,
+        "reviews": 361,
+        "description": "This is a premium accessorie from Logitech. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Logitech",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "1001g"
+        }
+    },
+    {
+        "id": 99,
+        "name": "Sony Audi Model 672",
+        "brand": "Sony",
+        "price": 1969.97,
+        "category": "Audio",
+        "image": "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1523206489230-c628115fe334?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.8,
+        "reviews": 310,
+        "description": "This is a premium audi from Sony. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Sony",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "1263g"
+        }
+    },
+    {
+        "id": 100,
+        "name": "Razer Gamin Model 256",
+        "brand": "Razer",
+        "price": 916.95,
+        "category": "Gaming",
+        "image": "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1588872657578-c0f5fcfdcbd0?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606220576361-cedce7c502da?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.8,
+        "reviews": 199,
+        "description": "This is a premium gamin from Razer. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Razer",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "616g"
+        }
+    },
+    {
+        "id": 101,
+        "name": "Apple Tablet Model 950",
+        "brand": "Apple",
+        "price": 1023.99,
+        "category": "Tablets",
+        "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1564466809059-eb5e4d2716ee?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.4,
+        "reviews": 391,
+        "description": "This is a premium tablet from Apple. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Apple",
+            "Color": "Midnight Green",
+            "Warranty": "1 Year Official",
+            "Weight": "830g",
+            "RAM": "12GB",
+            "Storage": "256GB",
+            "Battery": "4192 mAh"
+        }
+    },
+    {
+        "id": 102,
+        "name": "Apple Wearable Model 399",
+        "brand": "Apple",
+        "price": 1976.41,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.8,
+        "reviews": 422,
+        "description": "This is a premium wearable from Apple. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Apple",
+            "Color": "White",
+            "Warranty": "1 Year Official",
+            "Weight": "1375g"
+        }
+    },
+    {
+        "id": 103,
+        "name": "Canon Camera Model 652",
+        "brand": "Canon",
+        "price": 1454.56,
+        "category": "Cameras",
+        "image": "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 4.1,
+        "reviews": 334,
+        "description": "This is a premium camera from Canon. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Canon",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "356g"
+        }
+    },
+    {
+        "id": 104,
+        "name": "Xiaomi Mobile Model 356",
+        "brand": "Xiaomi",
+        "price": 1882.51,
+        "category": "Mobiles",
+        "image": "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1600080972464-8e5ceb4a6962?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1512499616203-05f33333bc7f?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1606813907291-d8ecefa6a374?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.6,
+        "reviews": 416,
+        "description": "This is a premium mobile from Xiaomi. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": true,
+        "specifications": {
+            "Brand": "Xiaomi",
+            "Color": "Black",
+            "Warranty": "1 Year Official",
+            "Weight": "1775g",
+            "RAM": "6GB",
+            "Storage": "512GB",
+            "Battery": "5242 mAh"
+        }
+    },
+    {
+        "id": 105,
+        "name": "Garmin Wearable Model 727",
+        "brand": "Garmin",
+        "price": 180.36,
+        "category": "Wearables",
+        "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop&q=80",
+        "images": [
+            "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1611186871340-2396328bc6e6?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542382103328-8686a34a1795?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1601599561213-832382fd07ba?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1504274068536-1c88820c75ff?w=800&h=800&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop&q=80"
+        ],
+        "rating": 3.6,
+        "reviews": 302,
+        "description": "This is a premium wearable from Garmin. It boasts top-tier performance, elegant design, and cutting edge technology.",
+        "is_featured": false,
+        "specifications": {
+            "Brand": "Garmin",
+            "Color": "Silver",
+            "Warranty": "1 Year Official",
+            "Weight": "1378g"
+        }
+    }
+]

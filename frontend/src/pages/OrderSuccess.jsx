@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaUserPlus, FaArrowRight } from 'react-icons/fa';
-import axios from 'axios';
+import api from '../api/client';
 import { toast } from 'react-toastify';
 
 import CopyableText from '../components/CopyableText';
-
-const API_URL = import.meta.env.VITE_API_URL;
 
 const OrderSuccess = () => {
     const location = useLocation();
@@ -54,7 +52,7 @@ const OrderSuccess = () => {
 
         setLoading(true);
         try {
-            await axios.post(`${API_URL}/auth/register/`, {
+            await api.post(`/auth/register/`, {
                 full_name: name,
                 email,
                 phone_number: phone,

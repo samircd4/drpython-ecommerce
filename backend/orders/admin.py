@@ -5,7 +5,7 @@ from django.forms.models import BaseInlineFormSet
 from django import forms
 from django.http import JsonResponse
 from django.urls import path
-from .models import Order, OrderItem, OrderStatus, PaymentInfo, Cart, Checkout, CartItem
+from .models import Order, OrderItem, OrderStatus, PaymentInfo, Cart, Checkout, CartItem, Coupon
 from products.models import ProductVariant
 
 
@@ -100,6 +100,29 @@ class OrderItemInline(admin.TabularInline):
         js = ('orders/admin_inline.js',)
 
 
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ('code', 'discount_type', 'discount_value', 'min_purchase', 'valid_to', 'active', 'usage_limit', 'times_used')
+    list_filter = ('discount_type', 'active', 'valid_from', 'valid_to')
+    search_fields = ('code',)
+    readonly_fields = ('times_used', 'created_at', 'updated_at')
+    fieldsets = (
+        (None, {
+            'fields': ('code', 'active')
+        }),
+        ('Discount Details', {
+            'fields': ('discount_type', 'discount_value', 'min_purchase')
+        }),
+        ('Validity', {
+            'fields': ('valid_from', 'valid_to', 'usage_limit', 'times_used')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ('total_amount', 'invoice_link')
@@ -108,6 +131,7 @@ class OrderAdmin(admin.ModelAdmin):
         'id',
         'customer',
         'total_amount',
+        'coupon',
         'order_status',
         'created_at',
         'phone',
@@ -116,8 +140,8 @@ class OrderAdmin(admin.ModelAdmin):
     )
     list_editable = ('order_status',)
 
-    list_filter = ('order_status', 'created_at')
-    search_fields = ('customer__name', 'customer__email', 'id', 'phone')
+    list_filter = ('order_status', 'created_at', 'coupon')
+    search_fields = ('customer__name', 'customer__email', 'id', 'phone', 'coupon__code')
     inlines = [OrderItemInline]
 
     def invoice_link(self, obj):

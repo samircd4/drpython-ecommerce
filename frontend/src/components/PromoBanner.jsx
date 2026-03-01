@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import banner_1 from "../assets/Samsung-Cover.png";
 
 const banners = [
   {
@@ -14,8 +15,7 @@ const banners = [
     id: 2,
     title: "New Arrivals!",
     subtitle: "Check out the latest gadgets and accessories",
-    image:
-      "https://images.unsplash.com/photo-1585386959984-a4155226f9f0?auto=format&fit=crop&w=1200&q=80",
+    image:banner_1,
     buttonText: "Explore",
   },
   {

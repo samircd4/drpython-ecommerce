@@ -12,10 +12,10 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Set API URL for production (defaults to /api which works with our Nginx proxy)
+# Set environment variables for production build
 ARG VITE_API_URL=/api
-ENV VITE_API_URL=$VITE_API_URL
 ARG VITE_GOOGLE_CLIENT_ID
+ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
 
 # Build the app

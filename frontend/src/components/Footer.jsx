@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaYoutube,
-    FaHeadset, FaEnvelope, FaPhoneAlt, FaMapMarkerAlt,
-    FaRocket, FaShieldAlt, FaStar
+    FaFacebookF, FaTiktok, FaInstagram, FaLinkedinIn, FaYoutube,
+    FaHeadset, FaPhoneAlt, FaMapMarkerAlt
 } from "react-icons/fa";
 import api from "../api/client";
 import { toast } from "react-toastify";
@@ -86,7 +85,7 @@ const Footer = () => {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Hotline</p>
-                                        <a href="tel:+8801781355377" className="text-sm font-semibold">+880 1781 355 377</a>
+                                        <a href="tel:+8801781355377" className="text-sm font-semibold">+880 1708 601002</a>
                                     </div>
                                 </div>
                             </div>
@@ -197,7 +196,7 @@ const Footer = () => {
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl shadow-xl shadow-purple-900/40 active:scale-95 transition-all text-sm tracking-widest uppercase disabled:opacity-50"
+                                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl shadow-xl shadow-purple-900/40 active:scale-95 transition-all text-sm tracking-widest uppercase disabled:opacity-50 cursor-pointer"
                                     >
                                         {loading ? "Subscribing..." : "Subscribe"}
                                     </button>
@@ -206,16 +205,38 @@ const Footer = () => {
 
                             <div className="flex justify-center md:justify-start gap-4">
                                 {[
-                                    { icon: <FaFacebookF />, color: '#1877F2' },
-                                    { icon: <FaTwitter />, color: '#1DA1F2' },
-                                    { icon: <FaInstagram />, color: 'gradient' },
-                                    { icon: <FaLinkedinIn />, color: '#0A66C2' },
-                                    { icon: <FaYoutube />, color: '#FF0000' }
+                                    {
+                                        icon: <FaFacebookF />,
+                                        color: '#1877F2',
+                                        link: "https://facebook.com/shopsarker"
+                                    },
+                                    {
+                                        icon: <FaTiktok />,
+                                        color: '#FF0000',
+                                        link: "https://tiktok.com/@yourusername"
+                                    },
+                                    {
+                                        icon: <FaInstagram />,
+                                        color: 'gradient',
+                                        link: "https://instagram.com/yourprofile"
+                                    },
+                                    {
+                                        icon: <FaLinkedinIn />,
+                                        color: '#0A66C2',
+                                        link: "https://linkedin.cozm/in/yourprofile"
+                                    },
+                                    {
+                                        icon: <FaYoutube />,
+                                        color: '#FF0000',
+                                        link: "https://youtube.com/@yourchannel"
+                                    }
                                 ].map((social, idx) => (
                                     <motion.a
                                         key={idx}
+                                        href={social.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                         whileHover={{ y: -5, scale: 1.1 }}
-                                        href="#"
                                         className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/30 transition-all"
                                     >
                                         {social.icon}
