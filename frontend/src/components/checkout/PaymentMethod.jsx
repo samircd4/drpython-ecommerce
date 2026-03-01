@@ -10,6 +10,7 @@ const PaymentMethod = ({
     onDetailsChange,
     paymentDetails,
     totalPayable,
+    deliveryCharge,
     errors = {}
 }) => {
     const handleDetailChange = (e) => {
@@ -152,8 +153,8 @@ const PaymentMethod = ({
                                 name="amount"
                                 value={
                                     paymentMethod === 'cod'
-                                        ? 120
-                                        : paymentDetails.amount ?? totalPayable.toFixed(0)
+                                        ? deliveryCharge
+                                        : paymentDetails.amount ?? totalPayable.toFixed(2)
                                 }
                                 onChange={handleDetailChange}
                                 className="w-full border rounded-md pl-8 pr-3 py-2"

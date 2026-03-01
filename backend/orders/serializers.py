@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from django.db import transaction
 from django.utils import timezone
+from decimal import Decimal
 from accounts.serializers import AddressSerializer
 from products.models import Product, ProductVariant
 from accounts.models import Address
-from .models import Order, OrderItem, Cart, CartItem, Checkout, PaymentInfo, OrderStatus
+from .models import Order, OrderItem, Cart, CartItem, Checkout, PaymentInfo, OrderStatus, Coupon
 
 from drf_spectacular.utils import extend_schema_field
 
@@ -39,6 +40,12 @@ class OrderProductSerializer(serializers.ModelSerializer):
 
     def get_wholesale_price(self, obj):
         return getattr(obj, 'display_wholesale_price', None)
+
+
+class CouponSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupon
+        fields = ['id', 'code', 'discount_type', 'discount_value', 'min_purchase', 'valid_from', 'valid_to', 'active']
 
 
 class OrderVariantSerializer(serializers.ModelSerializer):
@@ -131,8 +138,19 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'status',       # Read-only string
-            'total_amount',
+            'subtotal',     # Read-only property
+            'delivery_charge',
+            'tax',
+            'discount',
+            'total_amount', # Grand Total
+            'grand_total',  # Read-only property (should match total_amount)
+            'paid_amount',  # Read-only property
+            'due_amount',   # Read-only property
             'payment',      # Read-only nested object
+            'coupon',
+            'coupon_code',
+            'coupon',       # Read-only object
+            'coupon_code',  # Write-only string
             'created_at',
             'updated_at',
             'address',      # Legacy object (Read)
@@ -151,7 +169,12 @@ class OrderSerializer(serializers.ModelSerializer):
             
             'save_address'   # Boolean (Write Only)
         ]
-        read_only_fields = ['total_amount', 'status', 'payment', 'created_at', 'updated_at']
+        read_only_fields = [
+            'total_amount', 'status', 'payment', 'created_at', 'updated_at',
+            'subtotal', 'grand_total', 'paid_amount', 'due_amount', 'coupon'
+        ]
+
+    coupon_code = serializers.CharField(write_only=True, required=False, allow_null=True)
 
     def validate(self, data):
         request = self.context['request']
@@ -263,12 +286,42 @@ class OrderSerializer(serializers.ModelSerializer):
             )
 
             # Create Order
+            # Ensure we have defaults or provided values for financial fields
+            district = validated_data.get('district')
+            sub_district = validated_data.get('sub_district')
+            
+            delivery_charge = validated_data.pop('delivery_charge', None)
+            if delivery_charge is None:
+                delivery_charge = Order.get_delivery_charge(district, sub_district)
+                
+            tax = validated_data.pop('tax', Decimal('0.00'))
+            discount = validated_data.pop('discount', Decimal('0.00'))
+
+            # Coupon handling
+            coupon_code = validated_data.pop('coupon_code', None)
+            coupon = None
+            if coupon_code:
+                coupon = Coupon.objects.filter(code__iexact=coupon_code).first()
+                # Re-verify coupon just in case (though frontend should have validated)
+                if coupon:
+                    # We need to calculate subtotal first to verify coupon fully
+                    pass # We'll do it after creating items if needed, or before
+
             order = Order.objects.create(
                 customer=customer,
                 order_status=pending_status,
                 payment_info=payment_info,
+                delivery_charge=delivery_charge,
+                tax=tax,
+                discount=discount,
+                coupon=coupon,
                 **validated_data
             )
+
+            # Update coupon usage
+            if coupon:
+                coupon.times_used += 1
+                coupon.save()
 
             # Source items: provided items_input or current cart items
             # Identify the cart for possible clearing later

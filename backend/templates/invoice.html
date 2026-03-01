@@ -88,7 +88,7 @@
       }
 
       .total {
-        margin-top: 20px;
+        margin-top: 10px;
         text-align: right;
         font-size: 16px;
         font-weight: bold;
@@ -145,7 +145,7 @@
 
       <!-- Invoice Info -->
       <div class="invoice-details">
-        <p><strong>Status:</strong> {{ order.order_status.display_name }}</p>
+        <p><strong>Order Status:</strong> {{ order.order_status.display_name }}</p>
 
         <p>
           <strong>Payment Status:</strong>
@@ -205,10 +205,122 @@
         </tbody>
       </table>
 
-      <!-- Total -->
-      <div class="total">Total: 
-        <svg class="taka-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15.5 15.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M7 7a2 2 0 1 1 4 0v9a3 3 0 0 0 6 0v-.5" /><path d="M8 11h6" /></svg>
-        {{ order.total_amount|floatformat:2 }}
+      <!-- Summary -->
+      <div class="total" style="margin-top:5px; width:100%; display:flex; justify-content:flex-end;">
+        <table style="width:350px; border-collapse:collapse; font-size:14px;">
+          <!-- Subtotal -->
+          <tr>
+            <td style="border:1px solid #000; padding:6px;">Subtotal</td>
+            <td style="border:1px solid #000; padding:6px; text-align:right;">
+              <svg class="taka-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M15.5 15.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                <path d="M7 7a2 2 0 1 1 4 0v9a3 3 0 0 0 6 0v-.5" />
+                <path d="M8 11h6" />
+              </svg>
+              {{ order.subtotal|floatformat:2 }}
+            </td>
+          </tr>
+
+          <!-- Delivery -->
+          <tr>
+            <td style="border:1px solid #000; padding:6px;">Delivery Charge</td>
+            <td style="border:1px solid #000; padding:6px; text-align:right;">
+              <svg class="taka-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M15.5 15.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                <path d="M7 7a2 2 0 1 1 4 0v9a3 3 0 0 0 6 0v-.5" />
+                <path d="M8 11h6" />
+              </svg>
+              {{ order.delivery_charge|floatformat:2 }}
+            </td>
+          </tr>
+
+          <!-- Tax -->
+          <tr>
+            <td style="border:1px solid #000; padding:6px;">Tax</td>
+            <td style="border:1px solid #000; padding:6px; text-align:right;">
+              <svg class="taka-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M15.5 15.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                <path d="M7 7a2 2 0 1 1 4 0v9a3 3 0 0 0 6 0v-.5" />
+                <path d="M8 11h6" />
+              </svg>
+              {{ order.tax|default:"0.00"|floatformat:2 }}
+            </td>
+          </tr>
+          <!-- Discount -->
+          <tr>
+            <td style="border:1px solid #000; padding:6px;">Discount</td>
+            <td style="border:1px solid #000; padding:6px; text-align:right;">
+              - 
+              <svg class="taka-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M15.5 15.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                <path d="M7 7a2 2 0 1 1 4 0v9a3 3 0 0 0 6 0v-.5" />
+                <path d="M8 11h6" />
+              </svg>
+              {{ order.discount|floatformat:2 }}
+            </td>
+          </tr>
+
+          <!-- Grand Total -->
+          <tr style="font-weight:bold;">
+            <td style="border:1px solid #000; padding:6px;">Total Amount</td>
+            <td style="border:1px solid #000; padding:6px; text-align:right;">
+              <svg class="taka-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M15.5 15.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                <path d="M7 7a2 2 0 1 1 4 0v9a3 3 0 0 0 6 0v-.5" />
+                <path d="M8 11h6" />
+              </svg>
+              {{ order.grand_total|floatformat:2 }}
+            </td>
+          </tr>
+
+          <!-- Paid -->
+          <tr>
+            <td style="border:1px solid #000; padding:6px;">Paid</td>
+            <td style="border:1px solid #000; padding:6px; text-align:right;">
+              <svg class="taka-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M15.5 15.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                <path d="M7 7a2 2 0 1 1 4 0v9a3 3 0 0 0 6 0v-.5" />
+                <path d="M8 11h6" />
+              </svg>
+              {{ order.paid_amount|floatformat:2 }}
+            </td>
+          </tr>
+
+          <!-- Due (Final) -->
+          <tr style="font-weight:bold; background:#f2f2f2;">
+            <td style="border:1px solid #000; padding:8px;">Due</td>
+            <td style="border:1px solid #000; padding:8px; text-align:right;">
+              <svg class="taka-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M15.5 15.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                <path d="M7 7a2 2 0 1 1 4 0v9a3 3 0 0 0 6 0v-.5" />
+                <path d="M8 11h6" />
+              </svg>
+              {{ order.due_amount|floatformat:2 }}
+            </td>
+          </tr>
+
+        </table>
       </div>
 
       <!-- Shipping Address -->
@@ -238,3 +350,6 @@
     </div>
   </body>
 </html>
+
+
+
