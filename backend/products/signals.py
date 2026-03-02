@@ -32,7 +32,7 @@ def variant_status_changed(sender, instance, **kwargs):
             'type': 'product_update',
             'message': {
                 'variant_id': instance.id,
-                'variant_name': instance.name,
+                'variant_name': str(instance),
                 'variant_price': str(instance.price) if instance.price else str(instance.product.price),
                 'variant_stock': instance.stock_quantity,
             }
