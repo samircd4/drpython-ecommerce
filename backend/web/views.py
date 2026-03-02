@@ -1,8 +1,9 @@
 from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from .models import ContactMessage, NewsletterSubscription
-from .serializers import ContactMessageSerializer, NewsletterSubscriptionSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.decorators import action
+from .models import ContactMessage, NewsletterSubscription, Notification
+from .serializers import ContactMessageSerializer, NewsletterSubscriptionSerializer, NotificationSerializer
 
 class ContactMessageViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = ContactMessage.objects.all()
@@ -23,3 +24,27 @@ class NewsletterSubscriptionViewSet(mixins.CreateModelMixin, viewsets.GenericVie
                 status=status.HTTP_200_OK
             )
         return super().create(request, *args, **kwargs)
+
+class NotificationViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user)[:50]
+
+    @action(detail=True, methods=['post'])
+    def mark_read(self, request, pk=None):
+        notif = self.get_object()
+        notif.is_read = True
+        notif.save()
+        return Response({'status': 'ok'})
+
+    @action(detail=False, methods=['post'])
+    def mark_all_read(self, request):
+        Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        return Response({'status': 'ok'})
+
+    @action(detail=False, methods=['delete'])
+    def clear_all(self, request):
+        Notification.objects.filter(user=request.user).delete()
+        return Response({'status': 'ok'})

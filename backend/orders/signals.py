@@ -1,49 +1,54 @@
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from django.utils.timesince import timesince
 from .models import Order
-from utils.emails import send_order_placed_email, send_order_status_update_email, send_feedback_request_email
+from web.models import Notification
 
-@receiver(pre_save, sender=Order)
-def track_status_change(sender, instance, **kwargs):
-    """
-    Track the old status before saving.
-    """
-    if instance.pk:
-        try:
-            old_order = Order.objects.get(pk=instance.pk)
-            instance._old_status_id = old_order.order_status_id
-        except Order.DoesNotExist:
-            instance._old_status_id = None
-    else:
-        instance._old_status_id = None
 
-@receiver(post_save, sender=Order)
-def trigger_order_emails(sender, instance, created, **kwargs):
-    """
-    Signal to send emails when an order is created or its status is updated.
-    """
-    if created:
-        # 🔥 For new orders, use on_commit to ensure items are created first
-        from django.db import transaction
+@receiver(post_save, sender=Order, dispatch_uid='order_status_changed_signal')
+def order_status_changed(sender, instance, **kwargs):
+    channel_layer = get_channel_layer()
 
-        def send_placed_email():
-            # Refresh from DB to get the latest items and total_amount
-            instance.refresh_from_db()
-            try:
-                send_order_placed_email(instance)
-            except Exception as e:
-                print(f"Error sending order placed email for #{instance.id}: {e}")
+    # 1. Broadcast to the order tracking page (existing)
+    async_to_sync(channel_layer.group_send)(
+        f'order_{instance.id}',
+        {
+            'type': 'order_status_update',
+            'message': {
+                'id': instance.id,
+                'status': str(instance.order_status) if instance.order_status else 'Pending',
+                'updated_at': str(instance.updated_at),
+            }
+        }
+    )
 
-        transaction.on_commit(send_placed_email)
-    else:
-        # Detect status change
-        old_status_id = getattr(instance, '_old_status_id', None)
-        if old_status_id and old_status_id != instance.order_status_id:
-            try:
-                send_order_status_update_email(instance)
-                
-                # If newly delivered, also send feedback request
-                if instance.order_status and instance.order_status.status_code == 'delivered':
-                    send_feedback_request_email(instance)
-            except Exception as e:
-                print(f"Error sending update/feedback email for #{instance.id}: {e}")
+    # 2. Push notification to the customer's notification channel
+    if instance.customer and instance.customer.user_id:
+        user_id = instance.customer.user_id
+        status_name = str(instance.order_status) if instance.order_status else 'Pending'
+
+        # Create a persistent notification in the database
+        notif = Notification.objects.create(
+            user_id=user_id,
+            type='order_update',
+            title=f'Order #{instance.id} — {status_name}',
+            message=f'Your order #{instance.id} is now "{status_name}".',
+        )
+
+        # Push it live via WebSocket
+        async_to_sync(channel_layer.group_send)(
+            f'notifications_{user_id}',
+            {
+                'type': 'send_notification',
+                'notification': {
+                    'id': notif.id,
+                    'type': notif.type,
+                    'title': notif.title,
+                    'message': notif.message,
+                    'time': 'Just now',
+                    'is_read': False,
+                }
+            }
+        )

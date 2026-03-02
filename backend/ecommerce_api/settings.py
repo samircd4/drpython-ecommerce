@@ -46,6 +46,7 @@ USE_X_FORWARDED_PORT = True
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     # 'unfold',
     'corsheaders',
     'django.contrib.admin',
@@ -137,6 +138,18 @@ SPECTACULAR_SETTINGS = {
         'TOKEN_URL': '/api/token/',
         'REFRESH_URL': '/api/token/refresh/',
     },
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),     # 1 day of uninterrupted browsing
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),    # Stay logged in for a week
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'UPDATE_LAST_LOGIN': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
 }
 
 
@@ -378,3 +391,17 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Dhaka'
+
+# ========================
+# Real-time Configuration
+# ========================
+ASGI_APPLICATION = 'ecommerce_api.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.getenv('REDIS_URL', 'redis://redis:6379/0')],
+        },
+    },
+}

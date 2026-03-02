@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import api, { BASE_URL } from "../api/client";
+import React from 'react'
 
 export const CartContext = createContext(null)
 

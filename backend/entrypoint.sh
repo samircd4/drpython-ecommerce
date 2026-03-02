@@ -43,8 +43,8 @@ fi
 
 # Otherwise, start the default server
 if [ "$DEBUG" = "True" ]; then
-    echo "Starting server with --reload..."
-    exec uv run uvicorn ecommerce_api.asgi:application --host 0.0.0.0 --port 8000 --reload
+    echo "Starting server with daphne..."
+    exec uv run daphne -b 0.0.0.0 -p 8000 ecommerce_api.asgi:application
 else
-    exec uv run uvicorn ecommerce_api.asgi:application --host 0.0.0.0 --port 8000
+    exec uv run daphne -b 0.0.0.0 -p 8000 ecommerce_api.asgi:application
 fi

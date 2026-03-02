@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import ContactMessage, NewsletterSubscription
+from django.utils.timesince import timesince
+from .models import ContactMessage, NewsletterSubscription, Notification
 
 class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,3 +13,14 @@ class NewsletterSubscriptionSerializer(serializers.ModelSerializer):
         model = NewsletterSubscription
         fields = ['id', 'email', 'subscribed_at', 'is_active']
         read_only_fields = ['id', 'subscribed_at', 'is_active']
+
+class NotificationSerializer(serializers.ModelSerializer):
+    time = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Notification
+        fields = ['id', 'type', 'title', 'message', 'time', 'is_read', 'created_at']
+        read_only_fields = ['id', 'created_at']
+
+    def get_time(self, obj):
+        return f"{timesince(obj.created_at)} ago"

@@ -1,3 +1,4 @@
+import React from 'react';
 import { FaStar, FaShoppingCart } from "react-icons/fa";
 import { useCart, fixImage } from "../context/CartContext.jsx";
 import { IoFlashOutline } from "react-icons/io5";

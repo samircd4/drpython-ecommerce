@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaSearch, FaBoxOpen, FaTruck, FaCheckCircle, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
+import { FaSearch, FaBoxOpen, FaTruck, FaCheckCircle, FaMapMarkerAlt, FaClock, FaBell } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import api from '../api/client';
 import TakaIcon from '../components/TakaIcon';
+import useWebSocket from '../hooks/useWebSocket';
 
 const CountdownTimer = ({ targetDate, onComplete }) => {
     const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
@@ -50,6 +51,10 @@ const OrderTracking = () => {
     const [trackingResult, setTrackingResult] = useState(null);
     const [error, setError] = useState(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [statusJustUpdated, setStatusJustUpdated] = useState(false);
+    const [newStatus, setNewStatus] = useState(null);
+    const [prevStepCount, setPrevStepCount] = useState(0);
+    const updateTimerRef = useRef(null);
 
     const fetchTracking = useCallback(async (searchId) => {
         const targetId = searchId || orderId;
@@ -132,6 +137,31 @@ const OrderTracking = () => {
         }
     }, [orderId]);
 
+    const { data: wsData } = useWebSocket(id ? `/ws/order/${id}/` : null);
+
+    useEffect(() => {
+        if (wsData) {
+            console.log("Real-time order update received:", wsData);
+            // Save the current completed step count before refetching
+            if (trackingResult) {
+                setPrevStepCount(trackingResult.steps.filter(s => s.completed).length);
+            }
+            setNewStatus(wsData.status);
+            setStatusJustUpdated(true);
+            fetchTracking(id);
+
+            // Clear the animation after 4 seconds
+            if (updateTimerRef.current) clearTimeout(updateTimerRef.current);
+            updateTimerRef.current = setTimeout(() => {
+                setStatusJustUpdated(false);
+                setNewStatus(null);
+            }, 4000);
+        }
+        return () => {
+            if (updateTimerRef.current) clearTimeout(updateTimerRef.current);
+        };
+    }, [wsData, id, fetchTracking]);
+
     useEffect(() => {
         if (id) {
             setOrderId(id);
@@ -213,10 +243,42 @@ const OrderTracking = () => {
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="w-full max-w-md mt-8 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-white/50 p-6"
                     >
+                        {/* Real-time Update Banner */}
+                        <AnimatePresence>
+                            {statusJustUpdated && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -20, height: 0 }}
+                                    animate={{ opacity: 1, y: 0, height: 'auto' }}
+                                    exit={{ opacity: 0, y: -10, height: 0 }}
+                                    transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                                    className="mb-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-3 rounded-xl flex items-center gap-3 shadow-lg shadow-green-200"
+                                >
+                                    <motion.div
+                                        animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
+                                        transition={{ duration: 0.6, repeat: 2 }}
+                                    >
+                                        <FaBell className="text-lg" />
+                                    </motion.div>
+                                    <div>
+                                        <p className="font-bold text-sm">Status Updated!</p>
+                                        <p className="text-xs text-green-100">Your order is now: {newStatus || trackingResult.status}</p>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
                         <div className="flex justify-between items-end mb-6 border-b border-gray-100 pb-4">
                             <div>
                                 <h3 className="text-lg font-bold text-gray-800">Order {trackingResult.id}</h3>
-                                <p className="text-purple-600 font-medium text-sm">{trackingResult.status}</p>
+                                <motion.p
+                                    key={trackingResult.status}
+                                    initial={statusJustUpdated ? { scale: 1.3, color: '#16a34a' } : false}
+                                    animate={{ scale: 1, color: '#9333ea' }}
+                                    transition={{ duration: 0.8, type: 'spring' }}
+                                    className="font-medium text-sm"
+                                >
+                                    {trackingResult.status}
+                                </motion.p>
                             </div>
                             <div className="text-right">
                                 <p className="text-xs text-gray-400">Est. Delivery</p>
@@ -227,6 +289,7 @@ const OrderTracking = () => {
                         <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
                             {trackingResult.steps.map((step, index) => {
                                 const Icon = step.icon;
+                                const isNewlyCompleted = statusJustUpdated && step.completed && index >= prevStepCount;
                                 return (
                                     <motion.div
                                         key={index}
@@ -235,14 +298,34 @@ const OrderTracking = () => {
                                         transition={{ delay: 0.3 + index * 0.1 }}
                                         className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
                                     >
-                                        <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 shrink-0 z-10 transition-colors duration-300 ${step.completed ? 'bg-purple-600 border-purple-600 shadow-lg shadow-purple-200' : 'bg-white border-gray-300'}`}>
-                                            <Icon className={`w-4 h-4 ${step.completed ? 'text-white' : 'text-gray-300'}`} />
-                                        </div>
+                                        <motion.div
+                                            animate={isNewlyCompleted ? {
+                                                scale: [1, 1.4, 1],
+                                                boxShadow: [
+                                                    '0 0 0 0 rgba(147, 51, 234, 0)',
+                                                    '0 0 0 12px rgba(147, 51, 234, 0.3)',
+                                                    '0 0 0 0 rgba(147, 51, 234, 0)'
+                                                ]
+                                            } : {}}
+                                            transition={{ duration: 0.8, delay: index * 0.15, repeat: isNewlyCompleted ? 2 : 0 }}
+                                            className={`flex items-center justify-center w-10 h-10 rounded-full border-2 shrink-0 z-10 transition-colors duration-500 ${step.completed
+                                                    ? 'bg-purple-600 border-purple-600 shadow-lg shadow-purple-200'
+                                                    : 'bg-white border-gray-300'
+                                                }`}
+                                        >
+                                            <Icon className={`w-4 h-4 transition-colors duration-500 ${step.completed ? 'text-white' : 'text-gray-300'}`} />
+                                        </motion.div>
                                         <div className="ml-6 w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] md:ml-0 md:px-6">
-                                            <div className="flex flex-col">
-                                                <h4 className={`font-bold text-sm ${step.completed ? 'text-gray-800' : 'text-gray-400'}`}>{step.title}</h4>
-                                                <span className="text-xs text-gray-400">{step.date}</span>
-                                            </div>
+                                            <motion.div
+                                                className="flex flex-col"
+                                                animate={isNewlyCompleted ? { x: [0, 5, -3, 0] } : {}}
+                                                transition={{ duration: 0.4, delay: 0.3 + index * 0.15 }}
+                                            >
+                                                <h4 className={`font-bold text-sm transition-colors duration-500 ${step.completed ? 'text-gray-800' : 'text-gray-400'}`}>{step.title}</h4>
+                                                <span className={`text-xs transition-colors duration-500 ${isNewlyCompleted ? 'text-green-500 font-semibold' : 'text-gray-400'}`}>
+                                                    {isNewlyCompleted ? '✓ Just updated!' : step.date}
+                                                </span>
+                                            </motion.div>
                                         </div>
                                     </motion.div>
                                 );

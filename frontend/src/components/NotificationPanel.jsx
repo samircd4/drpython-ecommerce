@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Bell, Package, Tag, Info, CheckCircle2 } from 'lucide-react';
+import { X, Bell, Package, Tag, Info, CheckCircle2, Trash2 } from 'lucide-react';
 
-const NotificationPanel = ({ open, onClose, notifications }) => {
+const NotificationPanel = ({ open, onClose, notifications, onMarkAllRead, onClearAll, onDelete }) => {
     const getIcon = (type) => {
         switch (type) {
             case 'order_update': return <Package className="w-5 h-5 text-blue-500" />;
@@ -11,6 +11,8 @@ const NotificationPanel = ({ open, onClose, notifications }) => {
             default: return <Bell className="w-5 h-5 text-gray-500" />;
         }
     };
+
+    const unreadCount = notifications.filter(n => !n.is_read).length;
 
     return (
         <AnimatePresence>
@@ -38,12 +40,19 @@ const NotificationPanel = ({ open, onClose, notifications }) => {
                             <div>
                                 <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
                                     Notifications
-                                    <span className="bg-purple-100 text-purple-600 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-black">
-                                        Beta
-                                    </span>
-                                    <span className="bg-gray-100 text-gray-400 text-[10px] px-2 py-0.5 rounded-full">
-                                        {notifications.filter(n => !n.is_read).length} New
-                                    </span>
+                                    <AnimatePresence mode="wait">
+                                        {unreadCount > 0 && (
+                                            <motion.span
+                                                key={unreadCount}
+                                                initial={{ scale: 0, rotate: -10 }}
+                                                animate={{ scale: 1, rotate: 0 }}
+                                                exit={{ scale: 0 }}
+                                                className="bg-purple-100 text-purple-600 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-black"
+                                            >
+                                                {unreadCount} New
+                                            </motion.span>
+                                        )}
+                                    </AnimatePresence>
                                 </h2>
                                 <p className="text-sm text-gray-400 font-medium">Stay updated with Sarker Shop</p>
                             </div>
@@ -58,41 +67,71 @@ const NotificationPanel = ({ open, onClose, notifications }) => {
                         {/* Content */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-3">
                             {notifications.length > 0 ? (
-                                notifications.map((notif) => (
-                                    <motion.div
-                                        key={notif.id}
-                                        whileHover={{ x: 4 }}
-                                        className={`p-4 rounded-[1.25rem] border transition-all relative overflow-hidden group ${notif.is_read
-                                            ? 'bg-gray-50/50 border-gray-100 opacity-70'
-                                            : 'bg-white border-purple-100 shadow-sm shadow-purple-900/5 hover:border-purple-300'
-                                            }`}
-                                    >
-                                        {!notif.is_read && (
-                                            <div className="absolute top-0 right-0 w-1.5 h-full bg-purple-500" />
-                                        )}
+                                <AnimatePresence initial={false}>
+                                    {notifications.map((notif, index) => (
+                                        <motion.div
+                                            key={notif.id}
+                                            initial={{ opacity: 0, x: 50, height: 0 }}
+                                            animate={{ opacity: 1, x: 0, height: 'auto' }}
+                                            exit={{ opacity: 0, x: -50, height: 0 }}
+                                            transition={{
+                                                type: 'spring',
+                                                damping: 25,
+                                                stiffness: 300,
+                                                delay: index < 5 ? index * 0.05 : 0,
+                                            }}
+                                            whileHover={{ x: 4 }}
+                                            className={`p-4 rounded-[1.25rem] border transition-all relative overflow-hidden group ${notif.is_read
+                                                ? 'bg-gray-50/50 border-gray-100 opacity-70'
+                                                : 'bg-white border-purple-100 shadow-sm shadow-purple-900/5 hover:border-purple-300'
+                                                }`}
+                                        >
+                                            {!notif.is_read && (
+                                                <motion.div
+                                                    className="absolute top-0 right-0 w-1.5 h-full bg-purple-500"
+                                                    layoutId={`unread-${notif.id}`}
+                                                />
+                                            )}
 
-                                        <div className="flex gap-4">
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${notif.is_read ? 'bg-gray-100' : 'bg-purple-50'
-                                                }`}>
-                                                {getIcon(notif.type)}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex justify-between items-start mb-1">
-                                                    <h3 className={`text-sm font-bold truncate ${notif.is_read ? 'text-gray-600' : 'text-gray-900'
-                                                        }`}>
-                                                        {notif.title}
-                                                    </h3>
-                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap ml-2">
-                                                        {notif.time}
-                                                    </span>
+                                            <div className="flex gap-4">
+                                                <motion.div
+                                                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${notif.is_read ? 'bg-gray-100' : 'bg-purple-50'
+                                                        }`}
+                                                    animate={!notif.is_read ? { scale: [1, 1.1, 1] } : {}}
+                                                    transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
+                                                >
+                                                    {getIcon(notif.type)}
+                                                </motion.div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <h3 className={`text-sm font-bold truncate pr-2 ${notif.is_read ? 'text-gray-600' : 'text-gray-900'
+                                                            }`}>
+                                                            {notif.title}
+                                                        </h3>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">
+                                                                {notif.time}
+                                                            </span>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    if (onDelete) onDelete(notif.id);
+                                                                }}
+                                                                className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+                                                                aria-label="Delete"
+                                                            >
+                                                                <X className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 leading-relaxed font-medium">
+                                                        {notif.message}
+                                                    </p>
                                                 </div>
-                                                <p className="text-xs text-gray-500 leading-relaxed font-medium">
-                                                    {notif.message}
-                                                </p>
                                             </div>
-                                        </div>
-                                    </motion.div>
-                                ))
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
                             ) : (
                                 <div className="h-full flex flex-col items-center justify-center text-center p-8">
                                     <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
@@ -105,11 +144,33 @@ const NotificationPanel = ({ open, onClose, notifications }) => {
                         </div>
 
                         {/* Footer */}
-                        <div className="p-6 border-t border-gray-100 bg-gray-50/50">
-                            <button className="w-full py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:text-purple-600 hover:border-purple-200 transition-all flex items-center justify-center gap-2">
+                        <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex gap-2">
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={onMarkAllRead}
+                                disabled={unreadCount === 0}
+                                className="flex-1 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-600 hover:text-purple-600 hover:border-purple-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                            >
                                 <CheckCircle2 className="w-4 h-4" />
-                                Mark all as read
-                            </button>
+                                <span className="hidden sm:inline">
+                                    {unreadCount > 0 ? `Mark all ${unreadCount} as read` : 'All caught up!'}
+                                </span>
+                                <span className="sm:hidden">
+                                    {unreadCount > 0 ? `Mark all as read` : 'Caught up!'}
+                                </span>
+                            </motion.button>
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={onClearAll}
+                                disabled={notifications.length === 0}
+                                className="px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 hover:border-red-200 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                aria-label="Clear All"
+                                title="Clear All Notifications"
+                            >
+                                <Trash2 className="w-5 h-5" />
+                            </motion.button>
                         </div>
                     </motion.div>
                 </>
