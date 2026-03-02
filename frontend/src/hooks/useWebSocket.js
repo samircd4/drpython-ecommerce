@@ -27,11 +27,22 @@ const useWebSocket = (url) => {
 
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             let fullUrl = url;
+
+            // 1. If we have a dedicated WS URL defined in .env, use it
+            const envWsUrl = import.meta.env.VITE_WS_URL;
+            
             if (!url.startsWith('ws')) {
-                const host = import.meta.env.VITE_API_URL
-                    ? new URL(import.meta.env.VITE_API_URL).host
-                    : window.location.host;
-                fullUrl = `${protocol}//${host}${url}`;
+                if (envWsUrl) {
+                    // Remove trailing slash if present in envWsUrl
+                    const base = envWsUrl.endsWith('/') ? envWsUrl.slice(0, -1) : envWsUrl;
+                    fullUrl = `${base}${url}`;
+                } else {
+                    // Fallback to VITE_API_URL host or window.location.host
+                    const host = import.meta.env.VITE_API_URL
+                        ? new URL(import.meta.env.VITE_API_URL).host
+                        : window.location.host;
+                    fullUrl = `${protocol}//${host}${url}`;
+                }
             }
 
             const socket = new WebSocket(fullUrl);
