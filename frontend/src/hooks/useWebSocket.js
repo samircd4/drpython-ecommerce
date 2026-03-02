@@ -33,20 +33,18 @@ const useWebSocket = (url) => {
             
             if (!url.startsWith('ws')) {
                 if (envWsUrl) {
-                    // Normalize base: ensure it starts with ws/wss and has no trailing slash
-                    let base = envWsUrl.trim();
-                    if (base.endsWith('/')) base = base.slice(0, -1);
+                    // Ensure base is trimmed and has no trailing slash
+                    const base = envWsUrl.trim().replace(/\/+$/, '');
+                    // Ensure path starts with a single slash
+                    const path = url.startsWith('/') ? url : '/' + url;
                     
-                    // Smart join: if url already starts with /ws and base ends with /ws, deduplicate
-                    let cleanPath = url;
-                    if (base.toLowerCase().endsWith('/ws') && url.toLowerCase().startsWith('/ws')) {
-                        cleanPath = url.slice(3); // Remove the extra '/ws'
+                    fullUrl = `${base}${path}`;
+                    
+                    // Deduplicate /ws/ws or // if they happen
+                    fullUrl = fullUrl.replace(/([^:])\/\//g, '$1/');
+                    if (fullUrl.includes('/ws/ws/')) {
+                        fullUrl = fullUrl.replace('/ws/ws/', '/ws/');
                     }
-                    
-                    // Ensure the path starts with /
-                    if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
-                    
-                    fullUrl = `${base}${cleanPath}`;
                 } else {
                     // Fallback logic
                     const envApiUrl = import.meta.env.VITE_API_URL;
@@ -60,9 +58,6 @@ const useWebSocket = (url) => {
                     fullUrl = `${protocol}//${host}${url}`;
                 }
             }
-            
-            // Final cleanup of any potential double slashes (ignoring the protocol ones)
-            fullUrl = fullUrl.replace(/([^:])\/\//g, '$1/');
 
             const socket = new WebSocket(fullUrl);
 
