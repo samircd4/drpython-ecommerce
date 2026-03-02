@@ -33,27 +33,35 @@ const useWebSocket = (url) => {
             
             if (!url.startsWith('ws')) {
                 if (envWsUrl) {
-                    // Remove trailing slash if present
-                    const base = envWsUrl.endsWith('/') ? envWsUrl.slice(0, -1) : envWsUrl;
-                    fullUrl = `${base}${url}`;
+                    // Normalize base: ensure it starts with ws/wss and has no trailing slash
+                    let base = envWsUrl.trim();
+                    if (base.endsWith('/')) base = base.slice(0, -1);
+                    
+                    // Smart join: if url already starts with /ws and base ends with /ws, deduplicate
+                    let cleanPath = url;
+                    if (base.toLowerCase().endsWith('/ws') && url.toLowerCase().startsWith('/ws')) {
+                        cleanPath = url.slice(3); // Remove the extra '/ws'
+                    }
+                    
+                    // Ensure the path starts with /
+                    if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
+                    
+                    fullUrl = `${base}${cleanPath}`;
                 } else {
-                    // Fallback to VITE_API_URL or window.location.host
+                    // Fallback logic
                     const envApiUrl = import.meta.env.VITE_API_URL;
-                    let host = window.location.host; // Default to current browser host
+                    let host = window.location.host;
                     
                     if (envApiUrl && envApiUrl.startsWith('http')) {
                         try {
                             host = new URL(envApiUrl).host;
-                        } catch (e) {
-                            console.warn("Failed to parse VITE_API_URL for WebSocket host, using window.location.host", e);
-                        }
+                        } catch (e) {}
                     }
-                    
                     fullUrl = `${protocol}//${host}${url}`;
                 }
             }
             
-            // Final check: Remove double slashes or redundant /ws/ if they appear due to concatenation
+            // Final cleanup of any potential double slashes (ignoring the protocol ones)
             fullUrl = fullUrl.replace(/([^:])\/\//g, '$1/');
 
             const socket = new WebSocket(fullUrl);
