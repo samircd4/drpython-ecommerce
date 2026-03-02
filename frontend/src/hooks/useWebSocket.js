@@ -33,17 +33,28 @@ const useWebSocket = (url) => {
             
             if (!url.startsWith('ws')) {
                 if (envWsUrl) {
-                    // Remove trailing slash if present in envWsUrl
+                    // Remove trailing slash if present
                     const base = envWsUrl.endsWith('/') ? envWsUrl.slice(0, -1) : envWsUrl;
                     fullUrl = `${base}${url}`;
                 } else {
-                    // Fallback to VITE_API_URL host or window.location.host
-                    const host = import.meta.env.VITE_API_URL
-                        ? new URL(import.meta.env.VITE_API_URL).host
-                        : window.location.host;
+                    // Fallback to VITE_API_URL or window.location.host
+                    const envApiUrl = import.meta.env.VITE_API_URL;
+                    let host = window.location.host; // Default to current browser host
+                    
+                    if (envApiUrl && envApiUrl.startsWith('http')) {
+                        try {
+                            host = new URL(envApiUrl).host;
+                        } catch (e) {
+                            console.warn("Failed to parse VITE_API_URL for WebSocket host, using window.location.host", e);
+                        }
+                    }
+                    
                     fullUrl = `${protocol}//${host}${url}`;
                 }
             }
+            
+            // Final check: Remove double slashes or redundant /ws/ if they appear due to concatenation
+            fullUrl = fullUrl.replace(/([^:])\/\//g, '$1/');
 
             const socket = new WebSocket(fullUrl);
 
