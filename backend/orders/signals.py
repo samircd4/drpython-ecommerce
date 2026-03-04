@@ -5,6 +5,7 @@ from channels.layers import get_channel_layer
 from django.utils.timesince import timesince
 from .models import Order
 from web.models import Notification
+from utils.emails import send_order_placed_email, send_order_status_update_email
 
 
 @receiver(post_save, sender=Order, dispatch_uid='order_status_changed_signal')
@@ -23,6 +24,19 @@ def order_status_changed(sender, instance, **kwargs):
             }
         }
     )
+
+    # NEW: Send Email Notifications
+    if kwargs.get('created', False):
+        # Fresh Order
+        send_order_placed_email(instance)
+    else:
+        # Status Update
+        # Only send if the status was explicitly changed or if it's not the initial 'pending' save
+        # Note: In Django, checking field-level changes in post_save usually requires logic 
+        # in pre_save or a custom tracker, but here we can at least avoid re-sending 
+        # 'Order Placed' triggers if the status is still 'pending' and it's an update.
+        if instance.order_status and instance.order_status.status_code != 'pending':
+            send_order_status_update_email(instance)
 
     # 2. Push notification to the customer's notification channel
     if instance.customer and instance.customer.user_id:

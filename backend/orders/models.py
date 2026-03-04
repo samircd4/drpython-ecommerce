@@ -208,11 +208,17 @@ class Order(models.Model):
     def paid_amount(self):
         """Returns the amount already paid."""
         if self.payment_info:
-            # If specifically marked as paid, we assume at least grand_total was paid
-            # But we prefer the actual recorded amount if it exists
+            # Ensure we are using Decimal for calculations
+            amount = self.payment_info.amount or Decimal('0.00')
+            if isinstance(amount, str):
+                try:
+                    amount = Decimal(amount)
+                except:
+                    amount = Decimal('0.00')
+                    
             if self.payment_info.is_paid:
-                return max(self.payment_info.amount, self.grand_total)
-            return self.payment_info.amount
+                return max(amount, self.grand_total)
+            return amount
         return Decimal('0.00')
 
     @property

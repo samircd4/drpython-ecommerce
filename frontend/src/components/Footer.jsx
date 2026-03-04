@@ -213,22 +213,22 @@ const Footer = () => {
                                     {
                                         icon: <FaTiktok />,
                                         color: '#FF0000',
-                                        link: "https://tiktok.com/@yourusername"
+                                        link: "https://www.tiktok.com/@sarkershop"
                                     },
                                     {
                                         icon: <FaInstagram />,
                                         color: 'gradient',
-                                        link: "https://instagram.com/yourprofile"
+                                        link: "https://www.instagram.com/sarkershop"
                                     },
                                     {
                                         icon: <FaLinkedinIn />,
                                         color: '#0A66C2',
-                                        link: "https://linkedin.cozm/in/yourprofile"
+                                        link: "https://www.linkedin.com/company/sarkershop/"
                                     },
                                     {
                                         icon: <FaYoutube />,
                                         color: '#FF0000',
-                                        link: "https://youtube.com/@yourchannel"
+                                        link: "https://www.youtube.com/@sarkershop"
                                     }
                                 ].map((social, idx) => (
                                     <motion.a

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.db import transaction
 from django.utils import timezone
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from accounts.serializers import AddressSerializer
 from products.models import Product, ProductVariant
 from accounts.models import Address
@@ -73,10 +73,9 @@ class PaymentInfoSerializer(serializers.ModelSerializer):
 class OrderItemSerializer(serializers.ModelSerializer):
     product = OrderProductSerializer(read_only=True)
     variant = OrderVariantSerializer(read_only=True)
-    ram = serializers.IntegerField(source='variant.ram', read_only=True)
-    storage = serializers.IntegerField(
-        source='variant.storage', read_only=True)
-    color = serializers.CharField(source='variant.color', read_only=True)
+    ram = serializers.SerializerMethodField()
+    storage = serializers.SerializerMethodField()
+    color = serializers.SerializerMethodField()
     product_id = serializers.PrimaryKeyRelatedField(
         queryset=Product.objects.all(), source='product', write_only=True, required=False
     )
@@ -98,6 +97,15 @@ class OrderItemSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Provide product_id or variant_id.")
         return data
+
+    def get_ram(self, obj):
+        return obj.variant.ram if obj.variant else None
+
+    def get_storage(self, obj):
+        return obj.variant.storage if obj.variant else None
+
+    def get_color(self, obj):
+        return obj.variant.color if obj.variant else None
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -276,11 +284,18 @@ class OrderSerializer(serializers.ModelSerializer):
             
             # If cod, p_details might be None/empty, which is fine.
             
+            # Ensure amount is a Decimal
+            raw_amount = p_details.get('amount')
+            try:
+                p_amount = Decimal(str(raw_amount)) if raw_amount else Decimal('0.00')
+            except (TypeError, ValueError, InvalidOperation):
+                p_amount = Decimal('0.00')
+
             payment_info = PaymentInfo.objects.create(
                 payment_method=p_method,
                 transaction_id=p_details.get('transaction_id'),
                 paid_from=p_details.get('paid_from'),
-                amount=p_details.get('amount') or 0,
+                amount=p_amount,
                 payment_date=timezone.now(),
                 is_paid=False # default
             )
