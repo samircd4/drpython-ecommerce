@@ -81,7 +81,12 @@ const NotificationPanel = ({ open, onClose, notifications, onMarkAllRead, onClea
                                                 delay: index < 5 ? index * 0.05 : 0,
                                             }}
                                             whileHover={{ x: 4 }}
-                                            className={`p-4 rounded-[1.25rem] border transition-all relative overflow-hidden group ${notif.is_read
+                                            onClick={() => {
+                                                if (notif.link) {
+                                                    window.location.href = notif.link;
+                                                }
+                                            }}
+                                            className={`p-4 rounded-[1.25rem] border transition-all relative overflow-hidden group cursor-pointer ${notif.is_read
                                                 ? 'bg-gray-50/50 border-gray-100 opacity-70'
                                                 : 'bg-white border-purple-100 shadow-sm shadow-purple-900/5 hover:border-purple-300'
                                                 }`}

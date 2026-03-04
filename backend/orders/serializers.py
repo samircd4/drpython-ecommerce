@@ -6,6 +6,10 @@ from accounts.serializers import AddressSerializer
 from products.models import Product, ProductVariant
 from accounts.models import Address
 from .models import Order, OrderItem, Cart, CartItem, Checkout, PaymentInfo, OrderStatus, Coupon
+from web.models import Notification
+from utils.emails import send_order_placed_email
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 from drf_spectacular.utils import extend_schema_field
 
@@ -454,6 +458,42 @@ class OrderSerializer(serializers.ModelSerializer):
                     item.price * item.quantity for item in order.items.all())
                 order.total_amount = total
                 order.save()
+
+            # 🔥 NEW: Send "Order Placed" Email & Notification AFTER everything is saved
+            # This ensures items are included and totals are correct.
+            try:
+                # 1. Send Email
+                send_order_placed_email(order)
+
+                # 2. Push Notification
+                if order.customer and order.customer.user_id:
+                    user_id = order.customer.user_id
+                    channel_layer = get_channel_layer()
+                    
+                    notif = Notification.objects.create(
+                        user_id=user_id,
+                        type='order_update',
+                        title=f'Order #{order.id} — Placed',
+                        message=f'Your order #{order.id} has been placed successfully.',
+                        link=f'/order-tracking/{order.id}'
+                    )
+
+                    async_to_sync(channel_layer.group_send)(
+                        f'notifications_{user_id}',
+                        {
+                            'type': 'send_notification',
+                            'notification': {
+                                'id': notif.id,
+                                'type': notif.type,
+                                'title': notif.title,
+                                'message': notif.message,
+                                'time': 'Just now',
+                                'is_read': False,
+                            }
+                        }
+                    )
+            except Exception as e:
+                print(f"Error in post-order triggers: {e}")
 
         return order
 

@@ -3,56 +3,65 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmed - Sarker Shop</title>
+    <title>Order Placed Successfully - Sarker Shop</title>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Segoe UI', Arial, sans-serif;">
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; padding: 10px 5px;">
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Inter', 'Segoe UI', Arial, sans-serif;">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; padding: 20px 10px;">
         <tr>
             <td align="center">
-                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);">
                     
                     <!-- Header -->
                     <tr>
-                        <td align="center" style="background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); padding: 25px 10px;">
-                            <img src="{{ logo_url }}" alt="Sarker Shop" style="display: block; width: 100%; max-width: 200px; height: auto; margin-bottom: 20px;">
-                            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">Order Confirmed</h1>
-                            <p style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 16px;">Order #{{ order.id }}</p>
+                        <td align="center" style="background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); padding: 40px 20px;">
+                            <img src="{{ logo_url }}" alt="Sarker Shop" style="display: block; max-width: 180px; height: auto; margin-bottom: 24px;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px;">Order Placed</h1>
+                            <p style="color: #e0e7ff; margin: 12px 0 0 0; font-size: 16px; font-weight: 500; opacity: 0.9;">Tracking ID: #{{ order.id }}</p>
                         </td>
                     </tr>
 
                     <!-- Body -->
                     <tr>
-                        <td style="padding: 15px 8px;">
-                            <h2 style="color: #1e293b; margin: 0 0 20px 0; font-size: 20px;">Hi {{ full_name }},</h2>
-                            <p style="color: #475569; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
-                                Exciting news! Your order has been placed successfully and is now being processed. We'll notify you as soon as it's on its way.
+                        <td style="padding: 40px 30px;">
+                            <h2 style="color: #1e293b; margin: 0 0 16px 0; font-size: 22px; font-weight: 700;">Hi {{ full_name }},</h2>
+                            <p style="color: #64748b; font-size: 16px; line-height: 1.6; margin: 0 0 32px 0;">
+                                Amazing choice! Your order has been placed successfully. We're now getting everything ready for you and will notify you as soon as it's heads your way.
                             </p>
 
-                            <!-- Order Summary -->
-                            <div style="background-color: #f1f5f9; border-radius: 8px; padding: 10px 8px; margin-bottom: 20px;">
-                                <h3 style="color: #334155; margin: 0 0 15px 0; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">Order Summary</h3>
-                                <table width="100%" cellpadding="0" cellspacing="0">
-                                    {% for item in items %}
-                                    <tr style="border-bottom: 1px solid #e2e8f0;">
-                                         <td style="padding: 6px 0; color: #475569;">
-                                            {{ item.quantity }}x {{ item.product.name }}
-                                            {% if item.variant %}
-                                                {% if item.variant.color or item.variant.ram or item.variant.storage %}
-                                                    <br><span style="font-size: 11px; color: #64748b;">
+                            <!-- Items Table -->
+                            <div style="margin-bottom: 32px;">
+                                <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                                    <thead>
+                                        <tr>
+                                            <th align="left" style="padding-bottom: 12px; border-bottom: 2px solid #f1f5f9; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Product</th>
+                                            <th align="center" style="padding-bottom: 12px; border-bottom: 2px solid #f1f5f9; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; width: 60px;">Qty</th>
+                                            <th align="right" style="padding-bottom: 12px; border-bottom: 2px solid #f1f5f9; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; width: 100px;">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="border-top: 1px solid #f1f5f9;">
+                                        {% for item in items %}
+                                        <tr>
+                                            <td style="padding: 16px 0; vertical-align: top;">
+                                                <div style="color: #1e293b; font-weight: 600; font-size: 14px;">{{ item.product.name }}</div>
+                                                {% if item.variant %}
+                                                    <div style="color: #94a3b8; font-size: 12px; margin-top: 4px;">
                                                         {% if item.variant.color %}{{ item.variant.color }}{% endif %}
-                                                        {% if item.variant.ram %}{% if item.variant.color %} | {% endif %}{{ item.variant.ram }}GB{% endif %}
-                                                        {% if item.variant.storage %}{% if item.variant.color or item.variant.ram %} | {% endif %}{{ item.variant.storage }}GB{% endif %}
-                                                    </span>
+                                                        {% if item.variant.ram %}{% if item.variant.color %} • {% endif %}{{ item.variant.ram }}GB{% endif %}
+                                                        {% if item.variant.storage %}{% if item.variant.color or item.variant.ram %} • {% endif %}{{ item.variant.storage }}GB{% endif %}
+                                                    </div>
                                                 {% endif %}
-                                            {% endif %}
-                                        </td>
-                                        <td align="right" style="padding: 6px 0; color: #1e293b; font-weight: 600; font-size: 13px;">BDT {{ item.subtotal }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                    <tr>
-                                        <td style="padding: 20px 0 0 0; color: #1e293b; font-weight: 700; font-size: 18px;">Total</td>
-                                        <td align="right" style="padding: 20px 0 0 0; color: #7c3aed; font-weight: 800; font-size: 20px;">BDT {{ total_amount }}</td>
-                                    </tr>
+                                            </td>
+                                            <td align="center" style="padding: 16px 0; color: #64748b; font-size: 14px; font-weight: 500; vertical-align: top;">{{ item.quantity }}</td>
+                                            <td align="right" style="padding: 16px 0; color: #1e293b; font-weight: 700; font-size: 14px; vertical-align: top;">BDT {{ item.subtotal }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="2" style="padding-top: 24px; color: #1e293b; font-size: 16px; font-weight: 600;">Total Amount</td>
+                                            <td align="right" style="padding-top: 24px; color: #7c3aed; font-weight: 900; font-size: 22px;">BDT {{ total_amount }}</td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
 

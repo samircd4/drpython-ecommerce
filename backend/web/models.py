@@ -34,6 +34,7 @@ class Notification(models.Model):
     type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='system')
     title = models.CharField(max_length=255)
     message = models.TextField()
+    link = models.URLField(max_length=500, blank=True, null=True, help_text="Action URL for the notification")
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

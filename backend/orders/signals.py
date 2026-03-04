@@ -25,44 +25,39 @@ def order_status_changed(sender, instance, **kwargs):
         }
     )
 
-    # NEW: Send Email Notifications
-    if kwargs.get('created', False):
-        # Fresh Order
-        send_order_placed_email(instance)
-    else:
+    # NEW: Send Email Notifications (Only for Status Updates)
+    if not kwargs.get('created', False):
         # Status Update
         # Only send if the status was explicitly changed or if it's not the initial 'pending' save
-        # Note: In Django, checking field-level changes in post_save usually requires logic 
-        # in pre_save or a custom tracker, but here we can at least avoid re-sending 
-        # 'Order Placed' triggers if the status is still 'pending' and it's an update.
         if instance.order_status and instance.order_status.status_code != 'pending':
             send_order_status_update_email(instance)
 
-    # 2. Push notification to the customer's notification channel
-    if instance.customer and instance.customer.user_id:
-        user_id = instance.customer.user_id
-        status_name = str(instance.order_status) if instance.order_status else 'Pending'
+            # Push notification for status updates
+            if instance.customer and instance.customer.user_id:
+                user_id = instance.customer.user_id
+                status_name = str(instance.order_status) if instance.order_status else 'Updated'
 
-        # Create a persistent notification in the database
-        notif = Notification.objects.create(
-            user_id=user_id,
-            type='order_update',
-            title=f'Order #{instance.id} — {status_name}',
-            message=f'Your order #{instance.id} is now "{status_name}".',
-        )
+                # Create a persistent notification in the database
+                notif = Notification.objects.create(
+                    user_id=user_id,
+                    type='order_update',
+                    title=f'Order #{instance.id} — {status_name}',
+                    message=f'Your order #{instance.id} is now "{status_name}".',
+                    link=f'/order-tracking/{instance.id}'
+                )
 
-        # Push it live via WebSocket
-        async_to_sync(channel_layer.group_send)(
-            f'notifications_{user_id}',
-            {
-                'type': 'send_notification',
-                'notification': {
-                    'id': notif.id,
-                    'type': notif.type,
-                    'title': notif.title,
-                    'message': notif.message,
-                    'time': 'Just now',
-                    'is_read': False,
-                }
-            }
-        )
+                # Push it live via WebSocket
+                async_to_sync(channel_layer.group_send)(
+                    f'notifications_{user_id}',
+                    {
+                        'type': 'send_notification',
+                        'notification': {
+                            'id': notif.id,
+                            'type': notif.type,
+                            'title': notif.title,
+                            'message': notif.message,
+                            'time': 'Just now',
+                            'is_read': False,
+                        }
+                    }
+                )
