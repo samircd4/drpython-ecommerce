@@ -240,7 +240,7 @@ CORS_ALLOW_CREDENTIALS = True
 # =========================
 # CSRF (Admin / Cookies)
 # =========================
-_csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://sarker.shop,https://www.sarker.shop,https://dev.sarker.shop,http://localhost:8080,http://localhost:5173')
+_csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://sarker.shop,https://www.sarker.shop,https://dev.sarker.shop,http://localhost:8080,http://localhost:5173,http://127.0.0.1:5173')
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(',')]
 
 CSRF_COOKIE_SECURE = True

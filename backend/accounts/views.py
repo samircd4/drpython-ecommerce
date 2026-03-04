@@ -15,7 +15,6 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated
-from email.mime.image import MIMEImage
 import os
 
 
@@ -111,7 +110,11 @@ class RegisterView(generics.CreateAPIView):
                     to=[email]
                 )
                 email_message.attach_alternative(html_content, "text/html")
-                email_message.send(fail_silently=True)
+                try:
+                    email_message.send(fail_silently=False)
+                    print(f"Welcome email sent successfully to {email}")
+                except Exception as ex:
+                    print(f"SMTP Error sending welcome email to {email}: {ex}")
 
                 # 4. Check for order linking
                 link_order_id = request.data.get('link_order_id')
@@ -272,7 +275,11 @@ class ForgotPasswordView(generics.GenericAPIView):
                 to=[email]
             )
             email_message.attach_alternative(html_content, "text/html")
-            email_message.send(fail_silently=False)
+            try:
+                email_message.send(fail_silently=False)
+                print(f"Password reset email sent successfully to {email}")
+            except Exception as ex:
+                print(f"SMTP Error sending password reset email to {email}: {ex}")
             
         except User.DoesNotExist:
             return Response({"error": "Email is not associated with any account."}, status=status.HTTP_400_BAD_REQUEST)
