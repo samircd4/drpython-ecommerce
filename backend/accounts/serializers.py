@@ -78,16 +78,20 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
         # Map 'email' to 'username' if present, because the parent class expects 'username' (or USERNAME_FIELD)
-        if 'email' in attrs and attrs.get('email'):
+        email = attrs.get('email')
+        if email:
             # Standardize email casing for consistent lookup
-            attrs['email'] = attrs['email'].strip().lower()
-            attrs[self.username_field] = attrs['email']
+            email = email.strip().lower()
+            attrs['email'] = email
+            attrs[self.username_field] = email
 
-        # If neither provided, raise error
-        if not attrs.get(self.username_field) and not attrs.get('email'):
-            raise serializers.ValidationError('Email or username is required.')
-
-        return super().validate(attrs)
+        try:
+            data = super().validate(attrs)
+            print(f"DEBUG_LOGIN_SUCCESS|Email:{email or attrs.get(self.username_field)}")
+            return data
+        except Exception as e:
+            print(f"DEBUG_LOGIN_FAIL|Email:{email or attrs.get(self.username_field)}|Error:{e}")
+            raise e
 
     @classmethod
     def get_token(cls, user):
