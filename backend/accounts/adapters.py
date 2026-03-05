@@ -16,11 +16,14 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
             # ONLY set a random password if the account is unusable (empty/invalid hash)
             # and it doesn't already have one. This prevents changing valid passwords
             # Or invalidating reset tokens during social login attempts.
+            if not user.has_usable_password():
+                print(f"DEBUG_SOCIAL|SettingRandomPassFor:{user.email}")
                 import secrets
-                # Only set it once if it's currently unusable (e.g. '!')
-                # This ensures they have a hash so standard reset flow can find them.
                 user.set_password(secrets.token_urlsafe(16))
                 user.save()
+                print(f"DEBUG_SOCIAL|RandomPassSetFor:{user.email}|NewHashSet")
+            else:
+                print(f"DEBUG_SOCIAL|UserHasUsablePass:{user.email}|NoChange")
             
             try:
                 self._sync_customer_data(user, sociallogin)

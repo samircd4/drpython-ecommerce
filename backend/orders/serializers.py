@@ -489,6 +489,7 @@ class OrderSerializer(serializers.ModelSerializer):
                                 'message': notif.message,
                                 'time': 'Just now',
                                 'is_read': False,
+                                'link': notif.link,
                             }
                         }
                     )
