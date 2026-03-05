@@ -10,7 +10,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '../context/CartContext'
 import productsData from '../data/products.json'
-
+import SEO from '../components/SEO'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -245,6 +245,11 @@ const Products = () => {
 
     return (
         <div className="w-[95%] sm:w-[90%] max-w-6xl mx-auto">
+            <SEO
+                title="Products"
+                description="Browse our wide selection of premium products. Filter by category, price, brand, and more to find exactly what you need at Sarker Shop."
+                url="https://sarker.shop/products"
+            />
             <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
                     <h1 className="text-3xl font-bold text-gray-800">Our Products</h1>

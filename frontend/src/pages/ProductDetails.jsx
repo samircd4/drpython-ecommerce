@@ -14,7 +14,8 @@ import ProductDetailsTabs from "../components/ProductDetails/ProductDetailsTabs"
 import RelatedProducts from "../components/RelatedProducts";
 import productsData from "../data/products.json";
 
-
+import SEO from "../components/SEO";
+import { Helmet } from "react-helmet-async";
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -343,11 +344,40 @@ const ProductDetails = () => {
         setTouchEnd(0);
     };
 
-
+    const structuredData = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": name,
+        "image": images[0],
+        "description": description.replace(/(<([^>]+)>)/gi, "").substring(0, 150),
+        "brand": {
+            "@type": "Brand",
+            "name": brand
+        },
+        "offers": {
+            "@type": "Offer",
+            "url": `https://sarker.shop/product/${product.slug || product.id}`,
+            "priceCurrency": "BDT",
+            "price": displayPrice,
+            "availability": stockStatus === "in_stock" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+        }
+    };
 
 
     return (
         <div ref={containerRef} className="max-w-7xl mx-auto px-4 py-8">
+            <SEO
+                title={name}
+                description={description.replace(/(<([^>]+)>)/gi, "").substring(0, 150)}
+                image={images[0]}
+                url={`https://sarker.shop/product/${product.slug || product.id}`}
+            />
+            <Helmet>
+                <script type="application/ld+json">
+                    {JSON.stringify(structuredData)}
+                </script>
+            </Helmet>
+
             <ProductBreadcrumbs category={categoryObj} productName={name} />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
