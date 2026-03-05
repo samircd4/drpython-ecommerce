@@ -30,7 +30,12 @@ class NotificationViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Notification.objects.filter(user=self.request.user)[:50]
+        return Notification.objects.filter(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()[:50]
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(detail=True, methods=['post'])
     def mark_read(self, request, pk=None):
