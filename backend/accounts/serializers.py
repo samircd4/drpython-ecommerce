@@ -15,8 +15,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         write_only=True, required=False, allow_blank=True)
     email = serializers.EmailField(
         required=True,
-        validators=[UniqueValidator(queryset=User.objects.all(), message="Email already exists")]
     )
+
+    def validate_email(self, value):
+        if User.objects.filter(email__iexact=value).exists():
+            raise serializers.ValidationError("Email already exists")
+        return value
 
     class Meta:
         model = User
@@ -75,6 +79,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         # Map 'email' to 'username' if present, because the parent class expects 'username' (or USERNAME_FIELD)
         if 'email' in attrs and attrs.get('email'):
+            # Standardize email casing for consistent lookup
+            attrs['email'] = attrs['email'].strip().lower()
             attrs[self.username_field] = attrs['email']
 
         # If neither provided, raise error

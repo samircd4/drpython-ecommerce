@@ -12,7 +12,14 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         """
         # 1. If user is already authenticated and has social account, sync and return
         if sociallogin.is_existing:
-            self._sync_customer_data(sociallogin.user, sociallogin)
+            user = sociallogin.user
+            # If the user doesn't have a usable password, set a random one
+            # so they can use the "Forgot Password" flow.
+            if not user.has_usable_password():
+                from django.contrib.auth.models import User
+                user.set_password(User.objects.make_random_password())
+                user.save()
+            self._sync_customer_data(user, sociallogin)
             return
 
         # 2. Check if a user with this email already exists
@@ -49,6 +56,10 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         original_username = user.username
         while User.objects.filter(username=user.username).exists():
             user.username = f"{original_username}_{uuid.uuid4().hex[:5]}"
+            
+        # Set a random password so the user can use the "Forgot Password" flow 
+        # to set a known password for email/password login later.
+        user.set_password(User.objects.make_random_password())
             
         return user
 

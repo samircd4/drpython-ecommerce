@@ -245,7 +245,7 @@ class ForgotPasswordView(generics.GenericAPIView):
         email = serializer.validated_data['email']
 
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(email__iexact=email)
             
             # Generate token and uid
             token = default_token_generator.make_token(user)

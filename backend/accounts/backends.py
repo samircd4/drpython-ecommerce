@@ -9,7 +9,7 @@ class EmailBackend(ModelBackend):
         email = kwargs.get('email', username)
         
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(email__iexact=email)
         except User.DoesNotExist:
             return None
             
