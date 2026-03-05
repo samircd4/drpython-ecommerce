@@ -14,11 +14,11 @@ const ResetPassword = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+    const [success, setSuccess] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (loading) return;
+        if (loading || success) return;
 
         console.log("Submitting password reset...", { uid, token });
 
@@ -34,15 +34,18 @@ const ResetPassword = () => {
 
         setLoading(true);
         try {
-            console.log("Sending POST to /auth/reset-password/...");
+            console.log("Sending POST to /api/auth/reset-password/...");
             const response = await api.post(`/auth/reset-password/`, {
                 uidb64: uid,
                 token: token,
                 new_password: password
             });
             console.log("Reset Success response:", response.data);
+            setSuccess(true);
             toast.success("Password reset successfully! Please login.");
-            navigate('/account');
+            setTimeout(() => {
+                navigate('/account');
+            }, 1500);
         } catch (error) {
             console.error("Reset Error:", error.response?.data || error.message);
             toast.error(getErrorMessage(error, "Invalid or expired link."));
