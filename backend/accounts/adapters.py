@@ -13,13 +13,20 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         # 1. If user is already authenticated and has social account, sync and return
         if sociallogin.is_existing:
             user = sociallogin.user
-            # If the user doesn't have a usable password, set a random one
-            # so they can use the "Forgot Password" flow.
+            # ONLY set a random password if the account is unusable (empty/invalid hash)
+            # and it doesn't already have one. This prevents changing valid passwords
+            # Or invalidating reset tokens during social login attempts.
             if not user.has_usable_password():
-                from django.contrib.auth.models import User
-                user.set_password(User.objects.make_random_password())
+                import secrets
+                # Only set it once if it's currently unusable (e.g. '!')
+                # This ensures they have a hash so standard reset flow can find them.
+                user.set_password(secrets.token_urlsafe(16))
                 user.save()
-            self._sync_customer_data(user, sociallogin)
+            
+            try:
+                self._sync_customer_data(user, sociallogin)
+            except Exception as e:
+                print(f"Error syncing customer data for social user: {e}")
             return
 
         # 2. Check if a user with this email already exists
@@ -47,11 +54,11 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         if user.pk:
             return user
 
-        # For NEW users, ensure username is set and unique
         if not user.username:
             user.username = user.email.split('@')[0] if user.email else uuid.uuid4().hex[:10]
             
         from django.contrib.auth.models import User
+        import secrets
         # Check if this username is already taken by ANOTHER user
         original_username = user.username
         while User.objects.filter(username=user.username).exists():
@@ -59,7 +66,7 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
             
         # Set a random password so the user can use the "Forgot Password" flow 
         # to set a known password for email/password login later.
-        user.set_password(User.objects.make_random_password())
+        user.set_password(secrets.token_urlsafe(16))
             
         return user
 
