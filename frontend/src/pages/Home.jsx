@@ -9,9 +9,14 @@ import BestSellers from '../components/BestSellers';
 import Products from '../components/Products';
 import PromoBanner from '../components/PromoBanner';
 import Newsletter from '../components/Newsletter';
+import SEO from '../components/SEO';
 
 const Home = () => (
     <div className="sm:w-[90%] mx-auto">
+        <SEO
+            title="Home"
+            description="Welcome to Sarker Shop, the best place to find premium products at unbeatable prices."
+        />
         <div className="w-full mx-auto flex flex-col md:flex-row gap-4 md:gap-6 px-2">
             {/* Category Sidebar (desktop/tablet only) */}
             <div className="w-full md:w-60 mb-2 md:mb-0 hidden md:block">

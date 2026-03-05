@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /account/
+Disallow: /checkout/
+Disallow: /order-tracking/
+
+Sitemap: https://sarker.shop/sitemap.xml
