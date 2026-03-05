@@ -19,7 +19,11 @@ const ForgotPassword = () => {
             setSubmitted(true);
             toast.success("Reset link sent! Check your email.");
         } catch (error) {
-            toast.error(getErrorMessage(error, "Failed to send reset link. Please try again."));
+            if (error.response && (error.response.status === 400 || error.response.status === 404)) {
+                toast.error("This email is not associated with any account.");
+            } else {
+                toast.error(getErrorMessage(error, "Failed to send reset link. Please try again."));
+            }
         } finally {
             setLoading(false);
         }
