@@ -138,7 +138,12 @@ class ResetPasswordSerializer(serializers.Serializer):
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise serializers.ValidationError({"uidb64": "Invalid UID"})
 
-        if not default_token_generator.check_token(user, attrs['token']):
+        print(f"DEBUG_RESET|User:{user.email}|PK:{uid}|LastLogin:{user.last_login}")
+        token_valid = default_token_generator.check_token(user, attrs['token'])
+        print(f"DEBUG_RESET|Token:{attrs['token']}|Valid:{token_valid}")
+        
+        if not token_valid:
+            # Check if token would be valid with a slightly different state
             raise serializers.ValidationError({"token": "Invalid or expired token"})
 
         attrs['user'] = user

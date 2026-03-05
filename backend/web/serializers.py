@@ -19,7 +19,7 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-        fields = ['id', 'type', 'title', 'message', 'time', 'is_read', 'created_at']
+        fields = ['id', 'type', 'title', 'message', 'time', 'is_read', 'link', 'created_at']
         read_only_fields = ['id', 'created_at']
 
     def get_time(self, obj):
