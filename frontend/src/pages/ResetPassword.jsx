@@ -18,6 +18,9 @@ const ResetPassword = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (loading) return;
+
+        console.log("Submitting password reset...", { uid, token });
 
         if (password !== confirmPassword) {
             toast.error("Passwords do not match");
@@ -31,14 +34,17 @@ const ResetPassword = () => {
 
         setLoading(true);
         try {
-            await api.post(`/auth/reset-password/`, {
+            console.log("Sending POST to /auth/reset-password/...");
+            const response = await api.post(`/auth/reset-password/`, {
                 uidb64: uid,
                 token: token,
                 new_password: password
             });
+            console.log("Reset Success response:", response.data);
             toast.success("Password reset successfully! Please login.");
             navigate('/account');
         } catch (error) {
+            console.error("Reset Error:", error.response?.data || error.message);
             toast.error(getErrorMessage(error, "Invalid or expired link."));
         } finally {
             setLoading(false);

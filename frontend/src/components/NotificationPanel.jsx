@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Bell, Package, Tag, Info, CheckCircle2, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const NotificationPanel = ({ open, onClose, notifications, onMarkAllRead, onMarkRead, onClearAll, onDelete }) => {
+    const navigate = useNavigate();
     const getIcon = (type) => {
         switch (type) {
             case 'order_update': return <Package className="w-5 h-5 text-blue-500" />;
@@ -81,12 +83,13 @@ const NotificationPanel = ({ open, onClose, notifications, onMarkAllRead, onMark
                                                 delay: index < 5 ? index * 0.05 : 0,
                                             }}
                                             whileHover={{ x: 4 }}
-                                            onClick={() => {
+                                            onClick={async () => {
                                                 if (!notif.is_read && onMarkRead) {
-                                                    onMarkRead(notif.id);
+                                                    await onMarkRead(notif.id);
                                                 }
                                                 if (notif.link) {
-                                                    window.location.href = notif.link;
+                                                    navigate(notif.link);
+                                                    onClose();
                                                 }
                                             }}
                                             className={`p-4 rounded-[1.25rem] border transition-all relative overflow-hidden group cursor-pointer ${notif.is_read
