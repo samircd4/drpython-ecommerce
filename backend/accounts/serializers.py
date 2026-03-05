@@ -131,10 +131,12 @@ class ResetPasswordSerializer(serializers.Serializer):
         try:
             uid = urlsafe_base64_decode(attrs['uidb64']).decode()
             user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+            print(f"DEBUG_UID_FAIL|UIDB64:{attrs.get('uidb64')}|Error:{e}")
             raise serializers.ValidationError({"uidb64": "Invalid UID"})
 
         if not default_token_generator.check_token(user, attrs['token']):
+            print(f"DEBUG_TOKEN_FAIL|User:{user.email}|Token:{attrs['token']}")
             raise serializers.ValidationError({"token": "Invalid or expired token"})
 
         attrs['user'] = user

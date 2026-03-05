@@ -300,6 +300,7 @@ class ResetPasswordView(generics.GenericAPIView):
         responses={200: OpenApiTypes.OBJECT}
     )
     def post(self, request):
+        print(f"DEBUG_RESET_POST|UIDB64:{request.data.get('uidb64')}|TOKEN:{request.data.get('token')}")
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         

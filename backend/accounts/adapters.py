@@ -13,13 +13,20 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         # 1. If user is already authenticated and has social account, sync and return
         if sociallogin.is_existing:
             user = sociallogin.user
-            # If the user doesn't have a usable password, set a random one
-            # so they can use the "Forgot Password" flow.
+            # ONLY set a random password if the account is unusable (empty/invalid hash)
+            # and it doesn't already have one. This prevents changing valid passwords
+            # Or invalidating reset tokens during social login attempts.
             if not user.has_usable_password():
                 from django.contrib.auth.models import User
+                # Only set it once if it's currently unusable (e.g. '!')
+                # This ensures they have a hash so standard reset flow can find them.
                 user.set_password(User.objects.make_random_password())
                 user.save()
-            self._sync_customer_data(user, sociallogin)
+            
+            try:
+                self._sync_customer_data(user, sociallogin)
+            except Exception as e:
+                print(f"Error syncing customer data for social user: {e}")
             return
 
         # 2. Check if a user with this email already exists
