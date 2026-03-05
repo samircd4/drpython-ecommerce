@@ -184,7 +184,8 @@ const Checkout = () => {
         if (!subDistrict) newErrors.subDistrict = "Sub District is required";
         if (!address) newErrors.address = "Address is required";
 
-        if (paymentMethod !== 'card_mfs') {
+        const requiresManualPayment = paymentMethod !== 'card_mfs' && !(paymentMethod === 'cod' && deliveryCharge === 0);
+        if (requiresManualPayment) {
             if (!paymentDetails.paid_from) newErrors.paid_from = "Payment number is required";
             if (!paymentDetails.transaction_id) newErrors.transaction_id = "Transaction ID is required";
         }
