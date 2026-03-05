@@ -250,10 +250,11 @@ class ForgotPasswordView(generics.GenericAPIView):
             # Generate token and uid
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
+            print(f"DEBUG_FORGOT_PASS|User:{user.email}|PK:{user.pk}|UID:{uid}|Token:{token}|LastLogin:{user.last_login}|PassHash:{user.password[:15]}")
             
             # Build reset link (Frontend URL)
-            # Frontend URL from .env
-            frontend_url = settings.FRONTEND_URL
+            frontend_url = settings.FRONTEND_URL.rstrip('/')
+            # Use query params to match frontend current expectation
             reset_link = f"{frontend_url}/password-reset-confirm?uid={uid}&token={token}"
             
             # Render HTML Template
