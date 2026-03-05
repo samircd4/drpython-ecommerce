@@ -254,7 +254,7 @@ class ForgotPasswordView(generics.GenericAPIView):
             # Build reset link (Frontend URL)
             # Frontend URL from .env
             frontend_url = settings.FRONTEND_URL
-            reset_link = f"{frontend_url}/password-reset-confirm/?uid={uid}&token={token}"
+            reset_link = f"{frontend_url}/password-reset-confirm?uid={uid}&token={token}"
             
             # Render HTML Template
             from django.template.loader import render_to_string
