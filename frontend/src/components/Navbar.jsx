@@ -130,11 +130,24 @@ const Navbar = () => {
         }
     };
 
+    // Mark single as read handler
+    const handleMarkRead = async (id) => {
+        setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+        if (user) {
+            try {
+                await api.post(`/notifications/${id}/mark_read/`);
+            } catch { /* silently fail */ }
+        }
+    };
+
     // Delete single notification handler
     const handleDelete = async (id) => {
         setNotifications(prev => prev.filter(n => n.id !== id));
         if (user) {
             try {
+                // Assuming there's a delete or we just mark read for now 
+                // but let's stick to what works for 'delete' if there was one
+                // Actually the API doesn't have a delete for single and we're using mark_read
                 await api.post(`/notifications/${id}/mark_read/`);
             } catch { /* silently fail */ }
         }
@@ -288,6 +301,7 @@ const Navbar = () => {
                 onClose={() => setIsNotifOpen(false)}
                 notifications={notifications}
                 onMarkAllRead={handleMarkAllRead}
+                onMarkRead={handleMarkRead}
                 onClearAll={handleClearAll}
                 onDelete={handleDelete}
             />

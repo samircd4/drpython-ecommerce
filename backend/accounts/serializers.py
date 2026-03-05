@@ -139,12 +139,14 @@ class ResetPasswordSerializer(serializers.Serializer):
             print(f"DEBUG_UID_FAIL|UIDB64:{attrs.get('uidb64')}|Error:{e}")
             raise serializers.ValidationError({"uidb64": "Invalid UID"})
 
-        print(f"DEBUG_RESET|User:{user.email}|PK:{uid}|LastLogin:{user.last_login}")
+        print(f"DEBUG_RESET|User:{user.email}|PK:{uid}|LastLogin:{user.last_login}|Active:{user.is_active}|PassHash:{user.password[:15]}...")
         token_valid = default_token_generator.check_token(user, attrs['token'])
         print(f"DEBUG_RESET|Token:{attrs['token']}|Valid:{token_valid}")
         
         if not token_valid:
             # Check if token would be valid with a slightly different state
+            # (diagnostic only, don't change behavior here)
+            print(f"DEBUG_RESET|FAILED_VALIDATION_FOR_TOKEN")
             raise serializers.ValidationError({"token": "Invalid or expired token"})
 
         attrs['user'] = user
