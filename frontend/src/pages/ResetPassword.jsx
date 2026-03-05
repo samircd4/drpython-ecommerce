@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, Eye, EyeOff, ArrowRight, CheckCircle } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import api from '../api/client';
 import { getErrorMessage } from '../utils/errorUtils';
 
@@ -15,6 +16,7 @@ const ResetPassword = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -43,9 +45,7 @@ const ResetPassword = () => {
             console.log("Reset Success response:", response.data);
             setSuccess(true);
             toast.success("Password reset successfully! Please login.");
-            setTimeout(() => {
-                navigate('/account');
-            }, 1500);
+            navigate('/account');
         } catch (error) {
             console.error("Reset Error:", error.response?.data || error.message);
             toast.error(getErrorMessage(error, "Invalid or expired link."));
