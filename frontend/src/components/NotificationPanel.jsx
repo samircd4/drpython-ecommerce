@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Bell, Package, Tag, Info, CheckCircle2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +17,20 @@ const NotificationPanel = ({ open, onClose, notifications, onMarkAllRead, onMark
 
     const unreadCount = notifications.filter(n => !n.is_read).length;
 
-    return (
+    useEffect(() => {
+        if (open) {
+            document.documentElement.style.overflow = 'hidden';
+        } else {
+            document.documentElement.style.overflow = '';
+        }
+        return () => {
+            document.documentElement.style.overflow = '';
+        };
+    }, [open]);
+
+    if (typeof document === 'undefined') return null;
+
+    return ReactDOM.createPortal(
         <AnimatePresence>
             {open && (
                 <>
@@ -186,7 +200,8 @@ const NotificationPanel = ({ open, onClose, notifications, onMarkAllRead, onMark
                     </motion.div>
                 </>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 };
 
