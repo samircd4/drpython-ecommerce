@@ -1,21 +1,24 @@
 import React from "react";
-import { FaMobileAlt, FaMoneyBillWave } from "react-icons/fa";
+import { FaMoneyBillWave } from "react-icons/fa";
+import BKashIcon from "../../assets/BKash.svg";
+import NagadIcon from "../../assets/Nagad.svg";
+import RocketIcon from "../../assets/Rocket.svg";
 
 const PAYMENT_INFO = {
     bkash: {
         title: "Bkash Payment",
-        description: "Send your payment to our personal Bkash number: 01781355377",
-        icon: <FaMobileAlt className="text-purple-600" />,
+        description: "Send your payment to our personal Bkash number: 01926108816",
+        icon: <img src={BKashIcon} alt="Bkash" className="h-8 w-auto object-contain" />,
     },
     rocket: {
         title: "Rocket Payment",
         description: "Send your payment to our personal Rocket number: 01781355377",
-        icon: <FaMobileAlt className="text-purple-600" />,
+        icon: <img src={RocketIcon} alt="Rocket" className="h-8 w-auto object-contain" />,
     },
     nagad: {
         title: "Nagad Payment",
-        description: "Send your payment to our personal Nagad number: 01781355377",
-        icon: <FaMobileAlt className="text-purple-600" />,
+        description: "Send your payment to our personal Nagad number: 01926108816",
+        icon: <img src={NagadIcon} alt="Nagad" className="h-8 w-auto object-contain" />,
     },
     card_mfs: {
         title: "Card / MFS Payment",
@@ -24,7 +27,7 @@ const PAYMENT_INFO = {
     },
     cod: {
         title: "Cash on Delivery",
-        description: "Send the delivery fee ৳120 to our personal Nagad/Rocket/Bkash number: 01781355377",
+        description: "Send the delivery fee ৳120 to our personal Bkash/Nagad/Upay number: 01926108816",
         icon: <FaMoneyBillWave className="text-purple-600" />,
     },
 };

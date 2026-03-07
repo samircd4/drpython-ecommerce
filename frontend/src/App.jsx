@@ -19,6 +19,8 @@ import ScrollToTop from './components/ScrollToTop';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import EmailVerification from './pages/EmailVerification';
+import Team from './pages/Team';
+import TeamMemberDetails from './pages/TeamMemberDetails';
 
 
 
@@ -29,6 +31,8 @@ const App = () => (
             <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path="about" element={<About />} />
+                <Route path="team" element={<Team />} />
+                <Route path="team/:id" element={<TeamMemberDetails />} />
                 <Route path="products" element={<Products />} />
                 <Route path="products/:id" element={<ProductDetails />} />
                 <Route path="categories" element={<CategoryPage />} />
@@ -46,6 +50,7 @@ const App = () => (
                 <Route path="order-tracking/:id?" element={<OrderTracking />} />
                 <Route path="terms" element={<Terms />} />
             </Route>
+
         </Routes>
     </Router>
 );
