@@ -126,7 +126,14 @@ const Footer = () => {
                                         Contact Us
                                     </Link>
                                 </li>
+                                <li>
+                                    <Link to="/team" className="text-gray-400 hover:text-white transition-all duration-300 text-sm font-bold flex items-center justify-center md:justify-start gap-2 group">
+                                        <span className="w-0 group-hover:w-2 h-[1px] bg-purple-500 transition-all"></span>
+                                        Our Team
+                                    </Link>
+                                </li>
                             </ul>
+
                         </motion.div>
 
                         {/* 3. Support Ecosystem */}

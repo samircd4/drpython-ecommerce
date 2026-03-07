@@ -3,6 +3,9 @@ import { FaMobileAlt, FaMoneyBillWave } from "react-icons/fa";
 import { SiVisa, SiMastercard } from "react-icons/si";
 import PaymentInfoBox from "./PaymentInfoBox";
 import Badge from "../Badge";
+import BKashIcon from "../../assets/BKash.svg";
+import NagadIcon from "../../assets/Nagad.svg";
+import RocketIcon from "../../assets/Rocket.svg";
 
 const PaymentMethod = ({
     paymentMethod,
@@ -52,7 +55,7 @@ const PaymentMethod = ({
                         />
                         <span>Bkash</span>
                     </span>
-                    <FaMobileAlt className="text-purple-500" />
+                    <img src={BKashIcon} alt="Bkash" className="h-6 w-auto object-contain" />
                 </label>
                 <label className="flex items-center justify-between p-2 rounded cursor-pointer">
                     <span className="flex items-center gap-2">
@@ -66,7 +69,7 @@ const PaymentMethod = ({
                         />
                         <span>Nagad</span>
                     </span>
-                    <FaMobileAlt className="text-purple-500" />
+                    <img src={NagadIcon} alt="Nagad" className="h-6 w-auto object-contain" />
                 </label>
                 <label className="flex items-center justify-between p-2 rounded cursor-pointer">
                     <span className="flex items-center gap-2">
@@ -80,7 +83,7 @@ const PaymentMethod = ({
                         />
                         <span>Rocket</span>
                     </span>
-                    <FaMobileAlt className="text-purple-500" />
+                    <img src={RocketIcon} alt="Rocket" className="h-6 w-auto object-contain" />
                 </label>
                 <label className="flex items-center justify-between p-2 rounded cursor-not-allowed">
                     <span className="flex items-center gap-2">
