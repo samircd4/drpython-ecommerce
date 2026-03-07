@@ -1,13 +1,13 @@
 import React from "react";
 import Navbar from "./Navbar";
+import AnnouncementBar from "./AnnouncementBar";
 
 const Header = () => {
     return (
-        <div className="">
-            <div className="">
-                <Navbar />
-            </div>
-        </div>
+        <>
+            <AnnouncementBar />
+            <Navbar />
+        </>
     );
 };
 

@@ -7,9 +7,9 @@ import { ToastContainer } from 'react-toastify';
 import React from 'react'
 
 const Layout = () => (
-    <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
+    <div className="flex flex-col min-h-screen w-full">
         <Header />
-        <main className="flex-grow sm:p-4 pb-20 md:pb-4 mt-20">
+        <main className="flex-grow sm:p-4 pb-20 md:pb-4 mt-4">
             <Outlet /> {/* This is where nested routes will render */}
         </main>
         <Footer />
