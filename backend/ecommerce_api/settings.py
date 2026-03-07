@@ -240,11 +240,20 @@ CORS_ALLOW_CREDENTIALS = True
 # =========================
 # CSRF (Admin / Cookies)
 # =========================
-_csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://sarker.shop,https://www.sarker.shop,https://dev.sarker.shop,http://localhost:8080,http://localhost:5173,http://127.0.0.1:5173')
+_csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://sarker.shop,https://www.sarker.shop,https://dev.sarker.shop')
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(',')]
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+# Add local origins for development
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS += [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+    ]
+
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_HTTPONLY = False  # Allows frontend to read cookie for CSRF header
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'

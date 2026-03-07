@@ -149,7 +149,7 @@ const SearchBar = ({ onFocus, onBlur, onOpen, onClose }) => {
                                             {product.name}
                                         </p>
                                         <p className="text-xs text-gray-500">
-                                            ৳ {product.discount_price}
+                                            ৳ {product.discount_price || product.price}
                                         </p>
                                     </div>
                                 </li>
