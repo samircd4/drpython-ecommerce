@@ -71,7 +71,7 @@ const HeroSection = () => {
                     {/* Text Content */}
                     <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-16 text-white">
                         <motion.h1
-                            className="text-3xl md:text-5xl font-bold mb-4"
+                            className="text-2xl min-[400px]:text-3xl md:text-5xl font-bold mb-4 break-words"
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.3 }}
@@ -79,7 +79,7 @@ const HeroSection = () => {
                             {slides[current].title}
                         </motion.h1>
                         <motion.p
-                            className="text-lg md:text-xl mb-6 max-w-lg"
+                            className="text-lg md:text-xl mb-6 max-w-full sm:max-w-lg break-words"
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.5 }}

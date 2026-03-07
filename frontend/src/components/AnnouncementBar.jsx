@@ -16,7 +16,7 @@ const AnnouncementBar = () => {
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 w-1/2 h-full pointer-events-none"
             />
 
-            <div className="max-w-7xl mx-auto flex items-center justify-center gap-3 text-sm sm:text-base font-bold tracking-tight">
+            <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 sm:gap-3 text-[11px] min-[380px]:text-sm sm:text-base font-bold tracking-tight">
                 <motion.div
                     animate={{ scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
@@ -25,7 +25,7 @@ const AnnouncementBar = () => {
                     <FaRocket className="h-4 w-4 sm:h-5 sm:w-5" />
                 </motion.div>
 
-                <p className="flex items-center gap-2 text-center">
+                <p className="flex items-center gap-2 text-center break-words leading-tight max-w-[80vw] sm:max-w-none">
                     <span className="hidden sm:inline">Exciting News:</span>
                     Our full-featured website will be
                     <span className="px-2 py-0.5 bg-yellow-400 text-purple-900 rounded-md animate-pulse">

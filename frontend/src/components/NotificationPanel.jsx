@@ -26,7 +26,7 @@ const NotificationPanel = ({ open, onClose, notifications, onMarkAllRead, onMark
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60]"
+                        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[70]"
                     />
 
                     {/* Panel */}
@@ -35,7 +35,7 @@ const NotificationPanel = ({ open, onClose, notifications, onMarkAllRead, onMark
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-[70] flex flex-col"
+                        className="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-[80] flex flex-col"
                     >
                         {/* Header */}
                         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0">
