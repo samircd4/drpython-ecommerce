@@ -16,27 +16,38 @@ const CartPanel = ({ open, onClose }) => {
         if (open) {
             setShowPanel(true)
             setAnimationClass('animate-slide-in-right')
+            // Lock global scrolling
+            document.documentElement.style.overflow = 'hidden'
         } else {
             setAnimationClass('animate-slide-out-right')
             const t = setTimeout(() => setShowPanel(false), 300)
+            // Unlock global scrolling
+            document.documentElement.style.overflow = 'unset'
             return () => clearTimeout(t)
         }
     }, [open])
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            document.documentElement.style.overflow = 'unset'
+        }
+    }, [])
 
     const subtotal = cartItem.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0)
 
     if (!showPanel) return null
 
     return (
-        <div className="fixed inset-0 z-[60]" onClick={onClose}>
+        <div className="fixed inset-0 z-[70]" onClick={onClose}>
             <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
-            <div className={`absolute right-0 top-0 h-full w-full sm:w-[420px] bg-white shadow-xl border-l border-gray-200 ${animationClass}`} onClick={(e) => e.stopPropagation()}>
+            <div className={`absolute right-0 top-0 h-full w-full sm:max-w-md bg-white shadow-xl border-l border-gray-200 overflow-hidden flex flex-col ${animationClass}`} onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between px-4 py-3 border-b bg-purple-600 text-white">
                     <h2 className="text-lg font-semibold">Your Cart</h2>
                     <button onClick={onClose} className="px-3 py-1 rounded-md bg-white/10 hover:bg-white/20 cursor-pointer">Close</button>
                 </div>
-                <div className="flex flex-col h-full bg-neutral-50/30">
-                    <div className="flex-1 overflow-y-auto p-4 space-y-3 mb-12">
+                <div className="flex flex-col flex-1 overflow-hidden bg-neutral-50/30">
+                    <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
                         {cartItem.length === 0 && (
                             <div className="py-10">
                                 <EmptyCart
@@ -145,15 +156,15 @@ const CartPanel = ({ open, onClose }) => {
                                     {subtotal.toFixed(2)}
                                 </span>
                             </div>
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="flex gap-3">
                                 <button
-                                    className="w-full px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 cursor-pointer"
+                                    className="flex-1 px-2 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 cursor-pointer text-xs sm:text-sm font-semibold whitespace-nowrap"
                                     onClick={() => { onClose(); navigate('/cart'); }}
                                 >
                                     View Cart
                                 </button>
                                 <button
-                                    className="w-full px-4 py-2 rounded-md bg-purple-600 hover:bg-purple-700 text-white cursor-pointer"
+                                    className="flex-1 px-2 py-2 rounded-md bg-purple-600 hover:bg-purple-700 text-white cursor-pointer text-xs sm:text-sm font-semibold whitespace-nowrap"
                                     onClick={() => { onClose(); navigate('/checkout'); }}
                                 >
                                     Checkout

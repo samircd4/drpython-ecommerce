@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaStar, FaRegStar, FaTimes } from 'react-icons/fa'
 import { MdFilterList } from 'react-icons/md'
@@ -21,10 +22,13 @@ const FilterPanel = ({
     onToggleBrand,
     onClearAll,
 }) => {
-    return (
+    // We only want to use createPortal if we have a document body
+    if (typeof document === 'undefined') return null
+
+    return ReactDOM.createPortal(
         <AnimatePresence>
             {open && (
-                <div className="fixed inset-0 z-50 flex justify-end">
+                <div className="fixed inset-0 z-[70] flex justify-end">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -204,7 +208,7 @@ const FilterPanel = ({
                         </div>
 
                         {/* Footer Actions */}
-                        <div className="px-6 py-6 border-t border-gray-100 bg-white grid grid-cols-2 gap-4">
+                        <div className="px-6 pt-6 pb-24 md:pb-6 border-t border-gray-100 bg-white grid grid-cols-2 gap-4">
                             <button
                                 onClick={onClearAll}
                                 className="px-6 py-3.5 rounded-xl border-1.5 border-gray-200 text-gray-600 text-sm font-bold hover:bg-gray-50 transition-colors cursor-pointer"
@@ -221,7 +225,8 @@ const FilterPanel = ({
                     </motion.div>
                 </div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     )
 }
 

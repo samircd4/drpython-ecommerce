@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import ReactDOM from 'react-dom'
 import { MdApps, MdDevices, MdSettings, MdHome, MdWork } from 'react-icons/md'
 
 const categoryIconMap = {
@@ -32,8 +33,11 @@ const CategoryPanel = ({
 
     if (!showPanel) return null
 
-    return (
-        <div className="fixed inset-0 z-50" onClick={onClose}>
+    // We only want to use createPortal if we have a document body (browser environment)
+    if (typeof document === 'undefined') return null
+
+    return ReactDOM.createPortal(
+        <div className="fixed inset-0 z-[70]" onClick={onClose}>
             <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
             <div
                 className={`absolute right-0 top-0 h-full w-full sm:w-80 bg-white shadow-xl border-l border-gray-200 ${animationClass}`}
@@ -84,7 +88,8 @@ const CategoryPanel = ({
                     </ul>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     )
 }
 

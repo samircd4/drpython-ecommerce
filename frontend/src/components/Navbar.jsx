@@ -306,9 +306,9 @@ const Navbar = () => {
                 onDelete={handleDelete}
             />
             {showDrawer && (
-                <div className="fixed inset-0 z-50 flex" onClick={() => setIsDrawerOpen(false)}>
+                <div className="fixed inset-0 z-[70] flex" onClick={() => setIsDrawerOpen(false)}>
                     {/* Drawer */}
-                    <div className={`relative bg-white w-64 h-full shadow-lg z-50 ${animationClass} flex flex-col`} onClick={(e) => e.stopPropagation()}>
+                    <div className={`relative bg-white w-64 h-full shadow-lg z-[70] ${animationClass} flex flex-col`} onClick={(e) => e.stopPropagation()}>
                         <button
                             className="absolute top-3 right-3 text-2xl z-10 cursor-pointer"
                             onClick={() => setIsDrawerOpen(false)}
