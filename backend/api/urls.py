@@ -10,6 +10,7 @@ urlpatterns = [
          template_name='swagger_ui.html')), name='swagger-ui'),
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
+    path('chats/', include('chat.urls')),
     path('', include('accounts.urls')),
     path('', include('orders.urls')),
     path('', include('products.urls')),
