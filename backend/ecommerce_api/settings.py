@@ -232,6 +232,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://sarker.shop",
     "https://www.sarker.shop",
     "https://dev.sarker.shop",
+    "https://admin.sarker.shop",
 ]
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
