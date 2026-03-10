@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'reviews',
     'web',
     'api',
+    'chat',
 
     # Social Login
     'allauth',
@@ -226,7 +227,9 @@ if '*' in ALLOWED_HOSTS:
 # =========================
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://localhost:5174",
     "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
     "http://localhost",
     "http://127.0.0.1",
     "https://sarker.shop",
@@ -234,7 +237,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://dev.sarker.shop",
     "https://admin.sarker.shop",
 ]
-CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 

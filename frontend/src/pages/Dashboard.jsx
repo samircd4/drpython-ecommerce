@@ -9,6 +9,8 @@ import RecentOrder from '../components/dashboard/RecentOrder';
 import MyOrders from '../components/dashboard/MyOrders';
 import Addresses from '../components/dashboard/Addresses';
 import ProfileSettings from '../components/dashboard/ProfileSettings';
+import AdminChat from '../components/dashboard/AdminChat';
+import { FaHeadset } from 'react-icons/fa';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -113,7 +115,8 @@ const Dashboard = () => {
                 name: displayName,
                 email: contextUser.email || '',
                 username: contextUser.username || '',
-                is_email_verified: contextUser.is_email_verified
+                is_email_verified: contextUser.is_email_verified,
+                is_staff: contextUser.is_staff
             });
             setProfileName(displayName);
             setProfileEmail(contextUser.email || '');
@@ -377,7 +380,7 @@ const Dashboard = () => {
                                 <span className="font-medium text-sm">Addresses</span>
                             </button>
 
-                            <button
+                             <button
                                 onClick={() => setActiveTab('profile')}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all cursor-pointer ${activeTab === 'profile'
                                     ? 'bg-purple-600 text-white shadow-md'
@@ -387,6 +390,19 @@ const Dashboard = () => {
                                 <FaCog className={activeTab === 'profile' ? 'text-white' : 'text-purple-500'} />
                                 <span className="font-medium text-sm">Profile Settings</span>
                             </button>
+
+                            {user.is_staff && (
+                                <button
+                                    onClick={() => setActiveTab('admin-chat')}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all cursor-pointer ${activeTab === 'admin-chat'
+                                        ? 'bg-purple-600 text-white shadow-md'
+                                        : 'text-gray-600 hover:bg-purple-50 hover:text-purple-600'
+                                        }`}
+                                >
+                                    <FaHeadset className={activeTab === 'admin-chat' ? 'text-white' : 'text-purple-500'} />
+                                    <span className="font-medium text-sm">Support Chat (Admin)</span>
+                                </button>
+                            )}
 
                             <div className="my-2 border-t border-gray-100"></div>
 
@@ -455,7 +471,7 @@ const Dashboard = () => {
                         />
                     )}
 
-                    {activeTab === 'address' && (
+                     {activeTab === 'address' && (
                         <Addresses
                             addresses={addresses}
                             addressesLoading={addressesLoading}
@@ -483,6 +499,10 @@ const Dashboard = () => {
                             handleDeleteAddress={handleDeleteAddress}
                             handleSetDefault={handleSetDefault}
                         />
+                    )}
+
+                    {activeTab === 'admin-chat' && user.is_staff && (
+                        <AdminChat />
                     )}
                 </div>
             </div>
