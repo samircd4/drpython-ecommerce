@@ -17,6 +17,8 @@ import {
     Star,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../Context/AuthContext";
+import api from "../../api/axiosConfig";
 
 const menuItems = [
     { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", active: true, badge: "New" },
@@ -43,6 +45,8 @@ const menuItems = [
 ];
 
 const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageChange }) => {
+    const { user } = useAuth();
+    const [unreadTotal, setUnreadTotal] = useState(0);
     const [expandedItems, setExpandedItems] = useState(new Set(["analytics"]));
     const anyOpen = expandedItems && expandedItems.size > 0;
     const [hideScrollbar, setHideScrollbar] = useState(false);
@@ -62,6 +66,25 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
         else newExpanded.add(itemid);
         setExpandedItems(newExpanded);
     };
+
+    // Fetch unread count from API
+    useEffect(() => {
+        const fetchUnread = async () => {
+            try {
+                const response = await api.get('/chats/');
+                const chats = Array.isArray(response.data) ? response.data : (response.data?.results || []);
+                const total = chats.reduce((acc, chat) => acc + (chat.unread_count || 0), 0);
+                setUnreadTotal(total);
+            } catch (err) {
+                console.error("Sidebar: Failed to fetch unread count", err);
+            }
+        };
+        if (user) fetchUnread();
+        
+        // Refresh every minute
+        const interval = setInterval(fetchUnread, 60000);
+        return () => clearInterval(interval);
+    }, [user]);
 
     // On small screens the sidebar becomes a slide-over overlay (no page shift).
     // `mobileOpen` controls visibility on small screens; `collapsed` controls desktop width.
@@ -95,7 +118,10 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
                                 {showLabels && (
                                     <>
                                         <span className="font-medium ml-2">{item.label}</span>
-                                        {item.badge && <span className="px-2 py-1 text-xs bg-red-600 text-slate-100 rounded-full">{item.badge}</span>}
+                                        {item.id === 'messages' && unreadTotal > 0 && (
+                                            <span className="px-2 py-1 text-xs bg-red-600 text-slate-100 rounded-full">{unreadTotal}</span>
+                                        )}
+                                        {item.id === 'dashboard' && item.badge && <span className="px-2 py-1 text-xs bg-red-600 text-slate-100 rounded-full">{item.badge}</span>}
                                         {item.count && <span className="px-2 py-1 text-xs bg-slate-700 text-slate-200 rounded-full">{item.count}</span>}
                                     </>
                                 )}
@@ -136,13 +162,21 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
             {/* User Profile */}
             <div className="p-4 border-t border-slate-800">
                 <div className="flex items-center space-x-3 p-3 rounded-xl bg-transparent cursor-pointer">
-                    <div className="w-8 h-8 rounded-full bg-slate-700 ring-2 ring-[#184a6a] flex items-center justify-center text-slate-200">
-                        <User className="w-5 h-5" />
+                    <div className="w-8 h-8 rounded-full bg-slate-700 ring-2 ring-[#184a6a] flex items-center justify-center text-slate-200 overflow-hidden">
+                        {user?.avatar || user?.profile_picture ? (
+                            <img src={user.avatar || user.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                            <User className="w-5 h-5" />
+                        )}
                     </div>
                     {!collapsed && (
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-slate-100 truncate">Sarker Shop</p>
-                            <p className="text-xs text-slate-300">Administrator</p>
+                            <p className="text-sm font-medium text-slate-100 truncate">
+                                {user?.first_name ? `${user.first_name} ${user.last_name}` : (user?.username || 'Sarker Shop')}
+                            </p>
+                            <p className="text-xs text-slate-300">
+                                {user?.is_superuser ? 'Owner' : 'Staff'}
+                            </p>
                         </div>
                     )}
                 </div>

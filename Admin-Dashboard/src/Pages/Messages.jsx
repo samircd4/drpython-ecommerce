@@ -28,10 +28,10 @@ const Messages = () => {
             const messageData = Array.isArray(response.data) ? response.data : (response.data?.results || []);
 
             setChats(prevChats => prevChats.map(c =>
-                Number(c.id) === Number(chat.id) ? { ...c, messages: messageData, unread: 0 } : c
+                Number(c.id) === Number(chat.id) ? { ...c, messages: messageData, unread: 0, unread_count: 0 } : c
             ));
         } catch (error) {
-            // silently handle error
+            console.error(`Failed to fetch messages for chat ${chat.id}:`, error);
         } finally {
             setIsLoadingMessages(false);
         }
@@ -50,7 +50,11 @@ const Messages = () => {
                     handleSelectChat(conversationData[0]);
                 }
             } catch (error) {
-                // silently handle error
+                console.error("Messages: Failed to fetch conversations", error);
+                if (error.response) {
+                    console.error("Data:", error.response.data);
+                    console.error("Status:", error.response.status);
+                }
             } finally {
                 setIsLoadingChats(false);
             }
@@ -145,7 +149,14 @@ const Messages = () => {
         });
     }, [user?.id, selectedChatId]);
 
-    const { isConnected, sendMessage } = useChatSocket(token, handleWebSocketMessage);
+    const { isConnected, sendMessage, joinChat } = useChatSocket(token, handleWebSocketMessage);
+
+    // Join specific room when chat is selected
+    useEffect(() => {
+        if (isConnected && selectedChatId) {
+            joinChat(selectedChatId);
+        }
+    }, [isConnected, selectedChatId, joinChat]);
 
     const handleSendMessage = (e) => {
         e.preventDefault();
@@ -269,7 +280,7 @@ const Messages = () => {
                                                 <span className="text-[10px] text-slate-500 whitespace-nowrap">{chat.time}</span>
                                             </div>
                                             <p className={`text-xs truncate ${chat.isTyping ? 'text-green-500 font-bold' : 'text-slate-400'}`}>
-                                                {chat.isTyping ? 'Typing...' : chat.lastMessage}
+                                                {chat.isTyping ? 'Typing...' : (typeof chat.lastMessage === 'object' ? chat.lastMessage?.text : chat.lastMessage)}
                                             </p>
                                         </div>
                                         {chat.unread > 0 && (

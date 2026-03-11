@@ -60,8 +60,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'id': message.id,
                         'chatId': chat_id,
                         'text': message.text,
-                        'sender': 'admin' if self.user.is_staff else 'user',
-                        'senderEmail': self.user.email,
+                        'sender': {
+                            'id': self.user.id,
+                            'email': self.user.email,
+                            'first_name': self.user.first_name,
+                            'last_name': self.user.last_name,
+                            'role': 'admin' if self.user.is_staff else 'user'
+                        },
+                        'sender_id': self.user.id,
                         'time': message.timestamp.strftime('%I:%M %p')
                     }
                 }

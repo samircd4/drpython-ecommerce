@@ -42,7 +42,12 @@ const useChatSocket = (token, onMessage) => {
                 socketRef.current = null;
             }
 
-            const socket = new WebSocket(`${WS_URL}?token=${token}`);
+            // Ensure URL ends correctly for query params
+            const fullWsUrl = WS_URL.includes('?') 
+                ? `${WS_URL}&token=${token}` 
+                : `${WS_URL}${WS_URL.endsWith('/') ? '' : '/'}?token=${token}`;
+            
+            const socket = new WebSocket(fullWsUrl);
             socketRef.current = socket;
 
             socket.onopen = () => {
@@ -115,7 +120,16 @@ const useChatSocket = (token, onMessage) => {
         return false;
     };
 
-    return { isConnected, sendMessage };
+    const joinChat = (chatId) => {
+        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+            socketRef.current.send(JSON.stringify({
+                action: 'join',
+                chatId: chatId
+            }));
+        }
+    };
+
+    return { isConnected, sendMessage, joinChat };
 };
 
 export default useChatSocket;

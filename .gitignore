@@ -60,6 +60,7 @@ temp/
 tmp/
 *.log
 .trae
+**/.vite/
 
 # --- Old files ---
 nginx_vps.conf
