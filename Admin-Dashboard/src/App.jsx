@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useAuth } from "./Context/AuthContext"
 import Header from "./Components/Layout/Header"
 import Sidebar from "./Components/Layout/Sidebar"
@@ -44,6 +44,14 @@ function App() {
             setSideBarCollapsed((v) => !v);
         }
     };
+
+    useEffect(() => {
+        const handlePageChange = (e) => {
+            if (e.detail) setCurrentPage(e.detail);
+        };
+        window.addEventListener('changePage', handlePageChange);
+        return () => window.removeEventListener('changePage', handlePageChange);
+    }, []);
 
     if (loading) {
         return <div className="min-h-screen bg-[#071229] flex items-center justify-center text-blue-500">Loading...</div>;

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Search, Send, MoreVertical, Phone, Video, Paperclip, Smile } from "lucide-react";
+import { Search, Send, MoreVertical, Phone, Video, Paperclip, Smile, ArrowLeft } from "lucide-react";
 import api from "../api/axiosConfig";
 import { useAuth } from "../Context/AuthContext";
 import useChatSocket from "../hooks/useChatSocket";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 const Messages = () => {
     const { user } = useAuth();
@@ -13,6 +13,7 @@ const Messages = () => {
     const [messageInput, setMessageInput] = useState("");
     const [isLoadingChats, setIsLoadingChats] = useState(true);
     const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+    const [showChatOnMobile, setShowChatOnMobile] = useState(false);
     
     // The active chat derived from the list
     const activeChat = chats.find(c => Number(c.id) === Number(selectedChatId));
@@ -22,14 +23,20 @@ const Messages = () => {
 
     const handleSelectChat = useCallback(async (chat) => {
         setSelectedChatId(chat.id);
+        setShowChatOnMobile(true);
         setIsLoadingMessages(true);
         try {
+            // Mark as read on backend
+            await api.patch(`/chats/read/${chat.id}/`);
+            
             const response = await api.get(`/chats/${chat.id}/messages/`);
             const messageData = Array.isArray(response.data) ? response.data : (response.data?.results || []);
 
             setChats(prevChats => prevChats.map(c =>
                 Number(c.id) === Number(chat.id) ? { ...c, messages: messageData, unread: 0, unread_count: 0 } : c
             ));
+            // Trigger global refresh for badges
+            window.dispatchEvent(new CustomEvent('unreadCountRefresh'));
         } catch (error) {
             console.error(`Failed to fetch messages for chat ${chat.id}:`, error);
         } finally {
@@ -45,10 +52,7 @@ const Messages = () => {
                 const response = await api.get('/chats/');
                 const conversationData = Array.isArray(response.data) ? response.data : (response.data?.results || []);
                 setChats(conversationData);
-                if (conversationData.length > 0 && !selectedChatId) {
-                    setSelectedChatId(conversationData[0].id);
-                    handleSelectChat(conversationData[0]);
-                }
+                // Removed auto-selection of first chat
             } catch (error) {
                 console.error("Messages: Failed to fetch conversations", error);
                 if (error.response) {
@@ -117,13 +121,17 @@ const Messages = () => {
                 const updatedChat = {
                     ...existingChat,
                     messages: [...(existingChat.messages || []), newMessage],
-                    lastMessage: text,
+                    last_message: { text }, // Matching backend structure
+                    lastMessage: text,      // Compatibility
                     time: newMessage.time,
                     isTyping: false
                 };
 
                 if (Number(selectedChatId) !== chatId && !isFromMe) {
                     updatedChat.unread = (updatedChat.unread || 0) + 1;
+                    updatedChat.unread_count = (updatedChat.unread_count || 0) + 1;
+                    // Trigger global refresh for header/sidebar badges
+                    window.dispatchEvent(new CustomEvent('unreadCountRefresh'));
                 }
 
                 const newChats = [...prevChats];
@@ -137,13 +145,20 @@ const Messages = () => {
                         || (sender.first_name ? `${sender.first_name} ${sender.last_name}` : 'New Customer'),
                     avatar: cust.profile_picture || sender.profile_picture,
                     customer: cust,
+                    last_message: { text },
                     lastMessage: text,
                     time: newMessage.time,
                     unread: isFromMe ? 0 : 1,
+                    unread_count: isFromMe ? 0 : 1,
                     messages: [newMessage],
                     isTyping: false,
                     participants: sender.id ? [sender] : []
                 };
+
+                if (!isFromMe) {
+                    window.dispatchEvent(new CustomEvent('unreadCountRefresh'));
+                }
+
                 return [newChat, ...prevChats];
             }
         });
@@ -215,9 +230,9 @@ const Messages = () => {
 
     return (
         <div className="h-[calc(100vh-64px)] p-0 sm:px-6 sm:py-4 flex flex-col sm:flex-row gap-4 sm:gap-6">
-            <div className="flex-1 mt-6 flex overflow-hidden bg-[#071229] rounded-2xl border border-slate-800 shadow-2xl">
+            <div className="flex-1 mt-6 flex overflow-hidden bg-[#071229] sm:rounded-2xl border-0 sm:border border-slate-800 shadow-2xl relative">
                 {/* Sidebar */}
-                <div className="w-full md:w-80 border-r border-slate-800 flex flex-col">
+                <div className={`${showChatOnMobile ? 'hidden md:flex' : 'flex'} w-full md:w-80 border-r border-slate-800 flex-col bg-[#071229] transition-all duration-300`}>
                     <div className="p-4 border-b border-slate-800">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -264,13 +279,13 @@ const Messages = () => {
                                             <button
                                                 key={chat.id}
                                                 onClick={() => handleSelectChat(chat)}
-                                                className={`w-full flex items-center gap-3 p-4 hover:bg-slate-800/50 transition-colors border-b border-slate-800/50 ${Number(selectedChatId) === Number(chat.id) ? 'bg-blue-600/10 border-l-4 border-l-blue-600' : ''}`}
+                                                className={`w-full flex items-center gap-3 p-4 hover:bg-slate-800/50 transition-colors border-b border-slate-800/50 cursor-pointer ${Number(selectedChatId) === Number(chat.id) ? 'bg-blue-600/10 border-l-4 border-l-blue-600' : ''}`}
                                             >
                                         <div className="relative">
                                             <img 
                                                 src={displayAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff`} 
                                                 alt={displayName} 
-                                                className="w-12 h-12 rounded-xl object-cover border border-slate-700" 
+                                                className="w-12 h-12 rounded-xl object-cover border border-slate-700 cursor-pointer" 
                                             />
                                             <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-[#071229] ${isConnected ? 'bg-green-500' : 'bg-slate-500'}`} />
                                         </div>
@@ -280,7 +295,7 @@ const Messages = () => {
                                                 <span className="text-[10px] text-slate-500 whitespace-nowrap">{chat.time}</span>
                                             </div>
                                             <p className={`text-xs truncate ${chat.isTyping ? 'text-green-500 font-bold' : 'text-slate-400'}`}>
-                                                {chat.isTyping ? 'Typing...' : (typeof chat.lastMessage === 'object' ? chat.lastMessage?.text : chat.lastMessage)}
+                                                {chat.isTyping ? 'Typing...' : (chat.last_message?.text || chat.last_message || chat.lastMessage)}
                                             </p>
                                         </div>
                                         {chat.unread > 0 && (
@@ -296,12 +311,18 @@ const Messages = () => {
                 </div>
 
                 {/* Chat Window */}
-                <div className="hidden md:flex flex-1 flex-col bg-[#0b1326]">
+                <div className={`${showChatOnMobile ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-[#0b1326] transition-all duration-300`}>
                     {activeChat ? (
                         <>
                             {/* Chat Header */}
                             <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-[#071229]">
                                 <div className="flex items-center gap-3">
+                                    <button 
+                                        onClick={() => setShowChatOnMobile(false)}
+                                        className="md:hidden p-2 -ml-2 text-slate-400 hover:text-white cursor-pointer"
+                                    >
+                                        <ArrowLeft className="w-5 h-5" />
+                                    </button>
                                     {(() => {
                                         const otherParticipant = activeChat.participants?.find(p => Number(p.id) !== Number(user?.id)) 
                                             || activeChat.customer 
@@ -320,23 +341,29 @@ const Messages = () => {
                                                 <img 
                                                     src={displayAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff`} 
                                                     alt={displayName} 
-                                                    className="w-10 h-10 rounded-xl object-cover border border-slate-700" 
+                                                    className="w-10 h-10 rounded-xl object-cover border border-slate-700 cursor-pointer" 
                                                 />
                                                 <div>
                                                     <h3 className="text-sm font-bold text-white uppercase tracking-tight">{displayName}</h3>
-                                                    <span className={`flex items-center gap-1.5 text-[10px] font-bold uppercase ${isConnected ? 'text-green-500' : 'text-amber-500'}`}>
-                                                        <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`} />
-                                                        {isConnected ? 'Online' : 'Reconnecting...'}
-                                                    </span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`flex items-center gap-1.5 text-[10px] font-bold uppercase ${isConnected ? 'text-green-500' : 'text-amber-500'}`}>
+                                                            <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`} />
+                                                            {isConnected ? 'Online' : 'Reconnecting...'}
+                                                        </span>
+                                                        <span className="text-slate-500 text-[10px]">•</span>
+                                                        <span className="text-slate-500 text-[10px] font-medium">
+                                                            Active {activeChat.time || 'recently'}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </>
                                         );
                                     })()}
                                 </div>
                                 <div className="flex items-center gap-4 text-slate-400">
-                                    <button className="hover:text-blue-500 transition-colors"><Phone className="w-5 h-5" /></button>
-                                    <button className="hover:text-blue-500 transition-colors"><Video className="w-5 h-5" /></button>
-                                    <button className="hover:text-blue-500 transition-colors"><MoreVertical className="w-5 h-5" /></button>
+                                    <button className="hover:text-blue-500 transition-colors cursor-pointer"><Phone className="w-5 h-5" /></button>
+                                    <button className="hover:text-blue-500 transition-colors cursor-pointer"><Video className="w-5 h-5" /></button>
+                                    <button className="hover:text-blue-500 transition-colors cursor-pointer"><MoreVertical className="w-5 h-5" /></button>
                                 </div>
                             </div>
 
@@ -391,8 +418,8 @@ const Messages = () => {
                                     className="flex items-center gap-3 bg-[#0b1a2a] border border-slate-700 rounded-2xl px-4 py-2"
                                     onSubmit={handleSendMessage}
                                 >
-                                    <button type="button" className="text-slate-400 hover:text-blue-500"><Smile className="w-5 h-5" /></button>
-                                    <button type="button" className="text-slate-400 hover:text-blue-500"><Paperclip className="w-5 h-5" /></button>
+                                    <button type="button" className="text-slate-400 hover:text-blue-500 cursor-pointer"><Smile className="w-5 h-5" /></button>
+                                    <button type="button" className="text-slate-400 hover:text-blue-500 cursor-pointer"><Paperclip className="w-5 h-5" /></button>
                                     <input
                                         type="text"
                                         value={messageInput}
