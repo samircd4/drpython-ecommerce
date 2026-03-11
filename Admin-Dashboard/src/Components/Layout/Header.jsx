@@ -9,9 +9,12 @@ import {
     Moon,
     User,
     LogOut,
+    ShoppingCart,
+    MessageSquare,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../../Context/AuthContext";
+import api from "../../api/axiosConfig";
 
 const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
     const { user, logout } = useAuth();
@@ -36,7 +39,49 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
         } catch (e) { }
     }, [theme]);
 
-    const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+    const [showUserDropdown, setShowUserDropdown] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowUserDropdown(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        const fetchUnread = async () => {
+            try {
+                const response = await api.get('/chats/');
+                const chats = Array.isArray(response.data) ? response.data : (response.data?.results || []);
+                const total = chats.reduce((acc, chat) => acc + (chat.unread_count || 0), 0);
+                setUnreadCount(total);
+            } catch (err) {
+                console.error("Header: Failed to fetch unread count", err);
+            }
+        };
+        if (user) fetchUnread();
+        const interval = setInterval(fetchUnread, 30000);
+        return () => clearInterval(interval);
+    }, [user]);
+
+    const handleMarkAllRead = async () => {
+        try {
+            const response = await api.get('/chats/');
+            const chats = Array.isArray(response.data) ? response.data : (response.data?.results || []);
+            const unreadChats = chats.filter(c => c.unread_count > 0);
+            
+            await Promise.all(unreadChats.map(chat => api.patch(`/chats/read/${chat.id}/`)));
+            setUnreadCount(0);
+            window.dispatchEvent(new CustomEvent('unreadCountRefresh'));
+        } catch (err) {
+            console.error("Header: Failed to mark all as read", err);
+        }
+    };
 
     return (
         <div className="relative z-50 shadow-lg backdrop-blur-xl border-b border-slate-800 px-4 sm:px-6 py-2 sm:py-4 h-12 sm:h-16" style={{ backgroundImage: 'linear-gradient(90deg,var(--bg-start),var(--bg-mid),var(--bg-end))' }}>
@@ -82,58 +127,83 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
 
                 {/* Right */}
                 <div className="flex items-center space-x-3">
-                    {/* Quic Action */}
-                    <button className="hidden cursor-pointer lg:flex items-center space-x-2 py-2 px-4 text-slate-100 rounded-xl hover:shadow-lg transition-all" style={{ backgroundImage: 'linear-gradient(90deg,var(--accent-strong-start),var(--accent-strong-end))' }}>
-                        <Plus className="w-4 h-4" />
-                        <span className="text-sm font-medium">New</span>
+                    {/* Cart Icon (Mobile & Desktop) */}
+                    <button className="p-2.5 cursor-pointer rounded-xl text-slate-200 hover:bg-slate-800 transition-colors relative">
+                        <ShoppingCart className="w-5 h-5" />
                     </button>
 
-                    {/* Toggle */}
-                    <button
-                        onClick={toggleTheme}
-                        className="p-2.5 cursor-pointer rounded-xl text-slate-200 hover:bg-slate-800 transition-colors flex items-center justify-center"
-                        aria-label="Toggle theme"
+                    {/* Notification/Messages */}
+                    <button 
+                        onClick={() => {
+                            handleMarkAllRead();
+                            // If you have a prop to change page, you'd call it here. 
+                            // Since Header is inside App, we might need a prop or use window event.
+                            window.dispatchEvent(new CustomEvent('changePage', { detail: 'messages' }));
+                        }}
+                        className="relative p-2.5 cursor-pointer rounded-xl text-slate-200 hover:bg-slate-800 transition-colors"
                     >
-                        {theme === "dark" ? (
-                            <Sun className="w-5 h-5" />
-                        ) : (
-                            <Moon className="w-5 h-5" />
+                        <MessageSquare className="w-5 h-5" />
+                        {unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-slate-100 text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#071229]">
+                                {unreadCount > 99 ? '99+' : unreadCount}
+                            </span>
                         )}
                     </button>
 
-                    {/* Notification */}
-                    <button className="relative p-2.5 cursor-pointer rounded-xl text-slate-200 hover:bg-slate-800 transition-colors">
+                    <button className="relative p-2.5 cursor-pointer rounded-xl text-slate-200 hover:bg-slate-800 transition-colors hidden sm:block">
                         <Bell className="w-5 h-5" />
                         <span className="absolute -top-1 w-5 h-5 bg-red-500 text-slate-100 text-xs rounded-full flex items-center justify-center">
                             3
                         </span>
                     </button>
 
-                    {/* Setting */}
-                    <button className="p-2.5 cursor-pointer rounded-xl text-slate-200 hover:bg-slate-800 transition-colors">
-                        <Settings className="w-5 h-5" />
-                    </button>
-
                     {/* User Profile */}
-                    <div className="flex items-center space-x-3 pl-3 border-l border-slate-700">
-                        <div className="w-8 h-8 rounded-full bg-slate-700 ring-2 ring-[#184a6a] flex items-center justify-center text-slate-200 overflow-hidden">
-                            <User className="w-4 h-4" />
-                        </div>
-                        <div className="hidden md:block">
-                            <p className="text-xs font-bold text-slate-100 uppercase tracking-tight truncate max-w-[100px]">
-                                {user?.name || 'Administrator'}
-                            </p>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest truncate">
-                                {user?.role || 'Super Admin'}
-                            </p>
-                        </div>
-                        <button
-                            onClick={logout}
-                            title="Logout"
-                            className="p-2 ml-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all group shadow-lg shadow-red-500/5 active:scale-95"
+                    <div className="relative" ref={dropdownRef}>
+                        <button 
+                            onClick={() => setShowUserDropdown(!showUserDropdown)}
+                            className="flex items-center space-x-3 pl-3 border-l border-slate-700 cursor-pointer group"
                         >
-                            <LogOut className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                            <div className="w-8 h-8 rounded-full bg-slate-700 ring-2 ring-[#184a6a] flex items-center justify-center text-slate-200 overflow-hidden group-hover:ring-blue-500 transition-all">
+                                <User className="w-4 h-4" />
+                            </div>
+                            <div className="hidden md:block text-left">
+                                <p className="text-xs font-bold text-slate-100 uppercase tracking-tight truncate max-w-[100px]">
+                                    {user?.name || 'Administrator'}
+                                </p>
+                                <div className="flex items-center">
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest truncate">
+                                        {user?.role || 'Super Admin'}
+                                    </p>
+                                    <ChevronDown className={`w-3 h-3 ml-1 text-slate-500 transition-transform ${showUserDropdown ? 'rotate-180' : ''}`} />
+                                </div>
+                            </div>
                         </button>
+
+                        {showUserDropdown && (
+                            <div className="absolute right-0 mt-3 w-48 bg-[#0b1a2a] border border-slate-800 rounded-xl shadow-2xl py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
+                                <button 
+                                    onClick={() => {
+                                        window.dispatchEvent(new CustomEvent('changePage', { detail: 'settings' }));
+                                        setShowUserDropdown(false);
+                                    }}
+                                    className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 transition-colors cursor-pointer"
+                                >
+                                    <Settings className="w-4 h-4" />
+                                    <span>Settings</span>
+                                </button>
+                                <div className="h-px bg-slate-800 my-1 mx-2" />
+                                <button 
+                                    onClick={() => {
+                                        logout();
+                                        setShowUserDropdown(false);
+                                    }}
+                                    className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    <span>Logout</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

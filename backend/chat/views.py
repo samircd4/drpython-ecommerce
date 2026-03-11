@@ -43,3 +43,29 @@ class CustomerChatView(generics.GenericAPIView):
             return Response(serializer.data)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+from rest_framework.views import APIView
+
+class MarkAsReadAPIView(APIView):
+    """
+    Mark all unread messages in a conversation as read.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request, pk, *args, **kwargs):
+        try:
+            conversation = Conversation.objects.get(pk=pk)
+            
+            # Security: Allow staff or the customer who owns the chat
+            if not request.user.is_staff and conversation.customer != request.user:
+                return Response({"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN)
+
+            # Update messages sent by OTHERS
+            Message.objects.filter(
+                conversation=conversation, 
+                is_read=False
+            ).exclude(sender=request.user).update(is_read=True)
+
+            return Response({"status": "Marked as read", "conversation_id": pk}, status=status.HTTP_200_OK)
+        except Conversation.DoesNotExist:
+            return Response({"detail": "Conversation not found"}, status=status.HTTP_404_NOT_FOUND)

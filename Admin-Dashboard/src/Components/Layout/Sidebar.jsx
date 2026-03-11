@@ -81,9 +81,15 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
         };
         if (user) fetchUnread();
         
+        const handleRefresh = () => fetchUnread();
+        window.addEventListener('unreadCountRefresh', handleRefresh);
+        
         // Refresh every minute
         const interval = setInterval(fetchUnread, 60000);
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('unreadCountRefresh', handleRefresh);
+        };
     }, [user]);
 
     // On small screens the sidebar becomes a slide-over overlay (no page shift).
