@@ -37,6 +37,7 @@ loc → dev → prod
 |------------------|----------|-----------|
 | Backend (API)    | `8000`   | `8001`    |
 | Frontend (Nginx) | `9090`   | `8081`    |
+| Admin Dashboard  | `9091`   | `8082`    |
 
 ---
 
@@ -130,6 +131,19 @@ cp /root/sarker_dev/nginx/dev.sarker.shop.conf /etc/nginx/sites-available/dev.sa
 ln -s /etc/nginx/sites-available/dev.sarker.shop /etc/nginx/sites-enabled/
 
 # Test and reload
+nginx -t && systemctl reload nginx
+
+# For admin.sarker.shop
+cp /root/sarker_prod/nginx/admin.sarker.shop.conf /etc/nginx/sites-available/admin.sarker.shop
+ln -s /etc/nginx/sites-available/admin.sarker.shop /etc/nginx/sites-enabled/
+certbot --nginx -d admin.sarker.shop
+
+# For dev-admin.sarker.shop
+cp /root/sarker_dev/nginx/dev-admin.sarker.shop.conf /etc/nginx/sites-available/dev-admin.sarker.shop
+ln -s /etc/nginx/sites-available/dev-admin.sarker.shop /etc/nginx/sites-enabled/
+certbot --nginx -d dev-admin.sarker.shop
+
+# Final reload
 nginx -t && systemctl reload nginx
 ```
 
