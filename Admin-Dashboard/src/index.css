@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+	--bg-start: #05122a;
+	--bg-mid: #07142f;
+	--bg-end: #08172f;
+	--accent-1: #0b2b4a;
+	--accent-2: #07243e;
+	--accent-strong-start: #0b3a61;
+	--accent-strong-end: #072b55;
+	--muted: #0b1a2a;
+	--ring: #184a6a;
+}
+
+/* Utility to hide scrollbars across browsers */
+.no-scrollbar {
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+	display: none; /* Chrome, Safari, Opera */
+}

@@ -84,6 +84,19 @@ services:
     depends_on:
       - backend
 
+  admin_dashboard:
+    build:
+      context: ./Admin-Dashboard
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=${VITE_API_URL}
+        - VITE_WS_URL=${VITE_WS_URL}
+    restart: always
+    ports:
+      - "${ADMIN_PORT:-9091}:80"
+    depends_on:
+      - backend
+
 volumes:
   dev_postgres_data:
   dev_static:

@@ -1,0 +1,52 @@
+{
+    "monthlyStats": [
+        {
+            "month": "Jan",
+            "sales": 4000,
+            "profit": 2400
+        },
+        {
+            "month": "Feb",
+            "sales": 3000,
+            "profit": 1398
+        },
+        {
+            "month": "Mar",
+            "sales": 2000,
+            "profit": 9800
+        },
+        {
+            "month": "Apr",
+            "sales": 2780,
+            "profit": 3908
+        },
+        {
+            "month": "May",
+            "sales": 1890,
+            "profit": 4800
+        },
+        {
+            "month": "Jun",
+            "sales": 2390,
+            "profit": 3800
+        }
+    ],
+    "categories": [
+        {
+            "name": "Electronics",
+            "value": 45
+        },
+        {
+            "name": "Fashion",
+            "value": 30
+        },
+        {
+            "name": "Beauty",
+            "value": 15
+        },
+        {
+            "name": "Home",
+            "value": 10
+        }
+    ]
+}

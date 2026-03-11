@@ -1,0 +1,62 @@
+[
+    {
+        "id": "R001",
+        "user": "Miron Mahmud",
+        "userImage": "https://i.pravatar.cc/150?u=miron",
+        "product": "Wireless Headphones",
+        "rating": 5,
+        "comment": "Amazing sound quality and battery life! Highly recommend.",
+        "status": "Published",
+        "date": "2024-03-10 10:30"
+    },
+    {
+        "id": "R002",
+        "user": "Tahmina Bonny",
+        "userImage": "https://i.pravatar.cc/150?u=tahmina",
+        "product": "Smartphone",
+        "rating": 4,
+        "comment": "Good phone, but the battery could be better. Camera is top notch.",
+        "status": "Published",
+        "date": "2024-03-09 14:15"
+    },
+    {
+        "id": "R003",
+        "user": "Labonno Khan",
+        "userImage": "https://i.pravatar.cc/150?u=labonno",
+        "product": "Laptop",
+        "rating": 5,
+        "comment": "A powerhouse for work and play. The screen is gorgeous.",
+        "status": "Pending",
+        "date": "2024-03-08 11:00"
+    },
+    {
+        "id": "R004",
+        "user": "Sheikh Adabali",
+        "userImage": "https://i.pravatar.cc/150?u=sheikh",
+        "product": "Smart Watch",
+        "rating": 3,
+        "comment": "Nice features but the strap is a bit uncomfortable.",
+        "status": "Published",
+        "date": "2024-03-07 16:45"
+    },
+    {
+        "id": "R005",
+        "user": "Johara Khatun",
+        "userImage": "https://i.pravatar.cc/150?u=johara",
+        "product": "Bluetooth Speaker",
+        "rating": 5,
+        "comment": "Small but mighty! Deep bass and clear highs.",
+        "status": "Published",
+        "date": "2024-03-06 09:20"
+    },
+    {
+        "id": "R006",
+        "user": "Kurulus Osman",
+        "userImage": "https://i.pravatar.cc/150?u=osman",
+        "product": "Gaming Mouse",
+        "rating": 4,
+        "comment": "Fast and responsive. Fits well in the hand.",
+        "status": "Hidden",
+        "date": "2024-03-05 20:10"
+    }
+]
