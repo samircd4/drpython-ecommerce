@@ -1,0 +1,16 @@
+[
+    {
+        "id": "C001",
+        "name": "John Doe",
+        "email": "john@example.com",
+        "orders": 5,
+        "totalSpent": 1250.50
+    },
+    {
+        "id": "C002",
+        "name": "Jane Smith",
+        "email": "jane@example.com",
+        "orders": 3,
+        "totalSpent": 850.75
+    }
+]

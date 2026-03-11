@@ -1,0 +1,38 @@
+[
+    {
+        "id": "U001",
+        "name": "Samir Ahmed",
+        "email": "samir@example.com",
+        "image": "https://i.pravatar.cc/150?u=samir",
+        "role": "Super Admin",
+        "status": "Active",
+        "lastActive": "2 mins ago"
+    },
+    {
+        "id": "U002",
+        "name": "Plabon Das",
+        "email": "plabon@example.com",
+        "image": "https://i.pravatar.cc/150?u=plabon",
+        "role": "MERN Developer",
+        "status": "Active",
+        "lastActive": "10 mins ago"
+    },
+    {
+        "id": "U003",
+        "name": "Chayan Sarker",
+        "email": "chayan@example.com",
+        "image": "https://i.pravatar.cc/150?u=chayan",
+        "role": "Senior Developer",
+        "status": "Inactive",
+        "lastActive": "1 day ago"
+    },
+    {
+        "id": "U004",
+        "name": "Nilesh Kumar",
+        "email": "nilesh@example.com",
+        "image": "https://i.pravatar.cc/150?u=nilesh",
+        "role": "Designer",
+        "status": "Active",
+        "lastActive": "5 mins ago"
+    }
+]

@@ -1,0 +1,49 @@
+[
+    {
+        "id": 1,
+        "name": "Miron Mahmud",
+        "avatar": "https://i.pravatar.cc/150?u=miron",
+        "lastMessage": "Hey, is the new inventory updated?",
+        "time": "10:30 AM",
+        "unread": 2,
+        "messages": [
+            {
+                "id": 1,
+                "sender": "them",
+                "text": "Hey, is the new inventory updated?",
+                "time": "10:28 AM"
+            },
+            {
+                "id": 2,
+                "sender": "me",
+                "text": "Almost ready, just checking the last batch.",
+                "time": "10:30 AM"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Tahmina Bonny",
+        "avatar": "https://i.pravatar.cc/150?u=tahmina",
+        "lastMessage": "The monthly report looks great!",
+        "time": "Yesterday",
+        "unread": 0,
+        "messages": [
+            {
+                "id": 1,
+                "sender": "them",
+                "text": "The monthly report looks great!",
+                "time": "Yesterday"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Labonno Khan",
+        "avatar": "https://i.pravatar.cc/150?u=labonno",
+        "lastMessage": "Can we schedule a meeting for tomorrow?",
+        "time": "2 days ago",
+        "unread": 0,
+        "messages": []
+    }
+]

@@ -1,0 +1,42 @@
+[
+    {
+        "id": "INV001",
+        "productName": "Wireless Headphones",
+        "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop",
+        "category": "Electronics",
+        "stockLevel": 150,
+        "minStock": 20,
+        "status": "In Stock",
+        "location": "Warehouse A"
+    },
+    {
+        "id": "INV002",
+        "productName": "Smartphone",
+        "image": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100&h=100&fit=crop",
+        "category": "Mobile",
+        "stockLevel": 8,
+        "minStock": 15,
+        "status": "Low Stock",
+        "location": "Warehouse B"
+    },
+    {
+        "id": "INV003",
+        "productName": "Laptop",
+        "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=100&h=100&fit=crop",
+        "category": "Computers",
+        "stockLevel": 0,
+        "minStock": 10,
+        "status": "Out of Stock",
+        "location": "Warehouse A"
+    },
+    {
+        "id": "INV004",
+        "productName": "Smart Watch",
+        "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop",
+        "category": "Wearables",
+        "stockLevel": 200,
+        "minStock": 50,
+        "status": "In Stock",
+        "location": "Warehouse C"
+    }
+]
