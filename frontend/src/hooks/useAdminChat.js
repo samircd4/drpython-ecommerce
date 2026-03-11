@@ -93,7 +93,7 @@ export const useAdminChat = () => {
                         return [...prev, {
                             id: data.id,
                             text: data.text,
-                            from: data.sender === 'admin' ? 'admin' : 'user',
+                            from: data.sender?.role === 'admin' ? 'admin' : 'user',
                             time: data.time
                         }];
                     });

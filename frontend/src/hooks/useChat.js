@@ -86,7 +86,7 @@ export const useChat = () => {
         socket.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
-                const isMe = data.senderEmail === user.email;
+                const isMe = data.sender?.email === user.email;
                 
                 setMessages(prev => {
                     // Avoid duplicates if we just sent it
