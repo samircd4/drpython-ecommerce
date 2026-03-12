@@ -32,6 +32,15 @@ function App() {
     const [sideBarOpen, setSideBarOpen] = useState(false)
     const [currentpage, setCurrentPage] = useState("dashboard")
     const [authPage, setAuthPage] = useState('login'); // 'login', 'register', 'forgot'
+    const [hideLayout, setHideLayout] = useState(false);
+
+    useEffect(() => {
+        const handleToggleLayout = (e) => {
+            setHideLayout(!!e.detail);
+        };
+        window.addEventListener('toggleLayout', handleToggleLayout);
+        return () => window.removeEventListener('toggleLayout', handleToggleLayout);
+    }, []);
 
     const handleToggleSidebar = () => {
         try {
@@ -66,21 +75,27 @@ function App() {
     return (
         <div className="min-h-screen bg-[#071229] transition-all duration-500 text-slate-200">
             <div className="flex flex-col h-screen">
-                <Header SidebarCollapsed={sideBarCollapsed} onToggleSidebar={handleToggleSidebar} />
+                {!hideLayout && (
+                    <Header SidebarCollapsed={sideBarCollapsed} onToggleSidebar={handleToggleSidebar} />
+                )}
 
-                <div className="flex flex-1 overflow-hidden">
-                    <div
-                        className={`fixed inset-0 bg-black/50 z-30 sm:hidden ${sideBarOpen ? 'block' : 'hidden'}`}
-                        onClick={() => setSideBarOpen(false)}
-                    />
+                <div className={`flex flex-1 overflow-hidden ${hideLayout ? 'h-full' : ''}`}>
+                    {!hideLayout && (
+                        <>
+                            <div
+                                className={`fixed inset-0 bg-black/50 z-30 sm:hidden ${sideBarOpen ? 'block' : 'hidden'}`}
+                                onClick={() => setSideBarOpen(false)}
+                            />
 
-                    <Sidebar
-                        collapsed={sideBarCollapsed}
-                        mobileOpen={sideBarOpen}
-                        onToggle={() => setSideBarCollapsed(!sideBarCollapsed)}
-                        currentPage={currentpage}
-                        onPageChange={(id) => { setCurrentPage(id); }}
-                    />
+                            <Sidebar
+                                collapsed={sideBarCollapsed}
+                                mobileOpen={sideBarOpen}
+                                onToggle={() => setSideBarCollapsed(!sideBarCollapsed)}
+                                currentPage={currentpage}
+                                onPageChange={(id) => { setCurrentPage(id); }}
+                            />
+                        </>
+                    )}
                     <div className="flex-1 flex flex-col overflow-hidden border-l border-slate-800">
                         <div className="flex-1 overflow-auto">
                             {(() => {

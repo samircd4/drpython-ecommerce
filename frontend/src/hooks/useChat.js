@@ -38,6 +38,10 @@ export const useChat = () => {
             setMessages(historyList.map(msg => ({
                 id: msg.id,
                 text: msg.text,
+                image: msg.image,
+                video: msg.video,
+                parent_message_id: msg.parent_message_id,
+                reactions: msg.reactions || {},
                 from: msg.sender?.email === user.email ? 'user' : 'support',
                 time: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             })));
@@ -86,19 +90,35 @@ export const useChat = () => {
         socket.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
-                const isMe = data.sender?.email === user.email;
-                
-                setMessages(prev => {
-                    // Avoid duplicates if we just sent it
-                    if (prev.find(m => m.id === data.id)) return prev;
+                const type = data.type;
+
+                if (type === 'reaction_update') {
+                    setMessages(prev => prev.map(msg => 
+                        Number(msg.id) === Number(data.message_id) ? { ...msg, reactions: data.reactions } : msg
+                    ));
+                    return;
+                }
+
+                if (type === 'chat_message' || !type) {
+                    const msgData = data.message || data;
+                    const isMe = msgData.sender?.email === user.email;
                     
-                    return [...prev, {
-                        id: data.id,
-                        text: data.text,
-                        from: isMe ? 'user' : 'support',
-                        time: data.time
-                    }];
-                });
+                    setMessages(prev => {
+                        // Avoid duplicates
+                        if (prev.find(m => m.id === msgData.id)) return prev;
+                        
+                        return [...prev, {
+                            id: msgData.id,
+                            text: msgData.text,
+                            image: msgData.image,
+                            video: msgData.video,
+                            parent_message_id: msgData.parent_message_id,
+                            reactions: msgData.reactions || {},
+                            from: isMe ? 'user' : 'support',
+                            time: msgData.time
+                        }];
+                    });
+                }
             } catch (e) {
                 console.error("Failed to parse WebSocket message:", e);
             }
@@ -120,12 +140,13 @@ export const useChat = () => {
         };
     }, [conversation, user]);
 
-    const sendMessage = (text) => {
+    const sendMessage = (payload) => {
         if (socketRef.current && isConnected && conversation) {
-            socketRef.current.send(JSON.stringify({
-                chatId: conversation.id,
-                text: text
-            }));
+            const data = typeof payload === 'string' 
+                ? { type: 'chat_message', chatId: conversation.id, text: payload }
+                : { ...payload, chatId: conversation.id };
+            
+            socketRef.current.send(JSON.stringify(data));
             return true;
         }
         console.warn("Cannot send message: socket not connected or no conversation");
