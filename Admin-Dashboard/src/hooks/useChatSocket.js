@@ -111,9 +111,8 @@ const useChatSocket = (token, onMessage) => {
     const sendMessage = (messageData) => {
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
             socketRef.current.send(JSON.stringify({
-                type: messageData.type || 'chat_message',
                 ...messageData,
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                time: new Date().toISOString() // Let backend handle formatting, but send ISO for sync if needed
             }));
             return true;
         }

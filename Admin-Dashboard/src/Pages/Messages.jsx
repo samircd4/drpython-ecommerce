@@ -15,6 +15,27 @@ const Messages = () => {
     const [isLoadingMessages, setIsLoadingMessages] = useState(false);
     const [showChatOnMobile, setShowChatOnMobile] = useState(false);
     
+    // Timezone helper: Asia/Dhaka 12-hour format
+    const formatLocalTime = (date = new Date()) => {
+        return date.toLocaleTimeString('en-US', { 
+            timeZone: 'Asia/Dhaka', 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: true 
+        });
+    };
+
+    // Layout visibility control
+    useEffect(() => {
+        // When showChatOnMobile is true OR selectedChatId exists on mobile/narrow view
+        const shouldHide = showChatOnMobile;
+        window.dispatchEvent(new CustomEvent('toggleLayout', { detail: shouldHide }));
+        
+        return () => {
+            window.dispatchEvent(new CustomEvent('toggleLayout', { detail: false }));
+        };
+    }, [showChatOnMobile]);
+
     // The active chat derived from the list
     const activeChat = chats.find(c => Number(c.id) === Number(selectedChatId));
     const isTyping = activeChat?.isTyping || false;
@@ -51,20 +72,22 @@ const Messages = () => {
             try {
                 const response = await api.get('/chats/');
                 const conversationData = Array.isArray(response.data) ? response.data : (response.data?.results || []);
-                setChats(conversationData);
-                // Removed auto-selection of first chat
+                
+                // Format times for initial load
+                const formatted = conversationData.map(chat => ({
+                    ...chat,
+                    time: chat.updated_at ? formatLocalTime(new Date(chat.updated_at)) : chat.time
+                }));
+                
+                setChats(formatted);
             } catch (error) {
                 console.error("Messages: Failed to fetch conversations", error);
-                if (error.response) {
-                    console.error("Data:", error.response.data);
-                    console.error("Status:", error.response.status);
-                }
             } finally {
                 setIsLoadingChats(false);
             }
         };
         fetchConversations();
-    }, [handleSelectChat]);
+    }, []);
 
     // Auto-scroll to bottom of chat
     const scrollToBottom = () => {
@@ -74,104 +97,126 @@ const Messages = () => {
     useEffect(() => {
         scrollToBottom();
     }, [activeChat?.messages]);
+
     // Handle incoming WebSocket messages via callback
     const handleWebSocketMessage = useCallback((message) => {
         if (!message) return;
 
-        const chatId = Number(message.chatId || message.conversation || message.id);
         const type = message.type || 'chat_message';
-        const sender = message.sender || {};
-        const text = message.text || "";
-        const sender_id = Number(sender.id || message.sender_id);
         
-        if (!chatId) return;
+        // 1. Handle User Status Changes (Presence)
+        if (type === 'user_status') {
+            const { user_id, is_online } = message;
+            setChats(prev => prev.map(chat => {
+                const cust = chat.customer || {};
+                const other = chat.participants?.find(p => Number(p.id) !== Number(user?.id)) || chat.target_user || {};
+                const otherId = Number(cust.id || other.id || other.user_id);
+                
+                if (otherId === Number(user_id)) {
+                    return { ...chat, isOnline: is_online };
+                }
+                return chat;
+            }));
+            return;
+        }
 
+        // 2. Handle Typing indicators
         if (type === 'typing') {
-            const isTargetTyping = message.isTyping !== undefined ? message.isTyping : (message.typing !== undefined ? message.typing : message.is_typing);
-            setChats(prevChats => prevChats.map(chat => 
-                Number(chat.id) === chatId ? { ...chat, isTyping: !!isTargetTyping } : chat
+            const chatId = Number(message.chatId);
+            const senderId = Number(message.sender_id);
+            if (senderId === Number(user?.id)) return; // Ignore my own typing events
+
+            setChats(prev => prev.map(chat => 
+                Number(chat.id) === chatId ? { ...chat, isTyping: !!message.isTyping } : chat
             ));
             return;
         }
 
-        const currentUserId = Number(user?.id);
-        const isFromMe = sender_id === currentUserId;
-
-        const newMessage = { 
-            id: message.id || Date.now(), 
-            sender: sender.id ? sender : { id: sender_id },
-            text, 
-            time: message.time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            timestamp: message.timestamp || new Date().toISOString()
-        };
-
-        setChats(prevChats => {
-            const chatIndex = prevChats.findIndex(c => Number(c.id) === chatId);
+        // 3. Handle actual chat messages
+        if (type === 'chat_message' || !type) {
+            const chatId = Number(message.chatId || message.conversation || message.id);
+            const sender = message.sender || {};
+            const text = message.text || "";
+            const sender_id = Number(sender.id || message.sender_id);
             
-            if (chatIndex !== -1) {
-                const existingChat = prevChats[chatIndex];
+            if (!chatId) return;
+
+            const currentUserId = Number(user?.id);
+            const isFromMe = sender_id === currentUserId;
+
+            const newMessage = { 
+                id: message.id || Date.now(), 
+                sender: sender.id ? sender : { id: sender_id },
+                text, 
+                time: message.time || formatLocalTime(message.timestamp ? new Date(message.timestamp) : new Date()),
+                timestamp: message.timestamp || new Date().toISOString()
+            };
+
+            setChats(prevChats => {
+                const chatIndex = prevChats.findIndex(c => Number(c.id) === chatId);
                 
-                const isDuplicate = existingChat.messages?.some(m => 
-                    (m.id === newMessage.id) || 
-                    (isFromMe && m.text === newMessage.text && Math.abs(new Date(m.timestamp || Date.now()) - new Date(newMessage.timestamp)) < 2000)
-                );
+                if (chatIndex !== -1) {
+                    const existingChat = prevChats[chatIndex];
+                    
+                    const isDuplicate = existingChat.messages?.some(m => 
+                        (m.id === newMessage.id) || 
+                        (isFromMe && m.text === newMessage.text && Math.abs(new Date(m.timestamp || Date.now()) - new Date(newMessage.timestamp)) < 2000)
+                    );
 
-                if (isDuplicate && isFromMe) return prevChats;
+                    if (isDuplicate && isFromMe) return prevChats;
 
-                const updatedChat = {
-                    ...existingChat,
-                    messages: [...(existingChat.messages || []), newMessage],
-                    last_message: { text }, // Matching backend structure
-                    lastMessage: text,      // Compatibility
-                    time: newMessage.time,
-                    isTyping: false
-                };
+                    const updatedChat = {
+                        ...existingChat,
+                        messages: [...(existingChat.messages || []), newMessage],
+                        last_message: { text },
+                        lastMessage: text,
+                        time: newMessage.time,
+                        isTyping: false
+                    };
 
-                if (Number(selectedChatId) !== chatId && !isFromMe) {
-                    updatedChat.unread = (updatedChat.unread || 0) + 1;
-                    updatedChat.unread_count = (updatedChat.unread_count || 0) + 1;
-                    // Trigger global refresh for header/sidebar badges
-                    window.dispatchEvent(new CustomEvent('unreadCountRefresh'));
+                    if (Number(selectedChatId) !== chatId && !isFromMe) {
+                        updatedChat.unread = (updatedChat.unread || 0) + 1;
+                        updatedChat.unread_count = (updatedChat.unread_count || 0) + 1;
+                        window.dispatchEvent(new CustomEvent('unreadCountRefresh'));
+                    }
+
+                    const newChats = [...prevChats];
+                    newChats.splice(chatIndex, 1);
+                    return [updatedChat, ...newChats];
+                } else {
+                    const cust = message.customer || {};
+                    const newChat = {
+                        id: chatId,
+                        name: (cust.first_name ? `${cust.first_name} ${cust.last_name}` : null) 
+                            || (sender.first_name ? `${sender.first_name} ${sender.last_name}` : 'New Customer'),
+                        avatar: cust.profile_picture || sender.profile_picture,
+                        customer: cust,
+                        last_message: { text },
+                        lastMessage: text,
+                        time: newMessage.time,
+                        unread: isFromMe ? 0 : 1,
+                        unread_count: isFromMe ? 0 : 1,
+                        messages: [newMessage],
+                        isTyping: false,
+                        isOnline: true, // If we just got a message, they are online
+                        participants: sender.id ? [sender] : []
+                    };
+
+                    if (!isFromMe) window.dispatchEvent(new CustomEvent('unreadCountRefresh'));
+                    return [newChat, ...prevChats];
                 }
-
-                const newChats = [...prevChats];
-                newChats.splice(chatIndex, 1);
-                return [updatedChat, ...newChats];
-            } else {
-                const cust = message.customer || {};
-                const newChat = {
-                    id: chatId,
-                    name: (cust.first_name ? `${cust.first_name} ${cust.last_name}` : null) 
-                        || (sender.first_name ? `${sender.first_name} ${sender.last_name}` : 'New Customer'),
-                    avatar: cust.profile_picture || sender.profile_picture,
-                    customer: cust,
-                    last_message: { text },
-                    lastMessage: text,
-                    time: newMessage.time,
-                    unread: isFromMe ? 0 : 1,
-                    unread_count: isFromMe ? 0 : 1,
-                    messages: [newMessage],
-                    isTyping: false,
-                    participants: sender.id ? [sender] : []
-                };
-
-                if (!isFromMe) {
-                    window.dispatchEvent(new CustomEvent('unreadCountRefresh'));
-                }
-
-                return [newChat, ...prevChats];
-            }
-        });
+            });
+        }
     }, [user?.id, selectedChatId]);
 
     const { isConnected, sendMessage, joinChat } = useChatSocket(token, handleWebSocketMessage);
 
-    // Join specific room when chat is selected
+    // Join rooms when connected or list updates
     useEffect(() => {
-        if (isConnected && selectedChatId) {
-            joinChat(selectedChatId);
+        if (isConnected && chats.length > 0) {
+            chats.forEach(chat => joinChat(chat.id));
         }
-    }, [isConnected, selectedChatId, joinChat]);
+    }, [isConnected, chats.length, joinChat]);
 
     const handleSendMessage = (e) => {
         e.preventDefault();
@@ -180,18 +225,18 @@ const Messages = () => {
         const messageData = {
             chatId: selectedChatId,
             text: messageInput,
-            sender_id: user.id
         };
 
         const sent = sendMessage(messageData);
 
         if (sent) {
-            const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const now = formatLocalTime();
             const newMessage = { 
                 id: Date.now(), 
                 text: messageInput, 
                 sender: { id: user.id, first_name: user.first_name, last_name: user.last_name },
-                time: now 
+                time: now,
+                timestamp: new Date().toISOString()
             };
 
             setChats(prevChats => {
@@ -203,6 +248,7 @@ const Messages = () => {
                     ...existingChat,
                     messages: [...(existingChat.messages || []), newMessage],
                     lastMessage: messageInput,
+                    last_message: { text: messageInput },
                     time: now
                 };
 
@@ -253,13 +299,11 @@ const Messages = () => {
                             <div className="p-8 text-center text-slate-500 text-sm">No conversations found.</div>
                         ) : (
                             chats.map((chat) => {
-                                // Derive contact name/avatar - support participants, target_user, or customer field
                                 const cust = chat.customer || {};
                                 const otherParticipant = chat.participants?.find(p => Number(p.id) !== Number(user?.id)) 
                                     || chat.target_user 
                                     || {};
                                 
-                                // Robust name finding
                                 const displayName = chat.name 
                                     || (cust.full_name)
                                     || (cust.first_name ? `${cust.first_name} ${cust.last_name}` : null)
@@ -271,23 +315,20 @@ const Messages = () => {
                                     
                                 const displayAvatar = chat.avatar || cust.profile_picture || otherParticipant.profile_picture;
 
-                                if (displayName === 'Customer') {
-                                    console.log(`🔍 [UI] Chat ${chat.id} defaulting to 'Customer'. Data:`, { chat, otherParticipant });
-                                }
-
                                 return (
-                                            <button
-                                                key={chat.id}
-                                                onClick={() => handleSelectChat(chat)}
-                                                className={`w-full flex items-center gap-3 p-4 hover:bg-slate-800/50 transition-colors border-b border-slate-800/50 cursor-pointer ${Number(selectedChatId) === Number(chat.id) ? 'bg-blue-600/10 border-l-4 border-l-blue-600' : ''}`}
-                                            >
+                                    <button
+                                        key={chat.id}
+                                        onClick={() => handleSelectChat(chat)}
+                                        className={`w-full flex items-center gap-3 p-4 hover:bg-slate-800/50 transition-colors border-b border-slate-800/50 cursor-pointer ${Number(selectedChatId) === Number(chat.id) ? 'bg-blue-600/10 border-l-4 border-l-blue-600' : ''}`}
+                                    >
                                         <div className="relative">
                                             <img 
                                                 src={displayAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff`} 
                                                 alt={displayName} 
                                                 className="w-12 h-12 rounded-xl object-cover border border-slate-700 cursor-pointer" 
                                             />
-                                            <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-[#071229] ${isConnected ? 'bg-green-500' : 'bg-slate-500'}`} />
+                                            {/* Presence indicator: Individual user status */}
+                                            <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-[#071229] ${chat.isOnline ? 'bg-green-500' : 'bg-slate-500'}`} />
                                         </div>
                                         <div className="flex-1 text-left overflow-hidden">
                                             <div className="flex items-center justify-between mb-1">
@@ -295,12 +336,12 @@ const Messages = () => {
                                                 <span className="text-[10px] text-slate-500 whitespace-nowrap">{chat.time}</span>
                                             </div>
                                             <p className={`text-xs truncate ${chat.isTyping ? 'text-green-500 font-bold' : 'text-slate-400'}`}>
-                                                {chat.isTyping ? 'Typing...' : (chat.last_message?.text || chat.last_message || chat.lastMessage)}
+                                                {chat.isTyping ? 'Typing...' : (chat.last_message?.text || chat.lastMessage)}
                                             </p>
                                         </div>
-                                        {chat.unread > 0 && (
+                                        {chat.unread_count > 0 && (
                                             <span className="bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                                                {chat.unread}
+                                                {chat.unread_count}
                                             </span>
                                         )}
                                     </button>
@@ -324,8 +365,9 @@ const Messages = () => {
                                         <ArrowLeft className="w-5 h-5" />
                                     </button>
                                     {(() => {
+                                        const cust = activeChat.customer || {};
                                         const otherParticipant = activeChat.participants?.find(p => Number(p.id) !== Number(user?.id)) 
-                                            || activeChat.customer 
+                                            || cust 
                                             || activeChat.target_user 
                                             || {};
                                         
@@ -346,13 +388,13 @@ const Messages = () => {
                                                 <div>
                                                     <h3 className="text-sm font-bold text-white uppercase tracking-tight">{displayName}</h3>
                                                     <div className="flex items-center gap-2">
-                                                        <span className={`flex items-center gap-1.5 text-[10px] font-bold uppercase ${isConnected ? 'text-green-500' : 'text-amber-500'}`}>
-                                                            <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`} />
-                                                            {isConnected ? 'Online' : 'Reconnecting...'}
+                                                        <span className={`flex items-center gap-1.5 text-[10px] font-bold uppercase ${activeChat.isOnline ? 'text-green-500' : 'text-slate-500'}`}>
+                                                            <span className={`w-1.5 h-1.5 rounded-full ${activeChat.isOnline ? 'bg-green-500 animate-pulse' : 'bg-slate-500'}`} />
+                                                            {activeChat.isOnline ? 'Online' : 'Offline'}
                                                         </span>
                                                         <span className="text-slate-500 text-[10px]">•</span>
                                                         <span className="text-slate-500 text-[10px] font-medium">
-                                                            Active {activeChat.time || 'recently'}
+                                                            Last active {activeChat.time || 'recently'}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -388,7 +430,7 @@ const Messages = () => {
                                                         {!isMe && <p className="text-[10px] font-bold text-blue-500 mb-1">{senderName}</p>}
                                                         <p className="text-sm">{msg.text}</p>
                                                         <span className={`text-[10px] block mt-1 ${isMe ? 'text-blue-200' : 'text-slate-500'}`}>
-                                                            {msg.time || (msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '')}
+                                                            {msg.time}
                                                         </span>
                                                     </div>
                                                 </div>
