@@ -12,6 +12,10 @@ const SupportChat = ({ onClose }) => {
     const { messages: serverMessages, sendMessage, isConnected, loading } = useChat();
     const [input, setInput] = useState("");
     const [replyTo, setReplyTo] = useState(null);
+    
+    // Mobile Touch/Long-Press State
+    const [longPressedMsgId, setLongPressedMsgId] = useState(null);
+    const touchTimeoutRef = useRef(null);
     const messagesEndRef = useRef(null);
     const fileInputRef = useRef(null);
 
@@ -151,7 +155,35 @@ const SupportChat = ({ onClose }) => {
                         <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full" />
                     </div>
                 ) : (
-                    displayMessages.filter(msg => msg.text || msg.image || msg.video).map((msg, idx) => (
+                    displayMessages.filter(msg => msg.text || msg.image || msg.video).map((msg, idx) => {
+                        const isLongPressed = longPressedMsgId === msg.id;
+
+                        // Touch Handlers for Mobile Long Press
+                        const handleTouchStart = () => {
+                            if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+                            touchTimeoutRef.current = setTimeout(() => {
+                                setLongPressedMsgId(msg.id);
+                            }, 500); // 500ms long press
+                        };
+                        const handleTouchEnd = () => {
+                            if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+                            // If a long press was registered, clear it on touch end
+                            if (longPressedMsgId === msg.id) {
+                                // Optionally, you might want to keep it open until another action or tap
+                                // For now, let's clear it to mimic a toggle or temporary display
+                                // setLongPressedMsgId(null); // This would close it immediately
+                            }
+                        };
+                        // Clear long press state if user scrolls or interacts elsewhere
+                        useEffect(() => {
+                            const handleScroll = () => setLongPressedMsgId(null);
+                            const chatArea = messagesEndRef.current?.parentElement;
+                            chatArea?.addEventListener('scroll', handleScroll);
+                            return () => chatArea?.removeEventListener('scroll', handleScroll);
+                        }, []);
+
+
+                        return (
                         <motion.div
                             initial={{ opacity: 0, x: msg.from === "user" ? 20 : -20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -197,11 +229,14 @@ const SupportChat = ({ onClose }) => {
                                  })()}
                                  <div
                                      id={`msg-${msg.id}`}
-                                     className={`relative group p-4 rounded-2xl shadow-sm text-sm ${
+                                     onTouchStart={handleTouchStart}
+                                     onTouchEnd={handleTouchEnd}
+                                     onTouchCancel={handleTouchEnd}
+                                     className={`relative group p-4 rounded-2xl shadow-sm text-sm transition-all ${
                                          msg.from === 'user' 
                                          ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-tr-none' 
                                          : 'bg-white border border-gray-100 text-gray-800 rounded-tl-none'
-                                     } ${msg.reactions && Object.keys(msg.reactions).length > 0 ? 'mb-12' : ''}`}
+                                     } ${msg.reactions && Object.keys(msg.reactions).length > 0 ? 'mb-12' : ''} ${isLongPressed ? 'ring-2 ring-purple-500 shadow-md scale-[1.02]' : ''}`}
                                  >
                                      {msg.image ? (
                                          <div className="space-y-2">
@@ -261,42 +296,38 @@ const SupportChat = ({ onClose }) => {
                                          </div>
                                      )}
 
-                                     {/* Quick Actions overlay - Refined for stability */}
-                                     {/* Quick Actions (Reply/React) on Hover */}
-                                     {(!msg.reactions || Object.keys(msg.reactions).length === 0) && (
-                                        <div className={`absolute top-0 bottom-0 ${msg.from === 'user' ? '-left-16' : '-right-16'} hidden group-hover:flex items-center gap-1 transition-all`}>
-                                            <button 
-                                                onClick={() => setReplyTo(msg)}
-                                                className="p-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full transition-colors active:scale-95"
-                                                title="Reply"
-                                            >
-                                                <FaPaperPlane size={12} className="rotate-180" />
-                                            </button>
-                                        </div>
-                                     )}
-                                     {/* Action panel (more complete with reactions) - Moved to top to avoid clashes */}
-                                     <div className={`absolute -top-12 ${msg.from === 'user' ? 'right-0' : 'left-0'} h-12 flex items-end opacity-0 group-hover:opacity-100 transition-all pointer-events-none group-hover:pointer-events-auto z-30 pb-2`}>
-                                         <div className="flex bg-white border border-purple-100 rounded-xl p-1.5 gap-2 shadow-xl items-center animate-in slide-in-from-top-2 duration-300">
-                                             <div className="flex gap-2 border-r border-gray-100 pr-2">
-                                                 {['❤️', '👍', '😂', '🔥', '😮'].map(emoji => (
-                                                     <button 
-                                                         key={emoji} 
-                                                         onClick={() => handleReaction(msg.id, emoji)}
-                                                         className="text-xl hover:scale-125 transition-transform cursor-pointer filter hover:drop-shadow-sm active:scale-95"
-                                                     >
-                                                         {emoji}
-                                                     </button>
-                                                 ))}
+                                     {/* Actions Overlay - Visible on Hover (Desktop) or Long Press (Mobile) */}
+                                     {msg.from === 'user' && ( // Only allow actions on my own messages or adapt to all if needed
+                                         <div className={`absolute -top-12 ${msg.from === 'user' ? 'right-0' : 'left-0'} h-12 flex items-end ${isLongPressed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'} transition-all z-30 pb-2`}>
+                                             <div className="flex bg-white border border-purple-100 rounded-xl p-1.5 gap-2 shadow-xl items-center animate-in slide-in-from-top-2 duration-300 relative">
+                                                 <div className="flex gap-2 border-r border-purple-100 pr-2">
+                                                     {['❤️', '👍', '😂', '🔥', '😮'].map(emoji => (
+                                                         <button 
+                                                             key={emoji} 
+                                                             onClick={() => {
+                                                                 handleReaction(msg.id, emoji);
+                                                                 setLongPressedMsgId(null);
+                                                             }}
+                                                             className="text-xl hover:scale-125 transition-transform cursor-pointer filter hover:drop-shadow-md active:scale-95"
+                                                         >
+                                                             {emoji}
+                                                         </button>
+                                                     ))}
+                                                 </div>
+                                                 <button 
+                                                     onClick={() => {
+                                                         setReplyTo(msg);
+                                                         setLongPressedMsgId(null);
+                                                     }}
+                                                     className="p-1.5 text-purple-600 hover:text-white bg-purple-50 hover:bg-purple-600 rounded-lg transition-all cursor-pointer active:scale-90 flex items-center gap-1 text-[10px] font-bold uppercase"
+                                                     title="Reply"
+                                                 >
+                                                     <div className="rotate-180"><FaPaperPlane className="w-3 h-3" /></div>
+                                                     Reply
+                                                 </button>
                                              </div>
-                                             <button 
-                                                 onClick={() => setReplyTo(msg)}
-                                                 className="p-1.5 text-purple-600 hover:text-indigo-600 bg-purple-50 rounded-lg transition-colors cursor-pointer active:scale-90"
-                                                 title="Reply"
-                                             >
-                                                 <FaReply size={14} />
-                                             </button>
                                          </div>
-                                     </div>
+                                     )}
                                  </div>
                                  <span className="text-[10px] text-gray-400 mt-1 font-bold px-1 uppercase tracking-tighter">
                                      {msg.time}
