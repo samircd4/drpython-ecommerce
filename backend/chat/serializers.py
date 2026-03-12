@@ -15,10 +15,17 @@ UserShortSerializer.Meta.model = get_user_model()
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = UserShortSerializer(read_only=True)
+    parent_message_id = serializers.PrimaryKeyRelatedField(
+        source='parent_message',
+        read_only=True
+    )
 
     class Meta:
         model = Message
-        fields = ['id', 'conversation', 'sender', 'text', 'timestamp', 'is_read']
+        fields = [
+            'id', 'conversation', 'sender', 'text', 'timestamp', 
+            'is_read', 'reactions', 'parent_message_id', 'image', 'video'
+        ]
 
 
 class ConversationSerializer(serializers.ModelSerializer):

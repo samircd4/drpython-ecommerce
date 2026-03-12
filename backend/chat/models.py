@@ -25,7 +25,22 @@ class Message(models.Model):
         on_delete=models.CASCADE,
         related_name='sent_messages'
     )
-    text = models.TextField()
+    text = models.TextField(null=True, blank=True)
+    image = models.ImageField(upload_to='chat_images/', null=True, blank=True)
+    video = models.FileField(upload_to='chat_videos/', null=True, blank=True)
+    message_type = models.CharField(
+        max_length=20,
+        choices=[('text', 'Text'), ('image', 'Image'), ('video', 'Video')],
+        default='text'
+    )
+    parent_message = models.ForeignKey(
+        'self', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='replies'
+    )
+    reactions = models.JSONField(default=dict, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
 

@@ -69,3 +69,21 @@ class MarkAsReadAPIView(APIView):
             return Response({"status": "Marked as read", "conversation_id": pk}, status=status.HTTP_200_OK)
         except Conversation.DoesNotExist:
             return Response({"detail": "Conversation not found"}, status=status.HTTP_404_NOT_FOUND)
+from rest_framework.parsers import MultiPartParser, FormParser
+
+class ChatMessageUploadView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, *args, **kwargs):
+        file_obj = request.data.get('file')
+        if not file_obj:
+            return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Simple file saving for local/prod
+        # In production, this would go to S3 or a persistent volume
+        from django.core.files.storage import default_storage
+        filename = default_storage.save(f'chat_uploads/{file_obj.name}', file_obj)
+        file_url = default_storage.url(filename)
+        
+        return Response({"url": file_url}, status=status.HTTP_201_CREATED)
