@@ -334,7 +334,8 @@ const SupportChat = ({ onClose }) => {
                                  </span>
                              </div>
                         </motion.div>
-                    ))
+                        );
+                    })
                 )}
                 <div ref={messagesEndRef} />
             </div>

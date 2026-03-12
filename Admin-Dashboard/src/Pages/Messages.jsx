@@ -489,14 +489,24 @@ const Messages = () => {
                                             
                                             return (
                                                 <div key={msg.id || index} className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
-                                                    {/* Profile image for other user */}
-                                                    {!isMe && (
-                                                        <img 
-                                                            src={senderImage} 
-                                                            alt="sender" 
-                                                            className="w-8 h-8 rounded-full object-cover border border-slate-700 mb-1 flex-shrink-0"
-                                                        />
-                                                    )}
+                                                    {/* Profile image */}
+                                                    <div className="shrink-0 mb-1 flex-shrink-0">
+                                                        {isMe ? (
+                                                            user?.profile_picture ? (
+                                                                <img src={user.profile_picture} alt="Me" className="w-8 h-8 rounded-full object-cover border border-slate-700" />
+                                                            ) : (
+                                                                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-slate-700 shadow-sm p-1">
+                                                                    <img src="/favicon.png" alt="Admin" className="w-full h-full object-contain" />
+                                                                </div>
+                                                            )
+                                                        ) : (
+                                                            <img 
+                                                                src={senderImage} 
+                                                                alt="sender" 
+                                                                className="w-8 h-8 rounded-full object-cover border border-slate-700"
+                                                            />
+                                                        )}
+                                                    </div>
                                                     
                                                     <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
                                                         {msg.parent_message_id && (() => {
