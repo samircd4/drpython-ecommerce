@@ -27,6 +27,20 @@ const SupportChat = ({ onClose }) => {
         scrollToBottom();
     }, [serverMessages]);
 
+    // Clear long press state if user scrolls or interacts elsewhere
+    useEffect(() => {
+        const handleScroll = () => setLongPressedMsgId(null);
+        const chatArea = messagesEndRef.current ? messagesEndRef.current.parentElement : null;
+        if (chatArea) {
+            chatArea.addEventListener('scroll', handleScroll);
+        }
+        return () => {
+            if (chatArea) {
+                chatArea.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, []);
+
     const handleSend = (e) => {
         e.preventDefault();
         if (!input.trim() && !replyTo) return;
@@ -34,7 +48,7 @@ const SupportChat = ({ onClose }) => {
         const success = sendMessage({
             type: 'chat_message',
             text: input,
-            parent_message_id: replyTo?.id
+            parent_message_id: replyTo ? replyTo.id : null
         });
 
         if (success) {
@@ -167,21 +181,7 @@ const SupportChat = ({ onClose }) => {
                         };
                         const handleTouchEnd = () => {
                             if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
-                            // If a long press was registered, clear it on touch end
-                            if (longPressedMsgId === msg.id) {
-                                // Optionally, you might want to keep it open until another action or tap
-                                // For now, let's clear it to mimic a toggle or temporary display
-                                // setLongPressedMsgId(null); // This would close it immediately
-                            }
                         };
-                        // Clear long press state if user scrolls or interacts elsewhere
-                        useEffect(() => {
-                            const handleScroll = () => setLongPressedMsgId(null);
-                            const chatArea = messagesEndRef.current?.parentElement;
-                            chatArea?.addEventListener('scroll', handleScroll);
-                            return () => chatArea?.removeEventListener('scroll', handleScroll);
-                        }, []);
-
 
                         return (
                         <motion.div
@@ -298,7 +298,7 @@ const SupportChat = ({ onClose }) => {
 
                                      {/* Actions Overlay - Visible on Hover (Desktop) or Long Press (Mobile) */}
                                      {msg.from === 'user' && ( // Only allow actions on my own messages or adapt to all if needed
-                                         <div className={`absolute -top-12 ${msg.from === 'user' ? 'right-0' : 'left-0'} h-12 flex items-end ${isLongPressed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'} transition-all z-30 pb-2`}>
+                                         <div className={`absolute -bottom-12 ${msg.from === 'user' ? 'right-0' : 'left-0'} h-12 flex items-start ${isLongPressed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'} transition-all z-30 pt-2`}>
                                              <div className="flex bg-white border border-purple-100 rounded-xl p-1.5 gap-2 shadow-xl items-center animate-in slide-in-from-top-2 duration-300 relative">
                                                  <div className="flex gap-2 border-r border-purple-100 pr-2">
                                                      {['❤️', '👍', '😂', '🔥', '😮'].map(emoji => (

@@ -490,7 +490,7 @@ const Messages = () => {
                                             return (
                                                 <div key={msg.id || index} className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
                                                     {/* Profile image */}
-                                                    <div className="shrink-0 mb-1 flex-shrink-0">
+                                                    <div className="shrink-0 mb-5 flex-shrink-0">
                                                         {isMe ? (
                                                             user?.profile_picture ? (
                                                                 <img src={user.profile_picture} alt="Me" className="w-8 h-8 rounded-full object-cover border border-slate-700" />
@@ -596,8 +596,8 @@ const Messages = () => {
                                                             )}
 
                                                             {/* Actions Overlay - Visible on Hover (Desktop) or Long Press (Mobile) */}
-                                                            <div className={`absolute -top-12 ${isMe ? 'right-0' : 'left-0'} h-12 flex items-end ${isLongPressed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'} transition-all z-30 pb-2`}>
-                                                                <div className="flex bg-[#0b1a2a] border border-slate-700 rounded-xl p-1.5 gap-2 shadow-2xl items-center animate-in slide-in-from-top-2 duration-300">
+                                                            <div className={`absolute -bottom-14 ${isMe ? 'right-0' : 'left-0'} h-12 flex items-start ${isLongPressed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'} transition-all z-30 pt-2`}>
+                                                                <div className="flex bg-[#0b1a2a] border border-slate-700 rounded-xl p-1.5 gap-2 shadow-2xl items-center animate-in slide-in-from-bottom-2 duration-300">
                                                                     <div className="flex gap-2 border-r border-slate-700 pr-2">
                                                                         {['❤️', '👍', '😂', '🔥', '😮'].map(emoji => (
                                                                             <button 
