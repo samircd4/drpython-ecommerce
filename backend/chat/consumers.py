@@ -283,4 +283,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             conversation.save() # Update updated_at
             return message
         except Conversation.DoesNotExist:
+            print(f"Chat error: Conversation {chat_id} does not exist.")
+            return None
+        except Exception as e:
+            # BROAD CATCH: If database fails to save (e.g., missing migrations or column constraints)
+            print(f"CRITICAL ERROR in save_message: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return None
