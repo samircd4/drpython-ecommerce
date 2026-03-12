@@ -16,6 +16,10 @@ const Messages = () => {
     const [isLoadingMessages, setIsLoadingMessages] = useState(false);
     const [showChatOnMobile, setShowChatOnMobile] = useState(false);
     
+    // Mobile Touch/Long-Press State
+    const [longPressedMsgId, setLongPressedMsgId] = useState(null);
+    const touchTimeoutRef = useRef(null);
+
     // Timezone helper: Asia/Dhaka 12-hour format
     const formatLocalTime = (date = new Date()) => {
         return date.toLocaleTimeString('en-US', { 
@@ -182,12 +186,11 @@ const Messages = () => {
                 if (chatIndex !== -1) {
                     const existingChat = prevChats[chatIndex];
                     
-                    const isDuplicate = existingChat.messages?.some(m => 
-                        (m.id === newMessage.id) || 
-                        (isFromMe && m.text === newMessage.text && Math.abs(new Date(m.timestamp || Date.now()) - new Date(newMessage.timestamp)) < 2000)
-                    );
+                    // Relaxed duplicate check: Only reject if we already have this EXACT ID.
+                    // The previous text/time check was falsely rejecting fresh WS messages.
+                    const isDuplicate = existingChat.messages?.some(m => String(m.id) === String(newMessage.id));
 
-                    if (isDuplicate && isFromMe) return prevChats;
+                    if (isDuplicate) return prevChats;
 
                     const updatedChat = {
                         ...existingChat,
@@ -469,19 +472,41 @@ const Messages = () => {
                                     <>
                                         {activeChat.messages.filter(msg => msg.text || msg.image || msg.video).map((msg, index) => {
                                             const isMe = Number(msg.sender?.id) === Number(user?.id);
+                                            const isLongPressed = longPressedMsgId === msg.id;
+
+                                            // Touch Handlers for Mobile Long Press
+                                            const handleTouchStart = () => {
+                                                if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+                                                touchTimeoutRef.current = setTimeout(() => {
+                                                    setLongPressedMsgId(msg.id);
+                                                }, 500); // 500ms long press
+                                            };
+                                            const handleTouchEnd = () => {
+                                                if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+                                            };
                                             const sender = msg.sender || {};
                                             const senderImage = sender.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(sender.first_name || 'U')}&background=0D8ABC&color=fff`;
                                             
                                             return (
                                                 <div key={msg.id || index} className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
-                                                    {/* Profile image for other user */}
-                                                    {!isMe && (
-                                                        <img 
-                                                            src={senderImage} 
-                                                            alt="sender" 
-                                                            className="w-8 h-8 rounded-full object-cover border border-slate-700 mb-1 flex-shrink-0"
-                                                        />
-                                                    )}
+                                                    {/* Profile image */}
+                                                    <div className="shrink-0 mb-1 flex-shrink-0">
+                                                        {isMe ? (
+                                                            user?.profile_picture ? (
+                                                                <img src={user.profile_picture} alt="Me" className="w-8 h-8 rounded-full object-cover border border-slate-700" />
+                                                            ) : (
+                                                                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-slate-700 shadow-sm p-1">
+                                                                    <img src="/favicon.png" alt="Admin" className="w-full h-full object-contain" />
+                                                                </div>
+                                                            )
+                                                        ) : (
+                                                            <img 
+                                                                src={senderImage} 
+                                                                alt="sender" 
+                                                                className="w-8 h-8 rounded-full object-cover border border-slate-700"
+                                                            />
+                                                        )}
+                                                    </div>
                                                     
                                                     <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
                                                         {msg.parent_message_id && (() => {
@@ -504,10 +529,13 @@ const Messages = () => {
                                                         })()}
                                                         <div 
                                                             id={`admin-msg-${msg.id}`}
+                                                            onTouchStart={handleTouchStart}
+                                                            onTouchEnd={handleTouchEnd}
+                                                            onTouchCancel={handleTouchEnd}
                                                             className={`relative group px-4 py-3 rounded-2xl shadow-lg transition-all ${isMe
                                                             ? 'bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-tr-none'
                                                             : 'bg-[#071229] border border-slate-800 text-slate-200 rounded-tl-none'
-                                                            } ${msg.reactions && Object.keys(msg.reactions).length > 0 ? 'mb-12' : ''}`}>
+                                                            } ${msg.reactions && Object.keys(msg.reactions).length > 0 ? 'mb-12' : ''} ${isLongPressed ? 'ring-2 ring-blue-500 scale-[1.02]' : ''}`}>
                                                             {msg.image ? (
                                                                 <div className="space-y-2">
                                                                     <img 
@@ -567,14 +595,17 @@ const Messages = () => {
                                                                 </div>
                                                             )}
 
-                                                            {/* Actions Overlay - Fixed alignment and stabilized hover */}
-                                                            <div className={`absolute -top-12 ${isMe ? 'right-0' : 'left-0'} h-12 flex items-end opacity-0 group-hover:opacity-100 transition-all pointer-events-none group-hover:pointer-events-auto z-30 pb-2`}>
+                                                            {/* Actions Overlay - Visible on Hover (Desktop) or Long Press (Mobile) */}
+                                                            <div className={`absolute -top-12 ${isMe ? 'right-0' : 'left-0'} h-12 flex items-end ${isLongPressed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'} transition-all z-30 pb-2`}>
                                                                 <div className="flex bg-[#0b1a2a] border border-slate-700 rounded-xl p-1.5 gap-2 shadow-2xl items-center animate-in slide-in-from-top-2 duration-300">
                                                                     <div className="flex gap-2 border-r border-slate-700 pr-2">
                                                                         {['❤️', '👍', '😂', '🔥', '😮'].map(emoji => (
                                                                             <button 
                                                                                 key={emoji} 
-                                                                                onClick={() => handleReaction(msg.id, emoji)}
+                                                                                onClick={() => {
+                                                                                    handleReaction(msg.id, emoji);
+                                                                                    setLongPressedMsgId(null);
+                                                                                }}
                                                                                 className="text-xl hover:scale-125 transition-transform cursor-pointer filter hover:drop-shadow-blue active:scale-95"
                                                                             >
                                                                                 {emoji}
@@ -582,7 +613,10 @@ const Messages = () => {
                                                                         ))}
                                                                     </div>
                                                                     <button 
-                                                                        onClick={() => setReplyTo(msg)}
+                                                                        onClick={() => {
+                                                                            setReplyTo(msg);
+                                                                            setLongPressedMsgId(null);
+                                                                        }}
                                                                         className="p-1.5 text-blue-500 hover:text-white bg-blue-500/10 hover:bg-blue-600 rounded-lg transition-all cursor-pointer active:scale-90 flex items-center gap-1 text-[10px] font-bold uppercase"
                                                                         title="Reply"
                                                                     >
