@@ -4,7 +4,7 @@ import Pagination from '../Components/Layout/Pagination';
 import TransactionTable from '../Components/Transactions/TransactionTable';
 import mockTransactions from '../data/transactions.json';
 
-const Transactions = () => {
+const Payments = () => {
     const [transactions, setTransactions] = useState(mockTransactions);
     const [searchQuery, setSearchQuery] = useState('');
     const [typeFilter, setTypeFilter] = useState('All');
@@ -43,7 +43,7 @@ const Transactions = () => {
 
     return (
         <div className="p-0 sm:p-6 min-h-screen bg-transparent">
-            <Breadcrumb title="Transactions" paths={["Home", "Transactions"]} />
+            <Breadcrumb title="Payments" paths={["Home", "Payments"]} />
 
             <div className="my-6">
                 <div className="flex flex-col sm:flex-row items-center gap-4 bg-[#071229] p-4 rounded-xl border border-slate-800 shadow-sm">
@@ -96,4 +96,4 @@ const Transactions = () => {
     );
 };
 
-export default Transactions;
+export default Payments;

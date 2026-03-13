@@ -320,8 +320,14 @@ class ProductImage(models.Model):
 
     def save(self, *args, **kwargs):
         if self.is_primary:
+            # Clear other primaries
             ProductImage.objects.filter(
                 product=self.product,
                 is_primary=True
             ).exclude(pk=self.pk).update(is_primary=False)
+            
+            # Sync to parent Product.image field
+            if self.product.image != self.image:
+                self.product.image = self.image
+                self.product.save(update_fields=['image'])
         super().save(*args, **kwargs)

@@ -5,19 +5,25 @@ import {
     Plus,
     Search,
     Settings,
-    Sun,
-    Moon,
     User,
     LogOut,
     ShoppingCart,
     MessageSquare,
+    Box,
+    Layers,
+    Tag,
+    ShoppingBag,
+    CreditCard,
+    Users
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import api from "../../api/axiosConfig";
 
 const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [theme, setTheme] = useState(() => {
         try {
             const t = localStorage.getItem("theme");
@@ -40,13 +46,18 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
     }, [theme]);
 
     const [showUserDropdown, setShowUserDropdown] = useState(false);
+    const [showAddDropdown, setShowAddDropdown] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
     const dropdownRef = useRef(null);
+    const addDropdownRef = useRef(null);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowUserDropdown(false);
+            }
+            if (addDropdownRef.current && !addDropdownRef.current.contains(event.target)) {
+                setShowAddDropdown(false);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -127,6 +138,60 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
 
                 {/* Right */}
                 <div className="flex items-center space-x-3">
+                    {/* Add New Dropdown */}
+                    <div className="relative" ref={addDropdownRef}>
+                        <button 
+                            onClick={() => setShowAddDropdown(!showAddDropdown)}
+                            className="flex items-center space-x-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors cursor-pointer group shadow-sm"
+                        >
+                            <Plus className="w-4 h-4" />
+                            <span className="text-sm font-semibold">New</span>
+                            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showAddDropdown ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {showAddDropdown && (
+                            <div className="absolute right-0 mt-3 w-56 bg-[#0b1a2a] border border-slate-700/50 rounded-xl shadow-2xl py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200 origin-top-right">
+                                <div className="px-3 py-1.5 mb-1">
+                                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Create</p>
+                                </div>
+                                
+                                <button onClick={() => { navigate('/products/new'); setShowAddDropdown(false); }} className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer group">
+                                    <Box className="w-4 h-4 text-slate-400 group-hover:text-blue-400" />
+                                    <span>Product</span>
+                                </button>
+                                
+                                <button onClick={() => { navigate('/brands/new'); setShowAddDropdown(false); }} className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer group">
+                                    <Tag className="w-4 h-4 text-slate-400 group-hover:text-purple-400" />
+                                    <span>Brand</span>
+                                </button>
+                                
+                                <button onClick={() => { navigate('/categories/new'); setShowAddDropdown(false); }} className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer group">
+                                    <Layers className="w-4 h-4 text-slate-400 group-hover:text-emerald-400" />
+                                    <span>Category</span>
+                                </button>
+
+                                <div className="h-px bg-slate-800 my-1 mx-2" />
+                                
+                                <button onClick={() => { navigate('/orders/new'); setShowAddDropdown(false); }} className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer group">
+                                    <ShoppingBag className="w-4 h-4 text-slate-400 group-hover:text-amber-400" />
+                                    <span>Order</span>
+                                </button>
+
+                                <button onClick={() => { navigate('/payments/new'); setShowAddDropdown(false); }} className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer group">
+                                    <CreditCard className="w-4 h-4 text-slate-400 group-hover:text-green-400" />
+                                    <span>Payment</span>
+                                </button>
+
+                                <button onClick={() => { navigate('/customers/new'); setShowAddDropdown(false); }} className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer group">
+                                    <Users className="w-4 h-4 text-slate-400 group-hover:text-pink-400" />
+                                    <span>Customer</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div className="hidden sm:block h-6 w-px bg-slate-700 mx-1"></div>
+
                     {/* Cart Icon (Mobile & Desktop) */}
                     <button className="p-2.5 cursor-pointer rounded-xl text-slate-200 hover:bg-slate-800 transition-colors relative">
                         <ShoppingCart className="w-5 h-5" />
@@ -136,9 +201,7 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                     <button 
                         onClick={() => {
                             handleMarkAllRead();
-                            // If you have a prop to change page, you'd call it here. 
-                            // Since Header is inside App, we might need a prop or use window event.
-                            window.dispatchEvent(new CustomEvent('changePage', { detail: 'messages' }));
+                            navigate('/messages');
                         }}
                         className="relative p-2.5 cursor-pointer rounded-xl text-slate-200 hover:bg-slate-800 transition-colors"
                     >
@@ -183,7 +246,7 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                             <div className="absolute right-0 mt-3 w-48 bg-[#0b1a2a] border border-slate-800 rounded-xl shadow-2xl py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
                                 <button 
                                     onClick={() => {
-                                        window.dispatchEvent(new CustomEvent('changePage', { detail: 'settings' }));
+                                        navigate('/settings');
                                         setShowUserDropdown(false);
                                     }}
                                     className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 transition-colors cursor-pointer"

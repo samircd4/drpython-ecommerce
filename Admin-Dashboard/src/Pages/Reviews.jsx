@@ -3,7 +3,7 @@ import { Eye, CheckCircle, XCircle, Star, MessageSquare } from 'lucide-react';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import Pagination from '../Components/Layout/Pagination';
 import FilterBar from '../Components/FilterBar/FilterBar';
-import mockReviews from '../data/reviews.json';
+import api from '../api/axiosConfig';
 
 const StatusBadge = ({ status }) => {
     const map = {
@@ -15,12 +15,39 @@ const StatusBadge = ({ status }) => {
 };
 
 const Reviews = () => {
-    const [reviews, setReviews] = useState(mockReviews);
+    const [reviews, setReviews] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [totalCount, setTotalCount] = useState(0);
     const [showBy, setShowBy] = useState(12);
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(1);
-    const [sortColumn, setSortColumn] = useState('date');
+    const [sortColumn, setSortColumn] = useState('created_at');
     const [sortDirection, setSortDirection] = useState('desc');
+
+    React.useEffect(() => {
+        const fetchReviews = async () => {
+            setLoading(true);
+            try {
+                const response = await api.get(`/reviews/`, {
+                    params: { page: page }
+                });
+                
+                if (response.data && response.data.results) {
+                    setReviews(response.data.results);
+                    setTotalCount(response.data.count);
+                } else {
+                    setReviews(Array.isArray(response.data) ? response.data : []);
+                    setTotalCount(Array.isArray(response.data) ? response.data.length : 0);
+                }
+            } catch (error) {
+                console.error("Failed to fetch reviews:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchReviews();
+    }, [page]);
 
     const handleSort = (column) => {
         const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
@@ -38,14 +65,16 @@ const Reviews = () => {
 
     const filtered = useMemo(() => {
         return reviews.filter(r =>
-            r.user.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            r.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            r.comment.toLowerCase().includes(searchQuery.toLowerCase())
+            (r.customer_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            String(r.product_name || r.product || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (r.comment || '').toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [reviews, searchQuery]);
 
-    const totalPages = Math.max(1, Math.ceil(filtered.length / showBy));
-    const visible = filtered.slice((page - 1) * showBy, page * showBy);
+    const totalPages = Math.max(1, Math.ceil(totalCount > 0 ? totalCount / showBy : filtered.length / showBy));
+    
+    const isPaginatedByBackend = totalCount > reviews.length;
+    const visible = isPaginatedByBackend ? filtered : filtered.slice((page - 1) * showBy, page * showBy);
 
     const SortArrow = ({ column }) => {
         if (sortColumn !== column) return <span className="opacity-20 ml-1 inline-flex flex-col leading-[0] align-middle"><span className="text-[8px]">▲</span><span className="text-[8px]">▼</span></span>;
@@ -84,23 +113,25 @@ const Reviews = () => {
                             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer" onClick={() => handleSort('status')}>
                                 <div className="flex items-center whitespace-nowrap">Status <SortArrow column="status" /></div>
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer" onClick={() => handleSort('date')}>
-                                <div className="flex items-center whitespace-nowrap">Date <SortArrow column="date" /></div>
+                            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer" onClick={() => handleSort('created_at')}>
+                                <div className="flex items-center whitespace-nowrap">Date <SortArrow column="created_at" /></div>
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="bg-transparent divide-y divide-slate-700">
-                        {visible.map(r => (
+                        {loading ? (
+                            <tr><td colSpan="8" className="text-center py-8 text-slate-400">Loading reviews...</td></tr>
+                        ) : visible.map(r => (
                             <tr key={r.id} className="hover:bg-slate-800 transition-colors">
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-400 text-xs font-mono">{r.id}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center gap-3">
-                                        <img src={r.userImage} alt={r.user} className="w-8 h-8 rounded-lg" />
-                                        <span className="text-slate-100 font-medium text-sm">{r.user}</span>
+                                        <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(r.customer_name || 'U')}&background=random`} alt={r.customer_name} className="w-8 h-8 rounded-lg" />
+                                        <span className="text-slate-100 font-medium text-sm">{r.customer_name || 'Anonymous'}</span>
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-slate-300 text-sm">{r.product}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-slate-300 text-sm">{r.product_name || `Product ID: ${r.product}` || 'Unknown Product'}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center gap-1 text-yellow-500">
                                         <Star className="w-3 h-3 fill-current" />
@@ -110,8 +141,10 @@ const Reviews = () => {
                                 <td className="px-6 py-4 max-w-xs">
                                     <p className="text-slate-400 text-sm truncate" title={r.comment}>{r.comment}</p>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={r.status} /></td>
-                                <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs">{r.date}</td>
+                                <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={'Published'} /></td>
+                                <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs">
+                                    {new Date(r.created_at).toLocaleDateString()}
+                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex space-x-2">
                                         <button title="View" className="p-1.5 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-all"><Eye className="h-4 w-4" /></button>
@@ -126,7 +159,7 @@ const Reviews = () => {
             </div>
 
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-sm text-slate-400">showing <span className="text-slate-200 font-semibold">{visible.length}</span> of <span className="text-slate-200 font-semibold">{filtered.length}</span> results</div>
+                <div className="text-sm text-slate-400">showing <span className="text-slate-200 font-semibold">{visible.length}</span> of <span className="text-slate-200 font-semibold">{totalCount || filtered.length}</span> results</div>
                 <Pagination page={page} setPage={setPage} total={totalPages} />
             </div>
         </div>

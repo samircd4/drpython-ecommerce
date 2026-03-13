@@ -15,7 +15,7 @@ from .models import (
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
-        fields = ['id', 'image']
+        fields = ['id', 'image', 'is_primary']
 
 
 class ProductSpecificationSerializer(serializers.ModelSerializer):
@@ -122,7 +122,7 @@ class ProductSerializer(serializers.ModelSerializer):
     # ---------- READ ONLY DISPLAY ----------
     brand = BrandSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
-    gallery_images = ProductImageSerializer(many=True, read_only=True)
+    gallery_images = serializers.SerializerMethodField()
     specifications = ProductSpecificationSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
     related_products = SimpleProductSerializer(many=True, read_only=True)
@@ -183,6 +183,12 @@ class ProductSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at',
         ]
 
+    @extend_schema_field(ProductImageSerializer(many=True))
+    def get_gallery_images(self, obj):
+        # Exclude the primary image from the gallery array as it's now in Product.image
+        qs = obj.gallery_images.filter(is_primary=False)
+        return ProductImageSerializer(qs, many=True, context=self.context).data
+
     def to_representation(self, instance):
         data = super().to_representation(instance)
         
@@ -204,20 +210,100 @@ class ProductSerializer(serializers.ModelSerializer):
             
         return data
 
-    # ---------- CREATE ----------
-    def create(self, validated_data):
+    # ---------- UPDATE ----------
+    def update(self, instance, validated_data):
         uploaded_images = validated_data.pop('uploaded_images', [])
+        specs_input = validated_data.pop('specs_input', None)
+        variants_input = validated_data.pop('variants_input', None)
+        related_products = validated_data.pop('related_products', [])
+
+        # Update core fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Handle Images (Uploaded and Deleted)
+        deleted_images_raw = self.context['request'].data.get('deleted_images')
+        if deleted_images_raw:
+            try:
+                import json
+                ids = json.loads(deleted_images_raw)
+                ProductImage.objects.filter(id__in=ids, product=instance).delete()
+            except Exception:
+                pass
+
+        uploaded_images = self.context['request'].FILES.getlist('uploaded_images')
+        primary_image_id = self.context['request'].data.get('primary_image_id')
+        primary_new_image_index = self.context['request'].data.get('primary_new_image_index')
+
+        # Robust primary image handling
+        if primary_image_id or primary_new_image_index is not None:
+             # Clear ALL current primaries for this product
+             ProductImage.objects.filter(product=instance).update(is_primary=False)
+
+             # Handle existing image primary status
+             if primary_image_id:
+                try:
+                    ProductImage.objects.filter(id=primary_image_id, product=instance).update(is_primary=True)
+                except Exception:
+                    pass
+
+        # Handle uploaded images
+        for i, image_data in enumerate(uploaded_images):
+            is_p = False
+            # Check if this new image should be primary
+            if primary_new_image_index is not None and str(primary_new_image_index) == str(i):
+                is_p = True
+            
+            ProductImage.objects.create(product=instance, image=image_data, is_primary=is_p)
+
+        # Update Related Products
+        if related_products is not None:
+            instance.related_products.set(related_products)
+
+        # Update Gallery Images (already handled above via FILES)
+        pass
+
+        # Update Specifications (Replace existing for simplicity/cleanliness)
+        if specs_input is not None:
+            instance.specifications.all().delete()
+            for spec in specs_input:
+                ProductSpecification.objects.create(
+                    product=instance,
+                    key=spec.get('key'),
+                    value=spec.get('value')
+                )
+
+        # Update Variants (Complex update logic or simple replace)
+        if variants_input is not None:
+            instance.variants.all().delete()
+            for variant_data in variants_input:
+                ProductVariant.objects.create(product=instance, **variant_data)
+
+        return instance
+
+    def create(self, validated_data):
+        uploaded_images_data = self.context['request'].FILES.getlist('uploaded_images')
+        primary_new_image_index = self.context['request'].data.get('primary_new_image_index')
+        
         specs_input = validated_data.pop('specs_input', [])
         variants_input = validated_data.pop('variants_input', [])
         related_products = validated_data.pop('related_products', [])
+
+        # Remove uploaded_images from validated_data as we handle it manually
+        validated_data.pop('uploaded_images', None)
 
         product = Product.objects.create(**validated_data)
 
         if related_products:
             product.related_products.set(related_products)
 
-        for image in uploaded_images:
-            ProductImage.objects.create(product=product, image=image)
+        # Handle Images with Primary support
+        for i, image in enumerate(uploaded_images_data):
+            is_p = False
+            if primary_new_image_index is not None and str(primary_new_image_index) == str(i):
+                is_p = True
+            ProductImage.objects.create(product=product, image=image, is_primary=is_p)
 
         for spec in specs_input or []:
             ProductSpecification.objects.create(

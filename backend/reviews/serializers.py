@@ -21,10 +21,12 @@ class QuestionSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     customer_name = serializers.CharField(
         source='customer.name', read_only=True)
+    product_name = serializers.CharField(
+        source='product.name', read_only=True)
 
     class Meta:
         model = Review
-        fields = ['id', 'product', 'rating',
+        fields = ['id', 'product', 'product_name', 'rating',
                   'comment', 'customer_name', 'created_at']
         read_only_fields = ['customer']
 

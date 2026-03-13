@@ -3,23 +3,12 @@ import FilterBar from '../Components/FilterBar/FilterBar';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import Pagination from '../Components/Layout/Pagination';
+import api from '../api/axiosConfig';
 
 const StatusBadge = ({ status }) => {
-    const map = { Active: 'bg-green-500 text-white', Inactive: 'bg-yellow-500 text-white', Banned: 'bg-red-500 text-white' };
+    const map = { Active: 'bg-green-500 text-white', Pending: 'bg-yellow-500 text-black', Banned: 'bg-red-500 text-white' };
     return <span className={`px-2 py-0.5 rounded text-xs ${map[status] || 'bg-slate-600'}`}>{status}</span>;
 };
-
-const mockCustomers = Array.from({ length: 28 }).map((_, i) => ({
-    id: `C-${1000 + i}`,
-    image: `https://i.pravatar.cc/150?u=${1000 + i}`,
-    name: ['Arafat Hossain', 'Sadia Akter', 'Nur Islam', 'Mina Rahman', 'Rafi Ahmed', 'Taslima Banu'][i % 6],
-    email: `user${i}@example.com`,
-    phone: `017${10000000 + i}`,
-    role: ['Customer', 'VIP', 'Wholesale'][i % 3],
-    status: ['Active', 'Inactive', 'Banned'][i % 3],
-    orders: (i % 12) + 1,
-    joined: `2023-0${(i % 9) + 1}-15`
-}));
 
 const SortArrow = ({ column, sortColumn, sortDirection }) => {
     if (sortColumn !== column) return <span className="opacity-20 ml-1 inline-flex flex-col leading-[0] align-middle"><span className="text-[8px]">▲</span><span className="text-[8px]">▼</span></span>;
@@ -27,12 +16,39 @@ const SortArrow = ({ column, sortColumn, sortDirection }) => {
 };
 
 const Customers = () => {
-    const [customers, setCustomers] = useState(mockCustomers);
+    const [customers, setCustomers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [totalCount, setTotalCount] = useState(0);
     const [showBy, setShowBy] = useState(12);
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(1);
     const [sortColumn, setSortColumn] = useState('name');
     const [sortDirection, setSortDirection] = useState('asc');
+
+    React.useEffect(() => {
+        const fetchCustomers = async () => {
+            setLoading(true);
+            try {
+                const response = await api.get(`/customers/`, {
+                    params: { page: page }
+                });
+                
+                if (response.data && response.data.results) {
+                    setCustomers(response.data.results);
+                    setTotalCount(response.data.count);
+                } else {
+                    setCustomers(Array.isArray(response.data) ? response.data : []);
+                    setTotalCount(Array.isArray(response.data) ? response.data.length : 0);
+                }
+            } catch (error) {
+                console.error("Failed to fetch customers:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCustomers();
+    }, [page]);
 
     const handleSort = (column) => {
         const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
@@ -53,11 +69,17 @@ const Customers = () => {
     const filtered = useMemo(() => {
         if (!searchQuery) return customers;
         const q = searchQuery.toLowerCase();
-        return customers.filter(c => c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || c.phone.includes(q));
+        return customers.filter(c => 
+            (c.name || '').toLowerCase().includes(q) || 
+            (c.email || '').toLowerCase().includes(q) || 
+            (c.phone_number || '').includes(q)
+        );
     }, [customers, searchQuery]);
 
-    const totalPages = Math.max(1, Math.ceil(filtered.length / showBy));
-    const visible = filtered.slice((page - 1) * showBy, page * showBy);
+    const totalPages = Math.max(1, Math.ceil(totalCount > 0 ? totalCount / showBy : filtered.length / showBy));
+    
+    const isPaginatedByBackend = totalCount > customers.length;
+    const visible = isPaginatedByBackend ? filtered : filtered.slice((page - 1) * showBy, page * showBy);
 
     return (
         <div className="p-0 sm:p-6 min-h-screen bg-transparent">
@@ -110,23 +132,25 @@ const Customers = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-transparent divide-y divide-slate-700">
-                        {visible.map(c => (
+                        {loading ? (
+                            <tr><td colSpan="9" className="text-center py-8 text-slate-400">Loading customers...</td></tr>
+                        ) : visible.map(c => (
                             <tr key={c.id} className="hover:bg-slate-800 transition-colors">
-                                <td className="px-6 py-4 whitespace-nowrap text-slate-100 font-medium text-sm">{c.id}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-slate-100 font-medium text-sm">C-{c.id}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <img
-                                        src={c.image}
-                                        alt={c.name}
+                                        src={c.avatar || c.social_avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name || c.username || 'U')}&background=random`}
+                                        alt={c.name || c.username}
                                         className="w-10 h-10 rounded-lg object-cover shadow-sm border border-slate-700"
                                     />
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-slate-100 text-sm font-medium">{c.name}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-slate-100 text-sm font-medium">{c.name || c.username}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-400 text-sm italic">{c.email}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-slate-300 font-mono text-sm">{c.phone}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-slate-300 text-sm">{c.role}</td>
-                                <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={c.status} /></td>
-                                <td className="px-6 py-4 whitespace-nowrap text-slate-300 text-sm">{c.orders}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs">{c.joined}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-slate-300 font-mono text-sm">{c.phone_number || 'N/A'}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-slate-300 text-sm">{c.is_wholesaler ? 'Wholesale' : (c.customer_type || 'Retail')}</td>
+                                <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={c.is_email_verified ? 'Active' : 'Pending'} /></td>
+                                <td className="px-6 py-4 whitespace-nowrap text-slate-300 text-sm">N/A</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs">{new Date(c.created_at).toLocaleDateString()}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex space-x-2">
                                         <button title="View" className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all"><Eye className="h-4 w-4" /></button>
@@ -141,7 +165,7 @@ const Customers = () => {
             </div>
 
             <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-sm text-slate-400">showing <span className="text-slate-200 font-semibold">{visible.length}</span> of <span className="text-slate-200 font-semibold">{filtered.length}</span> results</div>
+                <div className="text-sm text-slate-400">showing <span className="text-slate-200 font-semibold">{visible.length}</span> of <span className="text-slate-200 font-semibold">{totalCount || filtered.length}</span> results</div>
                 <Pagination page={page} setPage={setPage} total={totalPages} />
             </div>
         </div>

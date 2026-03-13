@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { useAuth } from "./Context/AuthContext"
 import Header from "./Components/Layout/Header"
 import Sidebar from "./Components/Layout/Sidebar"
@@ -11,10 +12,11 @@ import AllUsers from "./Pages/AllUsers"
 import Roles from "./Pages/Roles"
 import Activity from "./Pages/Activity"
 import Products from "./Pages/Products"
+import AddProduct from "./Pages/AddProduct"
 import Orders from "./Pages/Orders"
 import Customers from "./Pages/Customers"
 import Inventory from "./Pages/Inventory"
-import Transactions from "./Pages/Transactions"
+import Payments from "./Pages/Payments"
 import Messages from "./Pages/Messages"
 import Calendar from "./Pages/Calendar"
 import ReportsPage from "./Pages/Reports"
@@ -30,9 +32,12 @@ function App() {
     const { user, loading } = useAuth();
     const [sideBarCollapsed, setSideBarCollapsed] = useState(false)
     const [sideBarOpen, setSideBarOpen] = useState(false)
-    const [currentpage, setCurrentPage] = useState("dashboard")
     const [authPage, setAuthPage] = useState('login'); // 'login', 'register', 'forgot'
     const [hideLayout, setHideLayout] = useState(false);
+    const location = useLocation();
+
+    // The old string-based currentpage logic is now derived from the location pathname
+    const currentpage = location.pathname.split('/')[1] || "dashboard";
 
     useEffect(() => {
         const handleToggleLayout = (e) => {
@@ -54,9 +59,25 @@ function App() {
         }
     };
 
+    // Update global CSS variable for sidebar width to sync other fixed elements
+    useEffect(() => {
+        const root = document.documentElement;
+        if (sideBarCollapsed) {
+            root.style.setProperty('--sidebar-width', '5rem'); // sm:w-20
+        } else {
+            root.style.setProperty('--sidebar-width', '18rem'); // sm:w-72
+        }
+    }, [sideBarCollapsed]);
+
+    // Custom event handlers for page change can be replaced/removed later, but keeping for backward compatibility
     useEffect(() => {
         const handlePageChange = (e) => {
-            if (e.detail) setCurrentPage(e.detail);
+            if (e.detail) {
+                // Not the best practice, but if other components rely on this event to navigate, 
+                // we'd need useHistory. For now, it's better to update those components to use useNavigate.
+                // We'll leave the event listener empty or handle via window.location if necessary.
+                window.location.hash = e.detail; // Fallback, better to refactor sender
+            }
         };
         window.addEventListener('changePage', handlePageChange);
         return () => window.removeEventListener('changePage', handlePageChange);
@@ -92,40 +113,39 @@ function App() {
                                 mobileOpen={sideBarOpen}
                                 onToggle={() => setSideBarCollapsed(!sideBarCollapsed)}
                                 currentPage={currentpage}
-                                onPageChange={(id) => { setCurrentPage(id); }}
                             />
                         </>
                     )}
                     <div className="flex-1 flex flex-col overflow-hidden border-l border-slate-800">
                         <div className="flex-1 overflow-auto">
-                            {(() => {
-                                const pages = {
-                                    dashboard: Dashboard,
-                                    analytics: Analytics,
-                                    overview: Overview,
-                                    insights: Insights,
-                                    users: Users,
-                                    "all-users": AllUsers,
-                                    roles: Roles,
-                                    activity: Activity,
-                                    products: Products,
-                                    "all-products": Products,
-                                    brands: Brands,
-                                    categories: Categories,
-                                    orders: Orders,
-                                    customers: Customers,
-                                    inventory: Inventory,
-                                    transactions: Transactions,
-                                    messages: Messages,
-                                    calendar: Calendar,
-                                    reports: ReportsPage,
-                                    reviews: Reviews,
-                                    settings: Settings,
-                                };
-
-                                const Page = pages[currentpage] || (() => <div className="p-6 text-slate-300">Page: {currentpage}</div>);
-                                return <Page />;
-                            })()}
+                            <Routes>
+                                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                                <Route path="/dashboard" element={<Dashboard />} />
+                                <Route path="/analytics" element={<Analytics />} />
+                                <Route path="/overview" element={<Overview />} />
+                                <Route path="/insights" element={<Insights />} />
+                                <Route path="/users" element={<Users />} />
+                                <Route path="/all-users" element={<AllUsers />} />
+                                <Route path="/roles" element={<Roles />} />
+                                <Route path="/activity" element={<Activity />} />
+                                <Route path="/products" element={<Products />} />
+                                <Route path="/products/new" element={<AddProduct />} />
+                                <Route path="/products/edit/:id" element={<AddProduct />} />
+                                <Route path="/products/view/:id" element={<AddProduct />} />
+                                <Route path="/all-products" element={<Products />} />
+                                <Route path="/brands" element={<Brands />} />
+                                <Route path="/categories" element={<Categories />} />
+                                <Route path="/orders" element={<Orders />} />
+                                <Route path="/customers" element={<Customers />} />
+                                <Route path="/inventory" element={<Inventory />} />
+                                <Route path="/payments" element={<Payments />} />
+                                <Route path="/messages" element={<Messages />} />
+                                <Route path="/calendar" element={<Calendar />} />
+                                <Route path="/reports" element={<ReportsPage />} />
+                                <Route path="/reviews" element={<Reviews />} />
+                                <Route path="/settings" element={<Settings />} />
+                                <Route path="*" element={<div className="p-6 text-slate-300">Page Not Found</div>} />
+                            </Routes>
                         </div>
                     </div>
                 </div>

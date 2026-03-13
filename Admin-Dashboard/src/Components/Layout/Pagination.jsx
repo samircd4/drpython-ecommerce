@@ -28,7 +28,7 @@ const Pagination = ({ page, setPage, total }) => {
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${page === 1
                         ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600 cursor-pointer'
                     }`}
             >
                 ‹ Previous
@@ -43,8 +43,8 @@ const Pagination = ({ page, setPage, total }) => {
                             key={p}
                             onClick={() => setPage(p)}
                             className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${p === page
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                                    ? 'bg-blue-600 text-white cursor-default'
+                                    : 'bg-slate-700 text-slate-200 hover:bg-slate-600 cursor-pointer'
                                 }`}
                         >
                             {p}
@@ -58,7 +58,7 @@ const Pagination = ({ page, setPage, total }) => {
                 onClick={() => setPage((p) => Math.min(total, p + 1))}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${page === total
                         ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600'
+                        : 'bg-slate-700 text-slate-200 hover:bg-slate-600 cursor-pointer'
                     }`}
             >
                 Next ›

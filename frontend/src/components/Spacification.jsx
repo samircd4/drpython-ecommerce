@@ -17,14 +17,9 @@ const Spacification = ({ specifications }) => {
             }
             return out;
         })()
-        : [
-            { label: 'Brand', value: 'Sarker Shop' },
-            { label: 'Model', value: '2026 Edition' },
-            { label: 'Material', value: 'Premium Cotton Blend' },
-            { label: 'Size', value: 'S, M, L, XL, XXL' },
-            { label: 'Color', value: 'Navy Blue, Charcoal, Olive' },
-            { label: 'Care', value: 'Machine wash cold, tumble dry low' },
-        ];
+        : null;
+
+    if (!specs) return null;
 
     return (
         <div className="w-full lg:max-w-3xl mx-auto bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl md:rounded-2xl shadow-lg md:shadow-xl">
