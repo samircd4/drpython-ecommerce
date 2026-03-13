@@ -13,9 +13,9 @@ const SortArrow = ({ column, sortColumn, sortDirection }) => {
 const StatusBadge = ({ status }) => {
     const map = {
         Pending: 'bg-pink-500/10 text-pink-400 ring-pink-500/20',
-        Shipped: 'bg-blue-500/10 text-blue-400 ring-blue-500/20',
+        Confirmed: 'bg-blue-500/10 text-blue-400 ring-blue-500/20',
+        Shipped: 'bg-indigo-500/10 text-indigo-400 ring-indigo-500/20',
         Cancelled: 'bg-red-500/10 text-red-400 ring-red-500/20',
-        Received: 'bg-green-500/10 text-green-400 ring-green-500/20',
         Delivered: 'bg-emerald-500/10 text-emerald-400 ring-emerald-500/20',
         Returned: 'bg-orange-500/10 text-orange-400 ring-orange-500/20',
     };
@@ -232,7 +232,7 @@ const OrderModal = ({ order, isOpen, onClose, onUpdateStatus, onEditPayment, isE
                                             disabled={!isEdit}
                                             className="w-full bg-[#071229] text-slate-200 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 disabled:opacity-50"
                                         >
-                                            {['Pending', 'Shipped', 'Cancelled', 'Received', 'Delivered', 'Returned'].map(s => (
+                                            {['Pending', 'Confirmed', 'Shipped', 'Cancelled', 'Delivered', 'Returned'].map(s => (
                                                 <option key={s} value={s}>{s}</option>
                                             ))}
                                         </select>
@@ -302,7 +302,14 @@ const OrderModal = ({ order, isOpen, onClose, onUpdateStatus, onEditPayment, isE
                                                     {item.product.image && <img src={item.product.image} className="w-8 h-8 rounded object-cover shadow-sm border border-slate-700" />}
                                                     <div>
                                                         <p className="text-slate-200 font-medium leading-tight">{item.product.name}</p>
-                                                        {item.variant && <p className="text-[10px] text-slate-500 mt-1">{item.variant}</p>}
+                                                        {item.variant && (
+                                                            <p className="text-[10px] text-slate-500 mt-1">
+                                                                {typeof item.variant === 'object'
+                                                                    ? [item.variant.color, item.variant.ram, item.variant.storage].filter(Boolean).join(' / ') || item.variant.sku || 'Variant'
+                                                                    : item.variant
+                                                                }
+                                                            </p>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </td>
