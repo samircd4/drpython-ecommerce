@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import toast from 'react-hot-toast';
 import { Eye, CheckCircle, XCircle, Star, MessageSquare } from 'lucide-react';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import Pagination from '../Components/Layout/Pagination';
@@ -61,6 +62,18 @@ const Reviews = () => {
             return valA < valB ? 1 : -1;
         });
         setReviews(sorted);
+    };
+
+    const handleApproveReview = async (reviewId, action) => {
+        const label = action === 'approve' ? 'approved' : 'rejected';
+        try {
+            await api.patch(`/reviews/${reviewId}/`, { status: action === 'approve' ? 'Published' : 'Hidden' });
+            setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, status: action === 'approve' ? 'Published' : 'Hidden' } : r));
+            toast.success(`Review ${label} successfully`);
+        } catch (error) {
+            console.error(`Failed to ${action} review:`, error);
+            toast.error(`Failed to ${label} review`);
+        }
     };
 
     const filtered = useMemo(() => {
@@ -148,8 +161,8 @@ const Reviews = () => {
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex space-x-2">
                                         <button title="View" className="p-1.5 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-all"><Eye className="h-4 w-4" /></button>
-                                        <button title="Approve" className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all"><CheckCircle className="h-4 w-4" /></button>
-                                        <button title="Reject" className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all"><XCircle className="h-4 w-4" /></button>
+                                        <button title="Approve" onClick={() => handleApproveReview(r.id, 'approve')} className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"><CheckCircle className="h-4 w-4" /></button>
+                                        <button title="Reject" onClick={() => handleApproveReview(r.id, 'reject')} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"><XCircle className="h-4 w-4" /></button>
                                     </div>
                                 </td>
                             </tr>

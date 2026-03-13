@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import BrandTable from '../Components/Product/BrandTable';
 import FilterBar from '../Components/FilterBar/FilterBar';
@@ -24,6 +25,18 @@ const Brands = () => {
         };
         fetchBrands();
     }, []);
+
+    const handleDeleteBrand = async (brandId) => {
+        if (!window.confirm('Are you sure you want to delete this brand?')) return;
+        const p = api.delete(`/brands/${brandId}/`).then(() => {
+            setBrands(prev => prev.filter(b => b.id !== brandId));
+        });
+        toast.promise(p, {
+            loading: 'Deleting brand...',
+            success: 'Brand deleted successfully',
+            error: 'Failed to delete brand',
+        });
+    };
 
     const filteredBrands = brands.filter((b) => {
         const q = searchQuery.trim().toLowerCase();
@@ -52,7 +65,7 @@ const Brands = () => {
                 />
             </div>
 
-            <BrandTable brands={visibleBrands} loading={loading} />
+            <BrandTable brands={visibleBrands} loading={loading} handleDelete={handleDeleteBrand} />
         </div>
     );
 };

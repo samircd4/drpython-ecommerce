@@ -1,7 +1,7 @@
 import React from 'react';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 
-const CategoryTable = ({ categories, loading }) => {
+const CategoryTable = ({ categories, loading, handleDelete }) => {
     if (loading) {
         return (
             <div className="flex items-center justify-center p-20 bg-[#0b1a2a]/50 rounded-2xl border border-slate-800">
@@ -50,7 +50,7 @@ const CategoryTable = ({ categories, loading }) => {
                                     <div className="flex space-x-2">
                                         <button className="text-purple-400 hover:text-purple-200"><Eye className="h-5 w-5" /></button>
                                         <button className="text-green-400 hover:text-green-200"><Pencil className="h-5 w-5" /></button>
-                                        <button className="text-red-400 hover:text-red-200"><Trash2 className="h-5 w-5" /></button>
+                                        <button onClick={() => handleDelete && handleDelete(cat.id)} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"><Trash2 className="h-5 w-5" /></button>
                                     </div>
                                 </td>
                             </tr>

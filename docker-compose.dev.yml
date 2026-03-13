@@ -48,7 +48,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: always
-    command: /usr/local/bin/uv run celery -A ecommerce_api worker --loglevel=info
+    entrypoint: ["/celery_entrypoint.sh"]
     environment:
       - REDIS_URL=redis://redis:6379/0
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}

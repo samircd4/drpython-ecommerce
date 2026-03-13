@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import toast from 'react-hot-toast';
 import FilterBar from '../Components/FilterBar/FilterBar';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
@@ -49,6 +50,19 @@ const Customers = () => {
 
         fetchCustomers();
     }, [page]);
+
+    const handleDeleteCustomer = async (customerId) => {
+        if (!window.confirm('Are you sure you want to delete this customer?')) return;
+        const p = api.delete(`/customers/${customerId}/`).then(() => {
+            setCustomers(prev => prev.filter(c => c.id !== customerId));
+            setTotalCount(prev => prev - 1);
+        });
+        toast.promise(p, {
+            loading: 'Deleting customer...',
+            success: 'Customer deleted successfully',
+            error: 'Failed to delete customer',
+        });
+    };
 
     const handleSort = (column) => {
         const direction = sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc';
@@ -155,7 +169,7 @@ const Customers = () => {
                                     <div className="flex space-x-2">
                                         <button title="View" className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all"><Eye className="h-4 w-4" /></button>
                                         <button title="Edit" className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all"><Pencil className="h-4 w-4" /></button>
-                                        <button title="Delete" className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all"><Trash2 className="h-4 w-4" /></button>
+                                        <button title="Delete" onClick={() => handleDeleteCustomer(c.id)} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"><Trash2 className="h-4 w-4" /></button>
                                     </div>
                                 </td>
                             </tr>

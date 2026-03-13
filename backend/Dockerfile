@@ -56,6 +56,7 @@ ENV PYTHONUNBUFFERED=1
 
 # Use a script for entrypoint to handle migrations
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY celery_entrypoint.sh /celery_entrypoint.sh
+RUN chmod +x /entrypoint.sh /celery_entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

@@ -5,8 +5,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 from decimal import Decimal
 
-from .models import Order, Cart, Checkout, CartItem, OrderStatus, Coupon
-from .serializers import OrderSerializer, CartSerializer, CheckoutSerializer, CartItemSerializer, CouponSerializer
+from .models import Order, Cart, Checkout, CartItem, OrderStatus, Coupon, PaymentInfo
+from .serializers import OrderSerializer, CartSerializer, CheckoutSerializer, CartItemSerializer, CouponSerializer, PaymentInfoSerializer
 
 # For pdf generator
 from django.http import HttpResponse
@@ -380,3 +380,25 @@ class CheckoutViewSet(viewsets.ModelViewSet):
         if getattr(self, 'swagger_fake_view', False):
             return Checkout.objects.none()
         return Checkout.objects.filter(cart__user=self.request.user)
+
+
+@extend_schema(tags=['Payments'])
+class PaymentViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing Payment Info.
+    """
+    queryset = PaymentInfo.objects.all()
+    serializer_class = PaymentInfoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    filterset_fields = ['is_paid', 'payment_method']
+    search_fields = ['transaction_id', 'paid_from']
+    ordering_fields = ['created_at', 'payment_date', 'amount']
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return PaymentInfo.objects.all()
+        # For regular users, they might only see payments related to their orders
+        if hasattr(self.request.user, 'customer'):
+            return PaymentInfo.objects.filter(order__customer=self.request.user.customer)
+        return PaymentInfo.objects.none()

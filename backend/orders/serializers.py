@@ -68,9 +68,12 @@ class OrderStatusSerializer(serializers.ModelSerializer):
 
 
 class PaymentInfoSerializer(serializers.ModelSerializer):
+    customer_name = serializers.CharField(source='order.full_name', read_only=True)
+    order_id = serializers.IntegerField(source='order.id', read_only=True)
+
     class Meta:
         model = PaymentInfo
-        fields = ['transaction_id', 'is_paid',
+        fields = ['id', 'order_id', 'customer_name', 'transaction_id', 'is_paid',
                   'payment_method', 'payment_date', 'amount']
 
 
@@ -135,9 +138,36 @@ class OrderSerializer(serializers.ModelSerializer):
     payment_details = serializers.DictField(write_only=True, required=False, allow_null=True)
 
     # Flattened fields for backward compatibility / ease of use
-    status = serializers.CharField(
-        source='order_status.display_name', read_only=True)
+    status = serializers.CharField(required=False)
     payment = PaymentInfoSerializer(source='payment_info', read_only=True)
+
+    def to_representation(self, instance):
+        """Show Display Name for status in responses."""
+        ret = super().to_representation(instance)
+        if instance.order_status:
+            ret['status'] = instance.order_status.display_name
+        return ret
+
+    def update(self, instance, validated_data):
+        """Handle status update and other fields."""
+        status_name = validated_data.pop('status', None)
+        if status_name:
+            # Map display name or code back to OrderStatus object
+            st_obj = OrderStatus.objects.filter(display_name__iexact=status_name).first()
+            if not st_obj:
+                st_obj = OrderStatus.objects.filter(status_code__iexact=status_name).first()
+            
+            if st_obj:
+                instance.order_status = st_obj
+            else:
+                raise serializers.ValidationError({"status": f"Invalid status: {status_name}"})
+
+        # Save other fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        instance.save()
+        return instance
 
     items_input = serializers.ListField(
         child=serializers.DictField(), write_only=True, required=False
@@ -192,8 +222,8 @@ class OrderSerializer(serializers.ModelSerializer):
         request = self.context['request']
         user = request.user
 
-        # Items can come from items_input or from the user's/session cart
-        if not data.get('items_input'):
+        # Items check is only for new orders
+        if not self.instance and not data.get('items_input'):
             # Try to resolve cart
             cart = None
             if user.is_authenticated:

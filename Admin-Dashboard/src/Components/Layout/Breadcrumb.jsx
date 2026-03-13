@@ -3,7 +3,7 @@ import React from "react";
 const Breadcrumb = ({ title = "", paths = [] }) => {
     return (
         <div className="sm:px-0">
-            <div className="rounded-xl bg-[#112960] p-1 sm:p-2 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="rounded-xl bg-[#112960] p-1 sm:p-4 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="w-full sm:w-auto">
                     <h2 className="text-xl sm:text-2xl font-bold text-slate-100 truncate">{title}</h2>
                 </div>

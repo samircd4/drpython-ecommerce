@@ -278,10 +278,14 @@ class ProductSerializer(serializers.ModelSerializer):
                     value=spec.get('value')
                 )
 
-        # Update Variants (Complex update logic or simple replace)
+        # Update Variants
         if variants_input is not None:
             instance.variants.all().delete()
             for variant_data in variants_input:
+                # Clean data: Replace empty strings with None for nullable fields
+                for field in ['wholesale_price', 'discount_price', 'ram', 'storage']:
+                    if variant_data.get(field) == '':
+                        variant_data[field] = None
                 ProductVariant.objects.create(product=instance, **variant_data)
 
         return instance
@@ -320,6 +324,10 @@ class ProductSerializer(serializers.ModelSerializer):
             )
 
         for variant_data in variants_input or []:
+            # Clean data: Replace empty strings with None for nullable fields
+            for field in ['wholesale_price', 'discount_price', 'ram', 'storage']:
+                if variant_data.get(field) == '':
+                    variant_data[field] = None
             ProductVariant.objects.create(product=product, **variant_data)
 
         return product

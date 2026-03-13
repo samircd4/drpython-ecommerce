@@ -11,7 +11,7 @@ const TakaIcon = ({ className = "w-3 h-3" }) => (
     <img src="/currency-taka.svg" alt="৳" className={`${className} opacity-70 brightness-125`} />
 );
 
-const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleSort }) => {
+const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleSort, handleDelete }) => {
     const navigate = useNavigate();
     return (
         <div className="overflow-x-auto rounded-lg border border-slate-700 shadow-sm">
@@ -131,7 +131,7 @@ const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleS
                                         >
                                             <Pencil className="h-4 w-4" />
                                         </button>
-                                        <button className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer">
+                                        <button onClick={() => handleDelete && handleDelete(product.id)} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer">
                                             <Trash2 className="h-4 w-4" />
                                         </button>
                                     </div>

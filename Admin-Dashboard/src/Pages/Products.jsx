@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import FilterBar from '../Components/FilterBar/FilterBar';
 import BestSellingProductsTable from '../Components/Dashboard/BestSellingProductsTable';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
@@ -43,6 +44,22 @@ const Products = () => {
         };
         fetchData();
     }, []);
+    
+    const handleDeleteProduct = async (productId) => {
+        if (!window.confirm("Are you sure you want to delete this product?")) return;
+
+        const deletePromise = api.delete(`/products/${productId}/`)
+            .then(() => {
+                setProducts(prev => prev.filter(p => p.id !== productId));
+                setTotalCount(prev => prev - 1);
+            });
+
+        toast.promise(deletePromise, {
+            loading: 'Deleting product...',
+            success: 'Product deleted successfully',
+            error: 'Failed to delete product',
+        });
+    };
 
     const handleSort = (column) => {
         let direction = 'asc';
@@ -146,6 +163,7 @@ const Products = () => {
                     sortColumn={sortColumn}
                     sortDirection={sortDirection}
                     handleSort={handleSort}
+                    handleDelete={handleDeleteProduct}
                 />
             )}
 

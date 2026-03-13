@@ -14,7 +14,9 @@ import {
     Circle,
     Activity,
     TrendingUp,
-    Star
+    Star,
+    Mail,
+    HelpCircle
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -40,7 +42,17 @@ const menuItems = [
     { id: "reviews", icon: Star, label: "Reviews" },
     { id: "inventory", icon: Package, label: "Inventory", count: "847" },
     { id: "payments", icon: CreditCard, label: "Payments" },
-    { id: "messages", icon: MessageSquare, label: "Messages", badge: "12" },
+    {
+        id: "messages",
+        icon: MessageSquare,
+        label: "Messages",
+        badge: "12",
+        submenu: [
+            { id: "chats", label: "Chats", icon: MessageSquare },
+            { id: "product-qna", label: "Product Q&A", icon: HelpCircle },
+            { id: "contact-messages", label: "Contact Messages", icon: Mail }
+        ]
+    },
     { id: "calendar", icon: Calendar, label: "Calendar" },
     { id: "settings", icon: Settings, label: "Settings" },
 ];
@@ -67,6 +79,14 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
         if (newExpanded.has(itemid)) newExpanded.delete(itemid);
         else newExpanded.add(itemid);
         setExpandedItems(newExpanded);
+    };
+
+    const isParentActive = (item) => {
+        if (currentPage === item.id) return true;
+        if (item.submenu) {
+            return item.submenu.some(sub => currentPage === sub.id);
+        }
+        return false;
     };
 
     // Fetch unread count from API
@@ -114,11 +134,19 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
                     <div key={item.id}>
                         <button
                             onClick={() => {
-                                if (item.submenu) toggleExpanded(item.id);
-                                else navigate(`/${item.id}`);
+                                if (item.submenu) {
+                                    toggleExpanded(item.id);
+                                    // Default navigation for parent menus
+                                    if (item.id === 'messages') navigate('/chats');
+                                    else if (item.id === 'products') navigate('/all-products');
+                                    else if (item.id === 'analytics') navigate('/overview');
+                                    else if (item.id === 'users') navigate('/all-users');
+                                } else {
+                                    navigate(`/${item.id}`);
+                                }
                             }}
-                            className={`w-full flex items-center cursor-pointer justify-between p-3 rounded-xl transition-all duration-200 ${currentPage === item.id || item.active ? 'text-slate-100 shadow-lg shadow-black/30' : 'text-slate-300 hover:bg-slate-800'}`}
-                            style={currentPage === item.id || item.active ? { backgroundImage: 'linear-gradient(90deg,var(--accent-1),var(--accent-2))' } : undefined}
+                            className={`w-full flex items-center cursor-pointer justify-between p-3 rounded-xl transition-all duration-200 ${isParentActive(item) || item.active ? 'text-slate-100 shadow-lg shadow-black/30' : 'text-slate-300 hover:bg-slate-800'}`}
+                            style={isParentActive(item) || item.active ? { backgroundImage: 'linear-gradient(90deg,var(--accent-1),var(--accent-2))' } : undefined}
                         >
                             <div className="flex items-center space-x-3">
                                 <item.icon className="w-5 h-5 text-slate-300" />

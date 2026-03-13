@@ -1,27 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Save, ArrowLeft, Image as ImageIcon, Plus, X, Check, AlertCircle, ChevronDown, Star } from 'lucide-react';
+import toast from 'react-hot-toast';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import api from '../api/axiosConfig';
 
-const Toast = ({ message, type, onClose }) => {
-    useEffect(() => {
-        const timer = setTimeout(onClose, 3000);
-        return () => clearTimeout(timer);
-    }, [onClose]);
 
-    return (
-        <div className={`fixed bottom-6 right-6 z-[100] flex items-center space-x-3 px-4 py-3 rounded-xl shadow-2xl animate-in fade-in slide-in-from-right-4 duration-300 ${
-            type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
-        }`}>
-            {type === 'success' ? <Check className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
-            <span className="font-medium">{message}</span>
-            <button onClick={onClose} className="ml-2 hover:opacity-70 transition-opacity">
-                <X className="w-4 h-4" />
-            </button>
-        </div>
-    );
-};
 
 const CustomSelect = ({ label, options, value, onChange, placeholder, disabled }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -95,11 +79,7 @@ const AddProduct = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [fetchingProduct, setFetchingProduct] = useState(false);
-    const [toast, setToast] = useState(null);
-    
-    const showToast = (message, type = 'success') => {
-        setToast({ message, type });
-    };
+
     
     const [formData, setFormData] = useState({
         name: '',
@@ -199,7 +179,7 @@ const AddProduct = () => {
                 }
             } catch (error) {
                 console.error('Failed to fetch data', error);
-                showToast('Failed to load product data', 'error');
+                toast.error('Failed to load product data');
                 setFetchingProduct(false);
             }
         };
@@ -314,7 +294,18 @@ const AddProduct = () => {
             });
 
             const filteredSpecs = specifications.filter(s => s.key && s.value);
-            const filteredVariants = variants.filter(v => v.price || v.stock_quantity);
+            const filteredVariants = variants
+                .filter(v => v.price || v.stock_quantity)
+                .map(v => {
+                    const cleaned = { ...v };
+                    // Replace empty strings with null for numeric/optional fields
+                    ['price', 'wholesale_price', 'discount_price', 'stock_quantity', 'ram', 'storage'].forEach(field => {
+                        if (cleaned[field] === '') {
+                            cleaned[field] = null;
+                        }
+                    });
+                    return cleaned;
+                });
     
             if (filteredSpecs.length > 0) {
                 formPayload.append('specs_input', JSON.stringify(filteredSpecs));
@@ -340,21 +331,37 @@ const AddProduct = () => {
             }
 
             if (isEdit) {
+                setFormData({
+                        name: productData.name || '',
+                        product_id: productData.product_id || '',
+                        sku: productData.sku || '',
+                        description: productData.description || '',
+                        short_description: productData.short_description || '',
+                        price: productData.price || '',
+                        discount_price: productData.discount_price || '',
+                        wholesale_price: productData.wholesale_price || '',
+                        stock_quantity: productData.stock_quantity || '',
+                        is_featured: productData.is_featured || false,
+                        is_bestseller: productData.is_bestseller || false,
+                        is_active: productData.is_active !== false,
+                        category_id: productData.category?.id || '',
+                        brand_id: productData.brand?.id || '',
+                    });
                 await api.patch(`/products/${id}/`, formPayload, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
-                showToast('Product updated successfully!');
+                toast.success('Product updated successfully!');
             } else {
                 await api.post('/products/', formPayload, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
-                showToast('Product created successfully!');
+                toast.success('Product created successfully!');
             }
             setTimeout(() => navigate('/products'), 3000);
         } catch (error) {
             console.error('Failed to submit:', error.response?.data || error);
             const errorMsg = error.response?.data ? JSON.stringify(error.response.data) : 'Check console for details';
-            showToast('Failed: ' + errorMsg, 'error');
+            toast.error('Failed: ' + errorMsg);
         } finally {
             setLoading(false);
         }
@@ -372,13 +379,7 @@ const AddProduct = () => {
                 </button>
             </div>
 
-            {toast && (
-                <Toast 
-                    message={toast.message} 
-                    type={toast.type} 
-                    onClose={() => setToast(null)} 
-                />
-            )}
+
 
             {isEdit && fetchingProduct ? (
                 <div className="flex items-center justify-center p-20 bg-[#0b1a2a]/50 rounded-2xl border border-slate-800 lg:col-span-3 mt-6">
@@ -883,7 +884,7 @@ const AddProduct = () => {
                             className="px-6 py-2.5 text-slate-300 hover:text-white transition-colors flex items-center space-x-2 font-medium cursor-pointer"
                         >
                             <ArrowLeft className="w-4 h-4" />
-                            <span>{isView ? 'Back to Products' : 'Discard Changes'}</span>
+                            <span>{isView ? 'Back to Products' : 'Discard'}</span>
                         </button>
                         {!isView && (
                             <button 
@@ -896,7 +897,7 @@ const AddProduct = () => {
                                 ) : (
                                     <Save className="w-4 h-4" />
                                 )}
-                                <span className="font-semibold">{isEdit ? 'Update Details' : 'Create Product'}</span>
+                                <span className="font-semibold">{isEdit ? 'Update' : 'Create'}</span>
                             </button>
                         )}
                     </div>

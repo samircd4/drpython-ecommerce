@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import CategoryTable from '../Components/Product/CategoryTable';
 import FilterBar from '../Components/FilterBar/FilterBar';
@@ -24,6 +25,18 @@ const Categories = () => {
         };
         fetchCategories();
     }, []);
+
+    const handleDeleteCategory = async (categoryId) => {
+        if (!window.confirm('Are you sure you want to delete this category?')) return;
+        const p = api.delete(`/categories/${categoryId}/`).then(() => {
+            setCategories(prev => prev.filter(c => c.id !== categoryId));
+        });
+        toast.promise(p, {
+            loading: 'Deleting category...',
+            success: 'Category deleted successfully',
+            error: 'Failed to delete category',
+        });
+    };
 
     const filteredCategories = categories.filter((c) => {
         const q = searchQuery.trim().toLowerCase();
@@ -52,7 +65,7 @@ const Categories = () => {
                 />
             </div>
 
-            <CategoryTable categories={visibleCategories} loading={loading} />
+            <CategoryTable categories={visibleCategories} loading={loading} handleDelete={handleDeleteCategory} />
         </div>
     );
 };

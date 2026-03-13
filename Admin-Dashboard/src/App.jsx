@@ -18,6 +18,8 @@ import Customers from "./Pages/Customers"
 import Inventory from "./Pages/Inventory"
 import Payments from "./Pages/Payments"
 import Messages from "./Pages/Messages"
+import ProductQnA from "./Pages/ProductQnA"
+import ContactMessages from "./Pages/ContactMessages"
 import Calendar from "./Pages/Calendar"
 import ReportsPage from "./Pages/Reports"
 import Reviews from "./Pages/Reviews"
@@ -27,6 +29,7 @@ import Settings from "./Pages/Settings"
 import Login from "./Pages/Auth/Login"
 import Register from "./Pages/Auth/Register"
 import ForgotPassword from "./Pages/Auth/ForgotPassword"
+import { Toaster } from 'react-hot-toast';
 
 function App() {
     const { user, loading } = useAuth();
@@ -139,7 +142,10 @@ function App() {
                                 <Route path="/customers" element={<Customers />} />
                                 <Route path="/inventory" element={<Inventory />} />
                                 <Route path="/payments" element={<Payments />} />
-                                <Route path="/messages" element={<Messages />} />
+                                <Route path="/messages" element={<Navigate to="/chats" replace />} />
+                                <Route path="/chats" element={<Messages />} />
+                                <Route path="/product-qna" element={<ProductQnA />} />
+                                <Route path="/contact-messages" element={<ContactMessages />} />
                                 <Route path="/calendar" element={<Calendar />} />
                                 <Route path="/reports" element={<ReportsPage />} />
                                 <Route path="/reviews" element={<Reviews />} />
@@ -150,6 +156,18 @@ function App() {
                     </div>
                 </div>
             </div>
+            <Toaster 
+                position="bottom-right"
+                toastOptions={{
+                    className: 'toast-premium',
+                    duration: 3000,
+                    style: {
+                        background: '#0b1a2a',
+                        color: '#f8fafc',
+                        border: '1px solid #1e293b',
+                    },
+                }}
+            />
         </div>
     );
 }

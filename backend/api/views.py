@@ -38,6 +38,7 @@ def api_root(request, format=None):
         },
         'orders': {
             'orders': reverse('order-list', request=request, format=format),
+            'payments': reverse('payment-info-list', request=request, format=format),
             'cart': reverse('cart-list', request=request, format=format),
             'checkout': reverse('checkout-list', request=request, format=format),
         },
