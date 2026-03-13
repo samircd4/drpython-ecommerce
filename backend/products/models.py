@@ -319,8 +319,9 @@ class ProductImage(models.Model):
         return f"Image for {self.product.name}"
 
     def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
         if self.is_primary:
-            # Clear other primaries
+            # Clear other primaries for this product
             ProductImage.objects.filter(
                 product=self.product,
                 is_primary=True
@@ -330,4 +331,3 @@ class ProductImage(models.Model):
             if self.product.image != self.image:
                 self.product.image = self.image
                 self.product.save(update_fields=['image'])
-        super().save(*args, **kwargs)

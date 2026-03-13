@@ -350,7 +350,7 @@ const AddProduct = () => {
                 });
                 showToast('Product created successfully!');
             }
-            setTimeout(() => navigate('/products'), 1500);
+            setTimeout(() => navigate('/products'), 3000);
         } catch (error) {
             console.error('Failed to submit:', error.response?.data || error);
             const errorMsg = error.response?.data ? JSON.stringify(error.response.data) : 'Check console for details';

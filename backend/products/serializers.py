@@ -238,24 +238,28 @@ class ProductSerializer(serializers.ModelSerializer):
 
         # Robust primary image handling
         if primary_image_id or primary_new_image_index is not None:
-             # Clear ALL current primaries for this product
+             # Clear ALL current primaries
              ProductImage.objects.filter(product=instance).update(is_primary=False)
 
              # Handle existing image primary status
              if primary_image_id:
                 try:
-                    ProductImage.objects.filter(id=primary_image_id, product=instance).update(is_primary=True)
+                    target_img = ProductImage.objects.get(id=primary_image_id, product=instance)
+                    target_img.is_primary = True
+                    target_img.save() # This triggers the model sync to Product.image
                 except Exception:
                     pass
 
         # Handle uploaded images
         for i, image_data in enumerate(uploaded_images):
             is_p = False
-            # Check if this new image should be primary
             if primary_new_image_index is not None and str(primary_new_image_index) == str(i):
                 is_p = True
             
-            ProductImage.objects.create(product=instance, image=image_data, is_primary=is_p)
+            pimg = ProductImage.objects.create(product=instance, image=image_data, is_primary=is_p)
+            if is_p:
+                instance.image = pimg.image
+                instance.save(update_fields=['image'])
 
         # Update Related Products
         if related_products is not None:
@@ -303,7 +307,10 @@ class ProductSerializer(serializers.ModelSerializer):
             is_p = False
             if primary_new_image_index is not None and str(primary_new_image_index) == str(i):
                 is_p = True
-            ProductImage.objects.create(product=product, image=image, is_primary=is_p)
+            pimg = ProductImage.objects.create(product=product, image=image, is_primary=is_p)
+            if is_p:
+                product.image = pimg.image
+                product.save(update_fields=['image'])
 
         for spec in specs_input or []:
             ProductSpecification.objects.create(
