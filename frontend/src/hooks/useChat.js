@@ -9,8 +9,22 @@ const WS_URL = WS_BASE.endsWith('/')
     ? WS_BASE.replace(/\/api\/$/, '/ws/chat/') 
     : WS_BASE.replace(/\/api$/, '/ws/chat/');
 
+// Helper to get or create a persistent guest_id
+const getGuestId = () => {
+    let gid = localStorage.getItem('guest_chat_id');
+    if (!gid) {
+        // Fallback for randomUUID if not available
+        gid = typeof crypto.randomUUID === 'function' 
+            ? crypto.randomUUID() 
+            : 'guest-' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('guest_chat_id', gid);
+    }
+    return gid;
+};
+
 export const useChat = () => {
     const { user } = useUser();
+    const guestIdRef = useRef(getGuestId());
     const [messages, setMessages] = useState([]);
     const [conversation, setConversation] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
@@ -19,19 +33,23 @@ export const useChat = () => {
 
     // Initial setup: Fetch or create conversation and load history
     const initChat = useCallback(async () => {
-        if (!user) return;
         try {
             setLoading(true);
-            console.log("Initializing chat for user:", user.email);
-            
             // 1. Get/Init conversation
-            // Using trailing slash to match Django's default expectation
-            const res = await api.get('/chats/init/');
-            console.log("Conversation initialized:", res.data);
+            const res = await api.get('/chats/init/', { 
+                params: !user ? { guest_id: guestIdRef.current } : {} 
+            });
+            
+            if (!res.data || !res.data.id) {
+                throw new Error("Invalid conversation data received");
+            }
+            
             setConversation(res.data);
 
             // 2. Fetch history
-            const historyRes = await api.get(`/chats/${res.data.id}/messages/`);
+            const historyRes = await api.get(`/chats/${res.data.id}/messages/`, { 
+                params: !user ? { guest_id: guestIdRef.current } : {}
+            });
             const historyData = historyRes.data.results || historyRes.data;
             const historyList = Array.isArray(historyData) ? historyData : [];
             
@@ -40,9 +58,11 @@ export const useChat = () => {
                 text: msg.text,
                 image: msg.image,
                 video: msg.video,
+                sender: msg.sender,
+                guest_id: msg.guest_id,
                 parent_message_id: msg.parent_message_id,
                 reactions: msg.reactions || {},
-                from: msg.sender?.email === user.email ? 'user' : 'support',
+                from: (user && msg.sender?.email === user.email) || (!user && msg.guest_id === guestIdRef.current) ? 'user' : 'support',
                 time: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             })));
         } catch (err) {
@@ -57,24 +77,24 @@ export const useChat = () => {
     }, [user]);
 
     useEffect(() => {
-        if (user) {
-            initChat();
-        }
+        initChat();
     }, [user, initChat]);
 
     // WebSocket connection
     useEffect(() => {
-        if (!conversation || !user) return;
+        if (!conversation) return;
 
         const token = localStorage.getItem('access_token');
-        if (!token) {
-            console.warn("No access token found for WebSocket");
-            return;
+        let wsFullUrl = WS_URL;
+        
+        if (token) {
+            wsFullUrl = wsFullUrl.endsWith('/') ? `${WS_URL}?token=${token}` : `${WS_URL}/?token=${token}`;
+        } else {
+            const gid = guestIdRef.current;
+            // Use & if ? already exists, but WS_URL shouldn't have it normally
+            const separator = wsFullUrl.includes('?') ? '&' : '?';
+            wsFullUrl = wsFullUrl.endsWith('/') ? `${wsFullUrl}${separator}guest_id=${gid}` : `${wsFullUrl}/${separator}guest_id=${gid}`;
         }
-
-        // Ensure WS_URL check matches routing.py re_path(r'ws/chat/$', ...)
-        // The URL should end in /ws/chat/
-        const wsFullUrl = WS_URL.endsWith('/') ? `${WS_URL}?token=${token}` : `${WS_URL}/?token=${token}`;
         console.log("Connecting to WebSocket:", wsFullUrl.split('?')[0]); // Log without token
         
         const socket = new WebSocket(wsFullUrl);
@@ -83,8 +103,15 @@ export const useChat = () => {
         socket.onopen = () => {
             console.log("Chat WebSocket connected");
             setIsConnected(true);
-            // Join the specific chat group
-            socket.send(JSON.stringify({ action: 'join', chatId: conversation.id }));
+            
+            // Explicitly join the chat group for real-time messages
+            if (conversation?.id) {
+                console.log("Joining chat room:", conversation.id);
+                socket.send(JSON.stringify({
+                    action: 'join',
+                    chatId: conversation.id
+                }));
+            }
         };
 
         socket.onmessage = (event) => {
@@ -101,7 +128,8 @@ export const useChat = () => {
 
                 if (type === 'chat_message' || !type) {
                     const msgData = data.message || data;
-                    const isMe = msgData.sender?.email === user.email;
+                    const isMe = (user && msgData.sender?.email === user.email) || 
+                                 (!user && msgData.guest_id === guestIdRef.current);
                     
                     setMessages(prev => {
                         // Avoid duplicates
@@ -112,6 +140,8 @@ export const useChat = () => {
                             text: msgData.text,
                             image: msgData.image,
                             video: msgData.video,
+                            sender: msgData.sender,
+                            guest_id: msgData.guest_id,
                             parent_message_id: msgData.parent_message_id,
                             reactions: msgData.reactions || {},
                             from: isMe ? 'user' : 'support',
@@ -141,17 +171,23 @@ export const useChat = () => {
     }, [conversation, user]);
 
     const sendMessage = (payload) => {
+        console.log("DEBUG: sendMessage attempt", payload);
         if (socketRef.current && isConnected && conversation) {
             const data = typeof payload === 'string' 
                 ? { type: 'chat_message', chatId: conversation.id, text: payload }
                 : { ...payload, chatId: conversation.id };
             
+            console.log("DEBUG: sending via WebSocket", data);
             socketRef.current.send(JSON.stringify(data));
             return true;
         }
-        console.warn("Cannot send message: socket not connected or no conversation");
+        console.warn("DEBUG: sendMessage failed - state:", { 
+            hasSocket: !!socketRef.current, 
+            isConnected, 
+            hasConv: !!conversation 
+        });
         return false;
     };
 
-    return { messages, sendMessage, isConnected, loading };
+    return { messages, sendMessage, isConnected, loading, guest_id: guestIdRef.current };
 };

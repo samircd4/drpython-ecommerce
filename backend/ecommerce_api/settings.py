@@ -241,6 +241,12 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "x-guest-id",
+]
+
 
 # =========================
 # CSRF (Admin / Cookies)
@@ -416,6 +422,8 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [os.getenv('REDIS_URL', 'redis://redis:6379/0')],
+            "capacity": 1500,
+            "expiry": 10,
         },
     },
 }

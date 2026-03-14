@@ -13,36 +13,63 @@ class ConversationListAPIView(generics.ListAPIView):
 
 class MessageListAPIView(generics.ListAPIView):
     serializer_class = MessageSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         conversation_id = self.kwargs['conversation_id']
         queryset = Message.objects.filter(conversation_id=conversation_id)
         
         # Admin can see all, customers only their own
-        if not self.request.user.is_staff:
-            queryset = queryset.filter(conversation__customer=self.request.user)
+        if self.request.user.is_authenticated:
+            if not self.request.user.is_staff:
+                queryset = queryset.filter(conversation__customer=self.request.user)
+        else:
+            # Guest filter
+            guest_id = self.request.query_params.get('guest_id') or self.request.headers.get('X-Guest-ID')
+            if guest_id:
+                queryset = queryset.filter(conversation__guest_id=guest_id)
+            else:
+                queryset = queryset.none()
             
         return queryset
 
 class CustomerChatView(generics.GenericAPIView):
     """
-    Get or create the conversation for the current logged in customer.
+    Get or create the conversation for the current logged in customer or guest.
     """
     serializer_class = ConversationSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
         try:
-            # Try to get existing conversation
-            conversation = Conversation.objects.filter(customer=self.request.user).first()
-            if not conversation:
-                conversation = Conversation.objects.create(customer=self.request.user)
+            print(f"DEBUG: CustomerChatView GET - user: {request.user}, auth: {request.user.is_authenticated}")
+            if request.user.is_authenticated:
+                # Try to get existing conversation for authenticated user
+                conversation = Conversation.objects.filter(customer=self.request.user).first()
+                if not conversation:
+                    conversation = Conversation.objects.create(customer=self.request.user)
+            else:
+                # Guest identification
+                guest_id = request.query_params.get('guest_id') or request.headers.get('X-Guest-ID')
+                print(f"DEBUG: CustomerChatView guest_id: {guest_id}")
+                if not guest_id:
+                    print("DEBUG: CustomerChatView - missing guest_id")
+                    return Response({"detail": "Guest identification required"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                conversation = Conversation.objects.filter(guest_id=guest_id, customer__isnull=True).first()
+                if not conversation:
+                    print(f"DEBUG: CustomerChatView - creating new conversation for guest {guest_id}")
+                    conversation = Conversation.objects.create(guest_id=guest_id)
+                else:
+                    print(f"DEBUG: CustomerChatView - found existing conversation {conversation.id} for guest {guest_id}")
             
             serializer = self.get_serializer(conversation)
             return Response(serializer.data)
         except Exception as e:
-            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            import traceback
+            print(f"ERROR: CustomerChatView exception: {str(e)}")
+            traceback.print_exc()
+            return Response({"detail": str(e), "traceback": traceback.format_exc()}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 from rest_framework.views import APIView
 
@@ -56,15 +83,27 @@ class MarkAsReadAPIView(APIView):
         try:
             conversation = Conversation.objects.get(pk=pk)
             
-            # Security: Allow staff or the customer who owns the chat
-            if not request.user.is_staff and conversation.customer != request.user:
-                return Response({"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN)
+            # Security: Allow staff, the customer who owns the chat, or the guest who owns the chat
+            if request.user.is_authenticated:
+                if not request.user.is_staff and conversation.customer != request.user:
+                    return Response({"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN)
+            else:
+                guest_id = request.query_params.get('guest_id') or request.headers.get('X-Guest-ID')
+                if not guest_id or str(conversation.guest_id) != str(guest_id):
+                    return Response({"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN)
 
             # Update messages sent by OTHERS
-            Message.objects.filter(
+            messages_to_update = Message.objects.filter(
                 conversation=conversation, 
                 is_read=False
-            ).exclude(sender=request.user).update(is_read=True)
+            )
+            
+            if request.user.is_authenticated:
+                messages_to_update = messages_to_update.exclude(sender=request.user)
+            else:
+                messages_to_update = messages_to_update.exclude(guest_id=guest_id, sender__isnull=True)
+            
+            messages_to_update.update(is_read=True)
 
             return Response({"status": "Marked as read", "conversation_id": pk}, status=status.HTTP_200_OK)
         except Conversation.DoesNotExist:
@@ -72,7 +111,7 @@ class MarkAsReadAPIView(APIView):
 from rest_framework.parsers import MultiPartParser, FormParser
 
 class ChatMessageUploadView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request, *args, **kwargs):

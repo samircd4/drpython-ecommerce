@@ -6,13 +6,18 @@ class Conversation(models.Model):
     customer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='conversations'
+        related_name='conversations',
+        null=True,
+        blank=True
     )
+    guest_id = models.CharField(max_length=100, null=True, blank=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Conversation with {self.customer.email}"
+        if self.customer:
+            return f"Conversation with {self.customer.email}"
+        return f"Conversation with Guest {self.guest_id}"
 
     class Meta:
         ordering = ['-updated_at']
@@ -23,8 +28,11 @@ class Message(models.Model):
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='sent_messages'
+        related_name='sent_messages',
+        null=True,
+        blank=True
     )
+    guest_id = models.CharField(max_length=100, null=True, blank=True)
     text = models.TextField(null=True, blank=True)
     image = models.ImageField(upload_to='chat_images/', null=True, blank=True)
     video = models.FileField(upload_to='chat_videos/', null=True, blank=True)
@@ -45,7 +53,8 @@ class Message(models.Model):
     is_read = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Message from {self.sender.email} at {self.timestamp}"
+        sender_display = self.sender.email if self.sender else f"Guest {self.guest_id}"
+        return f"Message from {sender_display} at {self.timestamp}"
 
     class Meta:
         ordering = ['timestamp']

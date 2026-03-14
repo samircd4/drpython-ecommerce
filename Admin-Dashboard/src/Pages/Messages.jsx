@@ -1,8 +1,17 @@
-import { Search, Send, MoreVertical, Phone, Video, Paperclip, Smile, ArrowLeft, X as FaTimes } from "lucide-react";
+import { Search, Send, MoreVertical, Phone, Video, Paperclip, Smile, ArrowLeft, X as FaTimes, User } from "lucide-react";
 import api from "../api/axiosConfig";
 import { useAuth } from "../Context/AuthContext";
 import useChatSocket from "../hooks/useChatSocket";
 import { useState, useRef, useCallback, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const BACKEND_URL = API_BASE.replace(/\/api\/?$/, '');
+
+const getFullUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    return `${BACKEND_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+};
 
 const Messages = () => {
     const { user } = useAuth();
@@ -18,6 +27,8 @@ const Messages = () => {
     
     // Mobile Touch/Long-Press State
     const [longPressedMsgId, setLongPressedMsgId] = useState(null);
+    const [hoveredMsgId, setHoveredMsgId] = useState(null);
+    const hoverTimeoutRef = useRef(null);
     const touchTimeoutRef = useRef(null);
 
     // Timezone helper: Asia/Dhaka 12-hour format
@@ -237,13 +248,24 @@ const Messages = () => {
     }, [user?.id, selectedChatId]);
 
     const { isConnected, sendMessage, joinChat } = useChatSocket(token, handleWebSocketMessage);
+    const joinedChatIds = useRef(new Set());
 
     // Join rooms when connected or list updates
     useEffect(() => {
         if (isConnected && chats.length > 0) {
-            chats.forEach(chat => joinChat(chat.id));
+            chats.forEach(chat => {
+                if (!joinedChatIds.current.has(chat.id)) {
+                    joinChat(chat.id);
+                    joinedChatIds.current.add(chat.id);
+                }
+            });
         }
-    }, [isConnected, chats.length, joinChat]);
+        
+        // Clear set if connection drops to ensure re-join on reconnect
+        if (!isConnected) {
+            joinedChatIds.current.clear();
+        }
+    }, [isConnected, chats, joinChat]);
 
     const handleSendMessage = (e) => {
         e.preventDefault();
@@ -367,6 +389,18 @@ const Messages = () => {
                                                 alt={displayName} 
                                                 className="w-12 h-12 rounded-xl object-cover border border-slate-700 cursor-pointer" 
                                             />
+                                            {/* Avatar */}
+                                            {displayAvatar ? (
+                                                <img 
+                                                    src={displayAvatar} 
+                                                    alt={displayName} 
+                                                    className="w-12 h-12 rounded-xl object-cover border border-slate-700 cursor-pointer" 
+                                                />
+                                            ) : (
+                                                <div className="w-12 h-12 rounded-xl bg-slate-700 flex items-center justify-center border border-slate-700 cursor-pointer">
+                                                    <User className="w-6 h-6 text-slate-400" />
+                                                </div>
+                                            )}
                                             {/* Presence indicator: Individual user status */}
                                             <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-[#071229] ${chat.isOnline ? 'bg-green-500' : 'bg-slate-500'}`} />
                                         </div>
@@ -414,17 +448,23 @@ const Messages = () => {
                                         const displayName = activeChat.name 
                                             || (otherParticipant.first_name ? `${otherParticipant.first_name} ${otherParticipant.last_name}` : null) 
                                             || otherParticipant.username 
-                                            || 'Customer';
+                                            || (activeChat.guest_id ? `Guest #${activeChat.guest_id.slice(0, 8)}` : 'Customer');
                                             
                                         const displayAvatar = activeChat.avatar || otherParticipant.profile_picture;
                                         
                                         return (
                                             <>
-                                                <img 
-                                                    src={displayAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff`} 
-                                                    alt={displayName} 
-                                                    className="w-10 h-10 rounded-xl object-cover border border-slate-700 cursor-pointer" 
-                                                />
+                                                {displayAvatar ? (
+                                                    <img 
+                                                        src={displayAvatar} 
+                                                        alt={displayName} 
+                                                        className="w-10 h-10 rounded-xl object-cover border border-slate-700 cursor-pointer" 
+                                                    />
+                                                ) : (
+                                                    <div className="w-10 h-10 rounded-xl bg-slate-700 flex items-center justify-center border border-slate-700 cursor-pointer">
+                                                        <User className="w-5 h-5 text-slate-400" />
+                                                    </div>
+                                                )}
                                                 <div>
                                                     <h3 className="text-sm font-bold text-white uppercase tracking-tight">{displayName}</h3>
                                                     <div className="flex items-center gap-2">
@@ -484,27 +524,37 @@ const Messages = () => {
                                             const handleTouchEnd = () => {
                                                 if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
                                             };
-                                            const sender = msg.sender || {};
-                                            const senderImage = sender.profile_picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(sender.first_name || 'U')}&background=0D8ABC&color=fff`;
+                                             const sender = msg.sender || {};
                                             
                                             return (
-                                                <div key={msg.id || index} className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                                                <motion.div 
+                                                    initial={{ opacity: 0, x: isMe ? 20 : -20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    key={msg.id || index} 
+                                                    className={`flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}
+                                                >
                                                     {/* Profile image */}
                                                     <div className="shrink-0 mb-5 flex-shrink-0">
                                                         {isMe ? (
                                                             user?.profile_picture ? (
-                                                                <img src={user.profile_picture} alt="Me" className="w-8 h-8 rounded-full object-cover border border-slate-700" />
+                                                                <img src={getFullUrl(user.profile_picture)} alt="Me" className="w-8 h-8 rounded-full object-cover border border-slate-700" />
                                                             ) : (
                                                                 <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-slate-700 shadow-sm p-1">
                                                                     <img src="/favicon.png" alt="Admin" className="w-full h-full object-contain" />
                                                                 </div>
                                                             )
                                                         ) : (
-                                                            <img 
-                                                                src={senderImage} 
-                                                                alt="sender" 
-                                                                className="w-8 h-8 rounded-full object-cover border border-slate-700"
-                                                            />
+                                                            sender.profile_picture ? (
+                                                                <img 
+                                                                    src={getFullUrl(sender.profile_picture)} 
+                                                                    alt="sender" 
+                                                                    className="w-8 h-8 rounded-full object-cover border border-slate-700"
+                                                                />
+                                                            ) : (
+                                                                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center border border-slate-700">
+                                                                    <User className="w-4 h-4 text-slate-400" />
+                                                                </div>
+                                                            )
                                                         )}
                                                     </div>
                                                     
@@ -529,6 +579,13 @@ const Messages = () => {
                                                         })()}
                                                         <div 
                                                             id={`admin-msg-${msg.id}`}
+                                                            onPointerEnter={() => {
+                                                                if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+                                                                setHoveredMsgId(msg.id);
+                                                            }}
+                                                            onPointerLeave={() => {
+                                                                hoverTimeoutRef.current = setTimeout(() => setHoveredMsgId(null), 500);
+                                                            }}
                                                             onTouchStart={handleTouchStart}
                                                             onTouchEnd={handleTouchEnd}
                                                             onTouchCancel={handleTouchEnd}
@@ -541,7 +598,7 @@ const Messages = () => {
                                                                     <img 
                                                                         src={msg.image.startsWith('http') ? msg.image : `${api.defaults.baseURL.replace(/\/api\/?$/, '')}/media/${msg.image.replace(/^\/media\//, '')}`} 
                                                                         alt="uploaded" 
-                                                                        className="max-w-[300px] rounded-lg cursor-pointer hover:scale-[1.01] transition-transform" 
+                                                                        className="max-w-[300px] rounded-lg cursor://pointer hover:scale-[1.01] transition-transform" 
                                                                         onClick={() => window.open(msg.image.startsWith('http') ? msg.image : `${api.defaults.baseURL.replace(/\/api\/?$/, '')}/media/${msg.image.replace(/^\/media\//, '')}`, '_blank')} 
                                                                     />
                                                                     {msg.text && <p className="text-sm leading-relaxed">{msg.text}</p>}
@@ -558,8 +615,8 @@ const Messages = () => {
                                                             {/* Emoji Reaction Display */}
                                                             {msg.reactions && Object.keys(msg.reactions).length > 0 && (
                                                                 <div className={`absolute top-full mt-1 ${isMe ? 'right-0' : 'left-0'} flex flex-row flex-wrap gap-1.5 z-20 min-w-max p-1`}>
-                                                                    {Object.entries(msg.reactions).map(([emoji, users]) => {
-                                                                        const hasReacted = users.includes(Number(user?.id)) || users.includes(String(user?.id));
+                                                                    {Object.entries(msg.reactions).map(([emoji, reactors]) => {
+                                                                        const hasReacted = reactors.some(r => String(r.id) === String(user?.id));
                                                                         return (
                                                                             <div 
                                                                                 key={emoji} 
@@ -567,23 +624,32 @@ const Messages = () => {
                                                                             >
                                                                                 <span className="text-sm leading-none mb-1">{emoji}</span>
                                                                                 <div className="flex flex-col gap-0.5 items-center">
-                                                                                    {users.map(uId => {
-                                                                                        const isMeReact = Number(uId) === Number(user?.id);
+                                                                                    {reactors.map(reactor => {
+                                                                                         const uId = reactor.id;
+                                                                                         const isMeReact = String(uId) === String(user?.id);
+                                                                                         
+                                                                                         // Use enriched data
+                                                                                         let reactorName = isMeReact ? 'You' : (reactor.is_staff ? 'Expert' : (reactor.name || 'User'));
+
+                                                                                         const reactorAvatar = reactor?.profile_picture;
+
                                                                                         return (
                                                                                             <div key={uId} className="flex items-center gap-1 w-full px-1">
                                                                                                 <div className="w-4 h-4 rounded-full border border-slate-700 overflow-hidden shadow-sm flex items-center justify-center shrink-0">
-                                                                                                    {isMeReact ? (
-                                                                                                        (user?.avatar) ? 
-                                                                                                            <img src={user.avatar} className="w-full h-full object-cover" /> : 
-                                                                                                            <div className="w-full h-full bg-blue-600 flex items-center justify-center text-[6px] font-extrabold text-white">YOU</div>
+                                                                                                    {reactor.avatar ? (
+                                                                                                        <img src={getFullUrl(reactor.avatar)} className="w-full h-full object-cover" alt={reactor.name} />
                                                                                                     ) : (
-                                                                                                        (activeChat.customer?.avatar) ?
-                                                                                                            <img src={activeChat.customer.avatar} className="w-full h-full object-cover" /> :
-                                                                                                            <div className="w-full h-full bg-slate-700 flex items-center justify-center text-[6px] font-extrabold text-white">{activeChat.customer?.full_name?.charAt(0) || 'C'}</div>
+                                                                                                        <div className="w-full h-full bg-slate-700 flex items-center justify-center text-[6px] font-extrabold text-white">
+                                                                                                            {reactor.is_staff ? (
+                                                                                                                <img src="/favicon.png" className="w-full h-full object-contain p-0.5" alt="Admin" />
+                                                                                                            ) : (
+                                                                                                                <User className="w-2.5 h-2.5 text-slate-400" />
+                                                                                                            )}
+                                                                                                        </div>
                                                                                                     )}
                                                                                                 </div>
                                                                                                 <span className="text-[8px] font-bold text-slate-400 whitespace-nowrap">
-                                                                                                    {isMeReact ? 'You' : (activeChat.customer?.first_name || 'Cust')}
+                                                                                                    {reactorName}
                                                                                                 </span>
                                                                                             </div>
                                                                                         );
@@ -595,42 +661,51 @@ const Messages = () => {
                                                                 </div>
                                                             )}
 
-                                                            {/* Actions Overlay - Visible on Hover (Desktop) or Long Press (Mobile) */}
-                                                            <div className={`absolute -bottom-14 ${isMe ? 'right-0' : 'left-0'} h-12 flex items-start ${isLongPressed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'} transition-all z-30 pt-2`}>
-                                                                <div className="flex bg-[#0b1a2a] border border-slate-700 rounded-xl p-1.5 gap-2 shadow-2xl items-center animate-in slide-in-from-bottom-2 duration-300">
-                                                                    <div className="flex gap-2 border-r border-slate-700 pr-2">
-                                                                        {['❤️', '👍', '😂', '🔥', '😮'].map(emoji => (
+                                                            {/* Reaction Panel Animation */}
+                                                            <AnimatePresence>
+                                                                {(isLongPressed || hoveredMsgId === msg.id) && (
+                                                                    <motion.div 
+                                                                        initial={{ opacity: 0, x: isMe ? -30 : 30, scale: 0.8 }} // Center to Edge animation
+                                                                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                                                                        exit={{ opacity: 0, x: isMe ? -30 : 30, scale: 0.8 }}
+                                                                        transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                                                                        className={`absolute -bottom-12 ${isMe ? 'right-0' : 'left-0'} h-12 flex items-start z-30 pt-2`}
+                                                                    >
+                                                                        <div className="flex bg-[#0b1a2a]/95 backdrop-blur-md border border-slate-700 rounded-xl p-1.5 gap-2 shadow-2xl items-center relative">
+                                                                            <div className="flex gap-2 border-r border-slate-700 pr-2">
+                                                                                {['❤️', '👍', '😂', '🔥', '😮'].map(emoji => (
+                                                                                    <button 
+                                                                                        key={emoji} 
+                                                                                        onClick={() => {
+                                                                                            handleReaction(msg.id, emoji);
+                                                                                            setLongPressedMsgId(null);
+                                                                                        }}
+                                                                                        className="text-xl hover:scale-125 transition-transform cursor-pointer filter hover:drop-shadow-md active:scale-95"
+                                                                                    >
+                                                                                        {emoji}
+                                                                                    </button>
+                                                                                ))}
+                                                                            </div>
                                                                             <button 
-                                                                                key={emoji} 
                                                                                 onClick={() => {
-                                                                                    handleReaction(msg.id, emoji);
+                                                                                    setReplyTo(msg);
                                                                                     setLongPressedMsgId(null);
                                                                                 }}
-                                                                                className="text-xl hover:scale-125 transition-transform cursor-pointer filter hover:drop-shadow-blue active:scale-95"
+                                                                                className="p-1.5 text-blue-400 hover:text-white bg-blue-500/10 hover:bg-blue-600 rounded-lg transition-all cursor-pointer active:scale-90 flex items-center gap-1 text-[10px] font-bold uppercase"
                                                                             >
-                                                                                {emoji}
+                                                                                <Send size={10} className="rotate-180" />
+                                                                                Reply
                                                                             </button>
-                                                                        ))}
-                                                                    </div>
-                                                                    <button 
-                                                                        onClick={() => {
-                                                                            setReplyTo(msg);
-                                                                            setLongPressedMsgId(null);
-                                                                        }}
-                                                                        className="p-1.5 text-blue-500 hover:text-white bg-blue-500/10 hover:bg-blue-600 rounded-lg transition-all cursor-pointer active:scale-90 flex items-center gap-1 text-[10px] font-bold uppercase"
-                                                                        title="Reply"
-                                                                    >
-                                                                        <div className="rotate-180"><Send className="w-3 h-3" /></div>
-                                                                        Reply
-                                                                    </button>
-                                                                </div>
-                                                            </div>
+                                                                        </div>
+                                                                    </motion.div>
+                                                                )}
+                                                            </AnimatePresence>
                                                         </div>
                                                         <span className="text-[10px] sm:text-xs font-bold text-slate-300 mt-2 bg-slate-800/30 px-2 py-0.5 rounded shadow-sm opacity-90 transition-opacity hover:opacity-100">
                                                             {msg.time}
                                                         </span>
                                                     </div>
-                                                </div>
+                                                </motion.div>
                                             );
                                         })}
                                         {isTyping && (

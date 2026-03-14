@@ -31,7 +31,9 @@ class TokenAuthMiddleware:
         token = query_params.get('token', [None])[0]
 
         if not token:
+            guest_id = query_params.get('guest_id', [None])[0]
             scope['user'] = AnonymousUser()
+            scope['guest_id'] = guest_id
             return await self.inner(scope, receive, send)
 
         try:
@@ -41,8 +43,11 @@ class TokenAuthMiddleware:
             decoded_data = jwt_decode(token, settings.SECRET_KEY, algorithms=["HS256"])
             user_id = decoded_data.get('user_id')
             scope['user'] = await get_user(user_id)
+            scope['guest_id'] = None
         except (InvalidToken, TokenError, Exception):
             # Token is invalid
+            guest_id = query_params.get('guest_id', [None])[0]
             scope['user'] = AnonymousUser()
+            scope['guest_id'] = guest_id
 
         return await self.inner(scope, receive, send)

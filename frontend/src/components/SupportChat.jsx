@@ -1,20 +1,30 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaHeadset, FaPaperPlane, FaTimes, FaUserAlt, FaCircle, FaPaperclip, FaSmile, FaReply } from "react-icons/fa";
+import { FaHeadset, FaPaperPlane, FaTimes, FaUser, FaCircle, FaPaperclip, FaSmile, FaReply } from "react-icons/fa";
 import { useUser } from "../context/UserContext";
 import { useChat } from "../hooks/useChat";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import api from "../api/client";
+import api, { BASE_URL } from "../api/client";
+
+const BACKEND_URL = BASE_URL ? BASE_URL.replace(/\/api\/?$/, '') : 'http://localhost:8000';
+
+const getFullUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    return `${BACKEND_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+};
 
 const SupportChat = ({ onClose }) => {
     const { user } = useUser();
-    const { messages: serverMessages, sendMessage, isConnected, loading } = useChat();
+    const { messages, sendMessage, isConnected, loading, guest_id } = useChat();
     const [input, setInput] = useState("");
     const [replyTo, setReplyTo] = useState(null);
     
     // Mobile Touch/Long-Press State
     const [longPressedMsgId, setLongPressedMsgId] = useState(null);
+    const [hoveredMsgId, setHoveredMsgId] = useState(null);
+    const hoverTimeoutRef = useRef(null);
     const touchTimeoutRef = useRef(null);
     const messagesEndRef = useRef(null);
     const fileInputRef = useRef(null);
@@ -25,7 +35,7 @@ const SupportChat = ({ onClose }) => {
 
     useEffect(() => {
         scrollToBottom();
-    }, [serverMessages]);
+    }, [messages]);
 
     // Clear long press state if user scrolls or interacts elsewhere
     useEffect(() => {
@@ -97,38 +107,7 @@ const SupportChat = ({ onClose }) => {
         time: "Now"
     };
 
-    const displayMessages = serverMessages.length > 0 ? serverMessages : [welcomeMessage];
-
-    if (!user) {
-        return (
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 20, transformOrigin: "bottom right" }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="fixed bottom-24 right-4 md:right-10 md:bottom-28 w-[90vw] md:w-96 h-[300px] bg-white rounded-[2rem] shadow-[0_20px_60px_rgba(109,40,217,0.3)] flex flex-col z-[70] overflow-hidden border border-purple-100"
-            >
-                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white flex justify-between items-center shadow-lg">
-                    <h3 className="font-bold text-lg">Support Chat</h3>
-                    <button onClick={onClose} className="w-10 h-10 rounded-xl hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer">
-                        <FaTimes size={20} />
-                    </button>
-                </div>
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-neutral-50/50">
-                    <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 mb-4">
-                        <FaHeadset size={32} />
-                    </div>
-                    <p className="text-gray-600 font-medium mb-6">Please log in to start a secure chat with our support team.</p>
-                    <Link
-                        to="/account"
-                        onClick={onClose}
-                        className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-purple-200 hover:scale-105 transition-transform"
-                    >
-                        Login / Register
-                    </Link>
-                </div>
-            </motion.div>
-        );
-    }
+    const displayMessages = messages.length > 0 ? messages : [welcomeMessage];
 
     return (
         <motion.div
@@ -193,15 +172,19 @@ const SupportChat = ({ onClose }) => {
                             {/* Avatar */}
                             <div className="shrink-0 mb-5">
                                 {msg.from === "support" ? (
-                                    <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center border border-purple-200 shadow-sm p-1">
-                                        <img src="/favicon.png" alt="Support" className="w-full h-full object-contain" />
-                                    </div>
-                                ) : (
-                                    (user?.avatar || user?.social_avatar_url) ? (
-                                        <img src={user.avatar || user.social_avatar_url} alt="User" className="w-8 h-8 rounded-xl object-cover border border-purple-200" />
+                                    (msg.sender?.profile_picture) ? (
+                                        <img src={getFullUrl(msg.sender.profile_picture)} alt="Support" className="w-8 h-8 rounded-xl object-cover border border-purple-200" />
                                     ) : (
                                         <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center border border-purple-200 shadow-sm p-1">
-                                            <img src="/favicon.png" alt="User" className="w-full h-full object-contain" />
+                                            <img src="/favicon.png" alt="Support" className="w-full h-full object-contain" />
+                                        </div>
+                                    )
+                                ) : (
+                                    (user?.avatar || user?.social_avatar_url) ? (
+                                        <img src={getFullUrl(user.avatar || user.social_avatar_url)} alt="User" className="w-8 h-8 rounded-xl object-cover border border-purple-200" />
+                                    ) : (
+                                        <div className="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center border border-purple-200 shadow-sm">
+                                            <FaUser className="text-purple-400 w-4 h-4" />
                                         </div>
                                     )
                                 )}
@@ -210,7 +193,7 @@ const SupportChat = ({ onClose }) => {
                              {/* Content */}
                              <div className={`flex flex-col max-w-[75%] ${msg.from === "user" ? "items-end" : "items-start"}`}>
                                  {msg.parent_message_id && (() => {
-                                     const parent = serverMessages.find(m => Number(m.id) === Number(msg.parent_message_id));
+                                     const parent = messages.find(m => Number(m.id) === Number(msg.parent_message_id));
                                      if (!parent) return null;
                                      return (
                                          <button 
@@ -229,10 +212,17 @@ const SupportChat = ({ onClose }) => {
                                  })()}
                                  <div
                                      id={`msg-${msg.id}`}
+                                     onPointerEnter={() => {
+                                         if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+                                         setHoveredMsgId(msg.id);
+                                     }}
+                                     onPointerLeave={() => {
+                                         hoverTimeoutRef.current = setTimeout(() => setHoveredMsgId(null), 500);
+                                     }}
                                      onTouchStart={handleTouchStart}
                                      onTouchEnd={handleTouchEnd}
                                      onTouchCancel={handleTouchEnd}
-                                     className={`relative group p-4 rounded-2xl shadow-sm text-sm transition-all ${
+                                     className={`relative group px-4 py-2.5 rounded-2xl shadow-md transition-all ${
                                          msg.from === 'user' 
                                          ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-tr-none' 
                                          : 'bg-white border border-gray-100 text-gray-800 rounded-tl-none'
@@ -259,34 +249,52 @@ const SupportChat = ({ onClose }) => {
 
                                      {msg.reactions && Object.keys(msg.reactions).length > 0 && (
                                          <div className={`absolute top-full mt-1 ${msg.from === 'user' ? 'right-0' : 'left-0'} flex flex-row flex-wrap gap-1.5 z-20 min-w-max p-1`}>
-                                             {Object.entries(msg.reactions).map(([emoji, users]) => {
-                                                 const hasReacted = users.includes(Number(user?.id)) || users.includes(String(user?.id));
+                                             {Object.entries(msg.reactions).map(([emoji, reactors]) => {
+                                                 const myUId = user?.id || guest_id;
+                                                 const hasReacted = reactors.some(r => String(r.id) === String(myUId));
                                                  return (
                                                      <div 
                                                         key={emoji} 
                                                         className={`flex flex-col items-center bg-white/90 backdrop-blur-sm border rounded-2xl p-1 shadow-lg animate-in zoom-in duration-300 min-w-[32px] ${hasReacted ? 'border-purple-400 ring-1 ring-purple-200' : 'border-purple-100'}`}
                                                      >
                                                          <span className="text-sm leading-none mb-1">{emoji}</span>
-                                                         <div className="flex flex-col gap-0.5 items-center">
-                                                            {users.map(uId => {
-                                                                const isMe = Number(uId) === Number(user?.id);
-                                                                return (
-                                                                    <div key={uId} className="group/avatar relative flex items-center gap-1 w-full px-1">
-                                                                        <div className="w-4 h-4 rounded-full border border-white overflow-hidden shadow-sm shrink-0">
-                                                                            {isMe ? (
-                                                                                (user?.avatar || user?.social_avatar_url) ? 
-                                                                                    <img src={user.avatar || user.social_avatar_url} className="w-full h-full object-cover" /> : 
-                                                                                    <div className="w-full h-full bg-indigo-500 flex items-center justify-center text-[6px] font-extrabold text-white">YOU</div>
-                                                                            ) : (
-                                                                                <div className="w-full h-full bg-white flex items-center justify-center p-0.5">
-                                                                                    <img src="/favicon.png" className="w-full h-full object-contain" />
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
-                                                                        <span className="text-[8px] font-bold text-gray-500 whitespace-nowrap">
-                                                                            {isMe ? 'You' : 'Expert'}
-                                                                        </span>
-                                                                    </div>
+                                                          <div className="flex flex-col gap-0.5 items-center">
+                                                             {reactors.map(reactor => {
+                                                                 const uId = reactor.id;
+                                                                 const isMe = String(uId) === String(myUId);
+                                                                 
+                                                                 // Use enriched name or default labels
+                                                                 let label = isMe ? 'You' : (reactor.is_staff ? 'Expert' : (reactor.name || 'User'));
+                                                                 
+                                                                 return (
+                                                                    <div key={uId} className="group/avatar relative flex items-center gap-1 w-full">
+                                                                         <div className="w-4 h-4 rounded-full border border-white overflow-hidden shadow-sm shrink-0">
+                                                                             {isMe ? (
+                                                                                 (user?.avatar || user?.social_avatar_url) ? (
+                                                                                     <img src={getFullUrl(user.avatar || user.social_avatar_url)} className="w-full h-full object-cover" alt="Me" />
+                                                                                 ) : (
+                                                                                     <div className="w-full h-full bg-indigo-500 flex items-center justify-center text-[6px] font-extrabold text-white">YOU</div>
+                                                                                 )
+                                                                             ) : (
+                                                                                 reactor.avatar ? (
+                                                                                     <img src={getFullUrl(reactor.avatar)} alt={reactor.name} className="w-full h-full object-cover" />
+                                                                                 ) : (
+                                                                                     reactor.is_staff ? (
+                                                                                         <div className="w-full h-full bg-white flex items-center justify-center">
+                                                                                             <img src="/favicon.png" className="w-full h-full object-contain p-0.5" alt="Admin" />
+                                                                                         </div>
+                                                                                     ) : (
+                                                                                         <div className="w-full h-full bg-purple-50 flex items-center justify-center">
+                                                                                             <FaUser className="text-purple-300 w-2.5 h-2.5" />
+                                                                                         </div>
+                                                                                     )
+                                                                                 )
+                                                                             )}
+                                                                         </div>
+                                                                         <span className="text-[8px] font-bold text-gray-500 whitespace-nowrap">
+                                                                             {label}
+                                                                         </span>
+                                                                     </div>
                                                                 );
                                                             })}
                                                          </div>
@@ -297,9 +305,16 @@ const SupportChat = ({ onClose }) => {
                                      )}
 
                                      {/* Actions Overlay - Visible on Hover (Desktop) or Long Press (Mobile) */}
-                                     {msg.from === 'user' && ( // Only allow actions on my own messages or adapt to all if needed
-                                         <div className={`absolute -bottom-12 ${msg.from === 'user' ? 'right-0' : 'left-0'} h-12 flex items-start ${isLongPressed ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'} transition-all z-30 pt-2`}>
-                                             <div className="flex bg-white border border-purple-100 rounded-xl p-1.5 gap-2 shadow-xl items-center animate-in slide-in-from-top-2 duration-300 relative">
+                                     <AnimatePresence>
+                                         {(isLongPressed || hoveredMsgId === msg.id) && (
+                                             <motion.div 
+                                                initial={{ opacity: 0, x: msg.from === 'user' ? 30 : -30, scale: 0.8 }}
+                                                animate={{ opacity: 1, x: 0, scale: 1 }}
+                                                exit={{ opacity: 0, x: msg.from === 'user' ? 30 : -30, scale: 0.8 }}
+                                                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                                                className={`absolute -bottom-12 ${msg.from === 'user' ? 'right-0' : 'left-0'} h-12 flex items-start z-30 pt-2`}
+                                             >
+                                                     <div className="flex bg-white border border-purple-100 rounded-xl p-1.5 gap-2 shadow-xl items-center relative">
                                                  <div className="flex gap-2 border-r border-purple-100 pr-2">
                                                      {['❤️', '👍', '😂', '🔥', '😮'].map(emoji => (
                                                          <button 
@@ -326,9 +341,10 @@ const SupportChat = ({ onClose }) => {
                                                      Reply
                                                  </button>
                                              </div>
-                                         </div>
-                                     )}
-                                 </div>
+                                         </motion.div>
+                                         )}
+                                     </AnimatePresence>
+                                     </div>
                                  <span className="text-[10px] text-gray-400 mt-1 font-bold px-1 uppercase tracking-tighter">
                                      {msg.time}
                                  </span>

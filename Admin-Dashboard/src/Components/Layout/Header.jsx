@@ -21,6 +21,15 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import api from "../../api/axiosConfig";
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const BACKEND_URL = API_BASE.replace(/\/api\/?$/, '');
+
+const getFullUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    return `${BACKEND_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+};
+
 const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
@@ -227,7 +236,11 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                             className="flex items-center space-x-3 pl-3 border-l border-slate-700 cursor-pointer group"
                         >
                             <div className="w-8 h-8 rounded-full bg-slate-700 ring-2 ring-[#184a6a] flex items-center justify-center text-slate-200 overflow-hidden group-hover:ring-blue-500 transition-all">
-                                <User className="w-4 h-4" />
+                                {user?.profile_picture ? (
+                                    <img src={getFullUrl(user.profile_picture)} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <User className="w-4 h-4" />
+                                )}
                             </div>
                             <div className="hidden md:block text-left">
                                 <p className="text-xs font-bold text-slate-100 uppercase tracking-tight truncate max-w-[100px]">
