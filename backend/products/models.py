@@ -3,6 +3,7 @@ from django.utils.text import slugify
 from django.db import models
 import random
 from django.db.models import Min
+from utils.images import convert_to_webp
 
 
 class Category(models.Model):
@@ -171,6 +172,20 @@ class Product(models.Model):
         if not self.sku:
             self.sku = self.product_id
 
+        # 4️⃣ Optimize Main Image
+        if self.image:
+            try:
+                if not self.pk or (Product.objects.get(pk=self.pk).image != self.image):
+                    optimized = convert_to_webp(self.image)
+                    if optimized:
+                        self.image = optimized
+            except Product.DoesNotExist:
+                optimized = convert_to_webp(self.image)
+                if optimized:
+                    self.image = optimized
+            except Exception as e:
+                print(f"Error optimizing Product image: {e}")
+
         super().save(*args, **kwargs)
 
     @property
@@ -319,6 +334,20 @@ class ProductImage(models.Model):
         return f"Image for {self.product.name}"
 
     def save(self, *args, **kwargs):
+        # Optimize Gallery Image
+        if self.image:
+            try:
+                if not self.pk or (ProductImage.objects.get(pk=self.pk).image != self.image):
+                    optimized = convert_to_webp(self.image)
+                    if optimized:
+                        self.image = optimized
+            except ProductImage.DoesNotExist:
+                optimized = convert_to_webp(self.image)
+                if optimized:
+                    self.image = optimized
+            except Exception as e:
+                print(f"Error optimizing ProductImage: {e}")
+
         super().save(*args, **kwargs)
         if self.is_primary:
             # Clear other primaries for this product

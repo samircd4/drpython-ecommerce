@@ -48,7 +48,7 @@ const ProductGallery = ({
     return (
         <div className="relative bg-white rounded-xl shadow overflow-hidden">
             <div
-                className="relative aspect-square lg:h-[500px] cursor-zoom-in w-full"
+                className="relative h-[400px] sm:h-[500px] lg:h-[600px] cursor-zoom-in w-full bg-gray-50"
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
@@ -63,7 +63,7 @@ const ProductGallery = ({
                     <img
                         src={fixImage(images[prevIndex])}
                         alt=""
-                        className={`absolute inset-0 w-full h-full ${direction === "right" ? "gallery-exit-left" : "gallery-exit-right"
+                        className={`absolute inset-0 w-full h-full object-contain ${direction === "right" ? "gallery-exit-left" : "gallery-exit-right"
                             }`}
                         onError={handleImageError}
                     />
@@ -71,7 +71,7 @@ const ProductGallery = ({
                 <img
                     src={fixImage(images[activeIndex])}
                     alt={name}
-                    className={`absolute inset-0 w-full h-full ${isAnimating
+                    className={`absolute inset-0 w-full h-full object-contain ${isAnimating
                         ? direction === "right" ? "gallery-enter-right" : "gallery-enter-left"
                         : "gallery-transition opacity-100"
                         }`}
