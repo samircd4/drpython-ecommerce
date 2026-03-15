@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from utils.images import convert_to_webp
 
 
 
@@ -62,14 +61,9 @@ class Message(models.Model):
         # Optimize Chat Image
         if self.image:
             try:
-                # Chat messages are typically not updated with new images, but safe to check
-                is_new = not self.pk
-                if not is_new:
-                    old_instance = Message.objects.get(pk=self.pk)
-                    if old_instance.image != self.image:
-                        is_new = True
-                
-                if is_new:
+                from django.core.files.uploadedfile import UploadedFile
+                if isinstance(self.image, UploadedFile):
+                    from utils.images import convert_to_webp
                     optimized = convert_to_webp(self.image)
                     if optimized:
                         self.image = optimized

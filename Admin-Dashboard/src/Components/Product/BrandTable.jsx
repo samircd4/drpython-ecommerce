@@ -1,7 +1,7 @@
 import React from 'react';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 
-const BrandTable = ({ brands, loading, handleDelete }) => {
+const BrandTable = ({ brands, loading, handleDelete, onEdit, onView }) => {
     if (loading) {
         return (
             <div className="flex items-center justify-center p-20 bg-[#0b1a2a]/50 rounded-2xl border border-slate-800">
@@ -38,9 +38,27 @@ const BrandTable = ({ brands, loading, handleDelete }) => {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-mono">{brand.slug}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div className="flex space-x-2">
-                                        <button className="text-purple-400 hover:text-purple-200"><Eye className="h-5 w-5" /></button>
-                                        <button className="text-green-400 hover:text-green-200"><Pencil className="h-5 w-5" /></button>
-                                        <button onClick={() => handleDelete && handleDelete(brand.id)} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"><Trash2 className="h-5 w-5" /></button>
+                                        <button 
+                                            title="View Details"
+                                            onClick={() => onView && onView(brand)}
+                                            className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all cursor-pointer"
+                                        >
+                                            <Eye className="h-5 w-5" />
+                                        </button>
+                                        <button 
+                                            title="Edit Brand"
+                                            onClick={() => onEdit && onEdit(brand)}
+                                            className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"
+                                        >
+                                            <Pencil className="h-5 w-5" />
+                                        </button>
+                                        <button 
+                                            title="Delete Brand"
+                                            onClick={() => handleDelete && handleDelete(brand.id)} 
+                                            className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+                                        >
+                                            <Trash2 className="h-5 w-5" />
+                                        </button>
                                     </div>
                                 </td>
                             </tr>

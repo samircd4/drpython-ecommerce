@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { useAuth } from "./Context/AuthContext"
+import { ModalProvider, useModals } from "./Context/ModalContext"
 import Header from "./Components/Layout/Header"
 import Sidebar from "./Components/Layout/Sidebar"
 import Dashboard from "./Pages/Dashboard"
@@ -31,15 +32,57 @@ import Register from "./Pages/Auth/Register"
 import ForgotPassword from "./Pages/Auth/ForgotPassword"
 import { Toaster } from 'react-hot-toast';
 
-function App() {
+// Global Modals
+import BrandModal from "./Components/Product/BrandModal"
+import BrandViewModal from "./Components/Product/BrandViewModal"
+import CategoryModal from "./Components/Product/CategoryModal"
+import CategoryViewModal from "./Components/Product/CategoryViewModal"
+
+const GlobalModals = () => {
+    const { modals, closeModal } = useModals();
+
+    const handleSave = () => {
+        // Dispatch a global event to refresh data on the current page
+        window.dispatchEvent(new CustomEvent('refreshData'));
+    };
+
+    return (
+        <>
+            <BrandModal 
+                isOpen={modals.brand.isOpen} 
+                onClose={() => closeModal('brand')} 
+                brand={modals.brand.data} 
+                onSave={handleSave}
+            />
+            {/* View modal doesn't need data refresh usually */}
+            <BrandViewModal 
+                isOpen={modals.brandView?.isOpen} 
+                onClose={() => closeModal('brandView')} 
+                brand={modals.brandView?.data} 
+            />
+            <CategoryModal 
+                isOpen={modals.category.isOpen} 
+                onClose={() => closeModal('category')} 
+                category={modals.category.data} 
+                onSave={handleSave}
+            />
+            <CategoryViewModal 
+                isOpen={modals.categoryView?.isOpen} 
+                onClose={() => closeModal('categoryView')} 
+                category={modals.categoryView?.data} 
+            />
+        </>
+    );
+};
+
+function AppContent() {
     const { user, loading } = useAuth();
     const [sideBarCollapsed, setSideBarCollapsed] = useState(false)
     const [sideBarOpen, setSideBarOpen] = useState(false)
-    const [authPage, setAuthPage] = useState('login'); // 'login', 'register', 'forgot'
+    const [authPage, setAuthPage] = useState('login'); 
     const [hideLayout, setHideLayout] = useState(false);
     const location = useLocation();
 
-    // The old string-based currentpage logic is now derived from the location pathname
     const currentpage = location.pathname.split('/')[1] || "dashboard";
 
     useEffect(() => {
@@ -62,29 +105,14 @@ function App() {
         }
     };
 
-    // Update global CSS variable for sidebar width to sync other fixed elements
     useEffect(() => {
         const root = document.documentElement;
         if (sideBarCollapsed) {
-            root.style.setProperty('--sidebar-width', '5rem'); // sm:w-20
+            root.style.setProperty('--sidebar-width', '5rem');
         } else {
-            root.style.setProperty('--sidebar-width', '18rem'); // sm:w-72
+            root.style.setProperty('--sidebar-width', '18rem');
         }
     }, [sideBarCollapsed]);
-
-    // Custom event handlers for page change can be replaced/removed later, but keeping for backward compatibility
-    useEffect(() => {
-        const handlePageChange = (e) => {
-            if (e.detail) {
-                // Not the best practice, but if other components rely on this event to navigate, 
-                // we'd need useHistory. For now, it's better to update those components to use useNavigate.
-                // We'll leave the event listener empty or handle via window.location if necessary.
-                window.location.hash = e.detail; // Fallback, better to refactor sender
-            }
-        };
-        window.addEventListener('changePage', handlePageChange);
-        return () => window.removeEventListener('changePage', handlePageChange);
-    }, []);
 
     if (loading) {
         return <div className="min-h-screen bg-[#071229] flex items-center justify-center text-blue-500">Loading...</div>;
@@ -156,6 +184,7 @@ function App() {
                     </div>
                 </div>
             </div>
+            <GlobalModals />
             <Toaster 
                 position="bottom-right"
                 toastOptions={{
@@ -172,4 +201,12 @@ function App() {
     );
 }
 
-export default App
+function App() {
+    return (
+        <ModalProvider>
+            <AppContent />
+        </ModalProvider>
+    )
+}
+
+export default App;

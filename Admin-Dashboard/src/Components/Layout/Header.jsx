@@ -19,6 +19,7 @@ import {
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
+import { useModals } from "../../Context/ModalContext";
 import api from "../../api/axiosConfig";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
@@ -32,6 +33,7 @@ const getFullUrl = (path) => {
 
 const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
     const { user, logout } = useAuth();
+    const { openModal } = useModals();
     const navigate = useNavigate();
     const [theme, setTheme] = useState(() => {
         try {
@@ -169,12 +171,24 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                                     <span>Product</span>
                                 </button>
                                 
-                                <button onClick={() => { navigate('/brands/new'); setShowAddDropdown(false); }} className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer group">
+                                <button 
+                                    onClick={() => { 
+                                        openModal('brand');
+                                        setShowAddDropdown(false); 
+                                    }} 
+                                    className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer group"
+                                >
                                     <Tag className="w-4 h-4 text-slate-400 group-hover:text-purple-400" />
                                     <span>Brand</span>
                                 </button>
                                 
-                                <button onClick={() => { navigate('/categories/new'); setShowAddDropdown(false); }} className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer group">
+                                <button 
+                                    onClick={() => { 
+                                        openModal('category');
+                                        setShowAddDropdown(false); 
+                                    }} 
+                                    className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer group"
+                                >
                                     <Layers className="w-4 h-4 text-slate-400 group-hover:text-emerald-400" />
                                     <span>Category</span>
                                 </button>

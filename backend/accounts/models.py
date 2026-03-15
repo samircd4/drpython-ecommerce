@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from smart_selects.db_fields import ChainedForeignKey
-from utils.images import convert_to_webp
 
 # --- Geolocation Models ---
 class Division(models.Model):
@@ -69,14 +68,10 @@ class Customer(models.Model):
         # Optimize Avatar
         if self.avatar:
             try:
-                is_new = not self.pk
-                if not is_new:
-                    old_instance = Customer.objects.get(pk=self.pk)
-                    if old_instance.avatar != self.avatar:
-                        is_new = True
-                
-                if is_new:
-                    optimized = convert_to_webp(self.avatar, max_size=(500, 500)) # Avatars can be smaller
+                from django.core.files.uploadedfile import UploadedFile
+                if isinstance(self.avatar, UploadedFile):
+                    from utils.images import convert_to_webp
+                    optimized = convert_to_webp(self.avatar, max_size=(500, 500))  # Avatars can be smaller
                     if optimized:
                         self.avatar = optimized
             except Exception as e:

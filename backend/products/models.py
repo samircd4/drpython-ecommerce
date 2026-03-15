@@ -3,7 +3,7 @@ from django.utils.text import slugify
 from django.db import models
 import random
 from django.db.models import Min
-from utils.images import convert_to_webp
+import os
 
 
 class Category(models.Model):
@@ -18,17 +18,20 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while Category.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         
         # Optimize logo
         if self.logo:
             try:
-                is_new = not self.pk
-                if not is_new:
-                    old_instance = Category.objects.get(pk=self.pk)
-                    if old_instance.logo != self.logo:
-                        is_new = True
-                if is_new:
+                from django.core.files.uploadedfile import UploadedFile
+                if isinstance(self.logo, UploadedFile):
+                    from utils.images import convert_to_webp
                     optimized = convert_to_webp(self.logo)
                     if optimized:
                         self.logo = optimized
@@ -62,17 +65,20 @@ class Brand(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while Brand.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         
         # Optimize logo
         if self.logo:
             try:
-                is_new = not self.pk
-                if not is_new:
-                    old_instance = Brand.objects.get(pk=self.pk)
-                    if old_instance.logo != self.logo:
-                        is_new = True
-                if is_new:
+                from django.core.files.uploadedfile import UploadedFile
+                if isinstance(self.logo, UploadedFile):
+                    from utils.images import convert_to_webp
                     optimized = convert_to_webp(self.logo)
                     if optimized:
                         self.logo = optimized
@@ -207,14 +213,12 @@ class Product(models.Model):
         # 4️⃣ Optimize Main Image
         if self.image:
             try:
-                if not self.pk or (Product.objects.get(pk=self.pk).image != self.image):
+                from django.core.files.uploadedfile import UploadedFile
+                if isinstance(self.image, UploadedFile):
+                    from utils.images import convert_to_webp
                     optimized = convert_to_webp(self.image)
                     if optimized:
                         self.image = optimized
-            except Product.DoesNotExist:
-                optimized = convert_to_webp(self.image)
-                if optimized:
-                    self.image = optimized
             except Exception as e:
                 print(f"Error optimizing Product image: {e}")
 
@@ -369,14 +373,26 @@ class ProductImage(models.Model):
         # Optimize Gallery Image
         if self.image:
             try:
-                if not self.pk or (ProductImage.objects.get(pk=self.pk).image != self.image):
-                    optimized = convert_to_webp(self.image)
-                    if optimized:
-                        self.image = optimized
+                from django.core.files.uploadedfile import UploadedFile
+                from utils.images import convert_to_webp
+
+                # Only optimize if it's a new file or the file has changed
+                if not self.pk or (self.pk and ProductImage.objects.get(pk=self.pk).image != self.image):
+                    if isinstance(self.image, UploadedFile):
+                        optimized = convert_to_webp(self.image)
+                        if optimized:
+                            self.image = optimized
             except ProductImage.DoesNotExist:
-                optimized = convert_to_webp(self.image)
-                if optimized:
-                    self.image = optimized
+                # Handle case where object doesn't exist yet (new image)
+                try:
+                    from django.core.files.uploadedfile import UploadedFile
+                    from utils.images import convert_to_webp
+                    if isinstance(self.image, UploadedFile):
+                        optimized = convert_to_webp(self.image)
+                        if optimized:
+                            self.image = optimized
+                except Exception as e:
+                    print(f"Error optimizing ProductImage (new): {e}")
             except Exception as e:
                 print(f"Error optimizing ProductImage: {e}")
 
