@@ -1,6 +1,8 @@
 import React from 'react';
 import { Eye, Pencil, Trash2, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import useProductLink from '../../hooks/useProductLink';
+
 
 const SortArrow = ({ column, sortColumn, sortDirection }) => {
     if (sortColumn !== column) return <span className="opacity-20 ml-1 inline-flex flex-col leading-[0] align-middle"><span className="text-[8px]">▲</span><span className="text-[8px]">▼</span></span>;
@@ -13,6 +15,8 @@ const TakaIcon = ({ className = "w-3 h-3" }) => (
 
 const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleSort, handleDelete }) => {
     const navigate = useNavigate();
+    const { copyToClipboard } = useProductLink();
+
     return (
         <div className="overflow-x-auto rounded-lg border border-slate-700 shadow-sm">
             <table className="min-w-full divide-y divide-slate-700">
@@ -63,7 +67,13 @@ const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleS
                                             className="h-10 w-10 rounded-lg object-cover bg-slate-800 border border-slate-700"
                                         />
                                         <div className="ml-4 max-w-[200px]">
-                                            <h3 className="text-sm font-medium text-slate-100 truncate">{product.name}</h3>
+                                            <h3 
+                                                onClick={() => copyToClipboard(product.slug, product.name)}
+                                                className="text-sm font-medium text-slate-100 truncate cursor-pointer hover:text-blue-400 transition-colors"
+                                                title="Click to copy product link"
+                                            >
+                                                {product.name}
+                                            </h3>
                                             <p className="text-xs text-slate-400 truncate">{product.short_description}</p>
                                         </div>
                                     </div>

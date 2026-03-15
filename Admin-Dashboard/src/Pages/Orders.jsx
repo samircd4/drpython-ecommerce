@@ -4,6 +4,8 @@ import toast from 'react-hot-toast';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import Pagination from '../Components/Layout/Pagination';
 import api from '../api/axiosConfig';
+import useProductLink from '../hooks/useProductLink';
+
 
 const SortArrow = ({ column, sortColumn, sortDirection }) => {
     if (sortColumn !== column) return <span className="opacity-20 ml-1 inline-flex flex-col leading-[0] align-middle"><span className="text-[8px]">▲</span><span className="text-[8px]">▼</span></span>;
@@ -124,6 +126,8 @@ const OrderModal = ({ order, isOpen, onClose, onUpdateStatus, onEditPayment, isE
     const [status, setStatus] = useState(order?.status || 'Pending');
     const [copied, setCopied] = useState(false);
     const [isSavingStatus, setIsSavingStatus] = useState(false);
+    const { copyToClipboard } = useProductLink();
+
 
     useEffect(() => {
         if (order) setStatus(order.status);
@@ -301,7 +305,14 @@ const OrderModal = ({ order, isOpen, onClose, onUpdateStatus, onEditPayment, isE
                                                 <div className="flex items-center gap-3">
                                                     {item.product.image && <img src={item.product.image} className="w-8 h-8 rounded object-cover shadow-sm border border-slate-700" />}
                                                     <div>
-                                                        <p className="text-slate-200 font-medium leading-tight">{item.product.name}</p>
+                                                        <p 
+                                                            onClick={() => copyToClipboard(item.product.slug, item.product.name)}
+                                                            className="text-slate-200 font-medium leading-tight cursor-pointer hover:text-blue-400 transition-colors"
+                                                            title="Click to copy product link"
+                                                        >
+                                                            {item.product.name}
+                                                        </p>
+
                                                         {item.variant && (
                                                             <p className="text-[10px] text-slate-500 mt-1">
                                                                 {typeof item.variant === 'object'
@@ -367,6 +378,8 @@ const Orders = () => {
     const [page, setPage] = useState(1);
     const [sortColumn, setSortColumn] = useState('created_at');
     const [sortDirection, setSortDirection] = useState('desc');
+    const { copyToClipboard } = useProductLink();
+
 
     const [paymentFilter, setPaymentFilter] = useState('Payment');
     const [paymentStatusFilter, setPaymentStatusFilter] = useState('Payment Status');
@@ -590,7 +603,16 @@ const Orders = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-100 font-medium text-sm">{o.id}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-300 font-medium text-sm">{o.full_name}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-400 text-sm max-w-[200px] truncate">
-                                    {o.items?.map(i => i.product.name).join(', ') || 'No Items'}
+                                    {o.items?.map((i, idx) => (
+                                        <span 
+                                            key={idx}
+                                            onClick={(e) => { e.stopPropagation(); copyToClipboard(i.product.slug, i.product.name); }}
+                                            className="cursor-pointer hover:text-blue-400 transition-colors"
+                                            title="Click to copy product link"
+                                        >
+                                            {i.product.name}{idx < o.items.length - 1 ? ', ' : ''}
+                                        </span>
+                                    )) || 'No Items'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-100 font-bold text-sm">${o.grand_total}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-400 uppercase text-[10px] font-bold">

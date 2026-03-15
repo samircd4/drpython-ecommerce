@@ -331,22 +331,6 @@ const AddProduct = () => {
             }
 
             if (isEdit) {
-                setFormData({
-                        name: productData.name || '',
-                        product_id: productData.product_id || '',
-                        sku: productData.sku || '',
-                        description: productData.description || '',
-                        short_description: productData.short_description || '',
-                        price: productData.price || '',
-                        discount_price: productData.discount_price || '',
-                        wholesale_price: productData.wholesale_price || '',
-                        stock_quantity: productData.stock_quantity || '',
-                        is_featured: productData.is_featured || false,
-                        is_bestseller: productData.is_bestseller || false,
-                        is_active: productData.is_active !== false,
-                        category_id: productData.category?.id || '',
-                        brand_id: productData.brand?.id || '',
-                    });
                 await api.patch(`/products/${id}/`, formPayload, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });

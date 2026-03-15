@@ -5,6 +5,8 @@ import Breadcrumb from '../Components/Layout/Breadcrumb';
 import Pagination from '../Components/Layout/Pagination';
 import FilterBar from '../Components/FilterBar/FilterBar';
 import api from '../api/axiosConfig';
+import useProductLink from '../hooks/useProductLink';
+
 
 const StatusBadge = ({ status }) => {
     const map = {
@@ -24,6 +26,8 @@ const Reviews = () => {
     const [page, setPage] = useState(1);
     const [sortColumn, setSortColumn] = useState('created_at');
     const [sortDirection, setSortDirection] = useState('desc');
+    const { copyToClipboard } = useProductLink();
+
 
     React.useEffect(() => {
         const fetchReviews = async () => {
@@ -144,7 +148,15 @@ const Reviews = () => {
                                         <span className="text-slate-100 font-medium text-sm">{r.customer_name || 'Anonymous'}</span>
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-slate-300 text-sm">{r.product_name || `Product ID: ${r.product}` || 'Unknown Product'}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-slate-300 text-sm">
+                                    <span 
+                                        onClick={() => copyToClipboard(r.product_slug || r.product?.slug, r.product_name || r.product?.name)}
+                                        className="cursor-pointer hover:text-blue-400 transition-colors"
+                                        title="Click to copy product link"
+                                    >
+                                        {r.product_name || `Product ID: ${r.product}`}
+                                    </span>
+                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center gap-1 text-yellow-500">
                                         <Star className="w-3 h-3 fill-current" />

@@ -3,12 +3,16 @@ import { HelpCircle, MessageSquare, Trash2, CheckCircle, Clock } from 'lucide-re
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import Pagination from '../Components/Layout/Pagination';
 import api from '../api/axiosConfig';
+import useProductLink from '../hooks/useProductLink';
+
 
 const ProductQnA = () => {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
+    const { copyToClipboard } = useProductLink();
+
 
     useEffect(() => {
         const fetchQuestions = async () => {
@@ -68,7 +72,13 @@ const ProductQnA = () => {
                             <div className="ml-13 space-y-4">
                                 <div className="bg-[#0b1a2a] p-4 rounded-lg border border-slate-700/50">
                                     <p className="text-sm text-slate-300 italic">"{q.question}"</p>
-                                    <p className="text-xs text-blue-400 mt-2 font-medium">Product: {q.product_name}</p>
+                                    <p 
+                                        onClick={() => copyToClipboard(q.product_slug, q.product_name)}
+                                        className="text-xs text-blue-400 mt-2 font-medium cursor-pointer hover:text-blue-300 transition-colors"
+                                        title="Click to copy product link"
+                                    >
+                                        Product: {q.product_name}
+                                    </p>
                                 </div>
                                 
                                 {q.answer ? (
