@@ -19,6 +19,22 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        
+        # Optimize logo
+        if self.logo:
+            try:
+                is_new = not self.pk
+                if not is_new:
+                    old_instance = Category.objects.get(pk=self.pk)
+                    if old_instance.logo != self.logo:
+                        is_new = True
+                if is_new:
+                    optimized = convert_to_webp(self.logo)
+                    if optimized:
+                        self.logo = optimized
+            except Exception as e:
+                print(f"Error optimizing Category logo: {e}")
+
         super().save(*args, **kwargs)
 
     def get_breadcrumbs(self):
@@ -47,6 +63,22 @@ class Brand(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        
+        # Optimize logo
+        if self.logo:
+            try:
+                is_new = not self.pk
+                if not is_new:
+                    old_instance = Brand.objects.get(pk=self.pk)
+                    if old_instance.logo != self.logo:
+                        is_new = True
+                if is_new:
+                    optimized = convert_to_webp(self.logo)
+                    if optimized:
+                        self.logo = optimized
+            except Exception as e:
+                print(f"Error optimizing Brand logo: {e}")
+
         super().save(*args, **kwargs)
 
     def __str__(self):

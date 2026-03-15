@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from smart_selects.db_fields import ChainedForeignKey
+from utils.images import convert_to_webp
 
 # --- Geolocation Models ---
 class Division(models.Model):
@@ -63,6 +64,25 @@ class Customer(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.customer_type})"
+
+    def save(self, *args, **kwargs):
+        # Optimize Avatar
+        if self.avatar:
+            try:
+                is_new = not self.pk
+                if not is_new:
+                    old_instance = Customer.objects.get(pk=self.pk)
+                    if old_instance.avatar != self.avatar:
+                        is_new = True
+                
+                if is_new:
+                    optimized = convert_to_webp(self.avatar, max_size=(500, 500)) # Avatars can be smaller
+                    if optimized:
+                        self.avatar = optimized
+            except Exception as e:
+                print(f"Error optimizing Customer avatar: {e}")
+        
+        super().save(*args, **kwargs)
 
     @property
     def is_wholesaler(self):

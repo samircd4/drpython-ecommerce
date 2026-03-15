@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from utils.images import convert_to_webp
+
 
 
 class Conversation(models.Model):
@@ -55,6 +57,26 @@ class Message(models.Model):
     def __str__(self):
         sender_display = self.sender.email if self.sender else f"Guest {self.guest_id}"
         return f"Message from {sender_display} at {self.timestamp}"
+
+    def save(self, *args, **kwargs):
+        # Optimize Chat Image
+        if self.image:
+            try:
+                # Chat messages are typically not updated with new images, but safe to check
+                is_new = not self.pk
+                if not is_new:
+                    old_instance = Message.objects.get(pk=self.pk)
+                    if old_instance.image != self.image:
+                        is_new = True
+                
+                if is_new:
+                    optimized = convert_to_webp(self.image)
+                    if optimized:
+                        self.image = optimized
+            except Exception as e:
+                print(f"Error optimizing Chat image: {e}")
+        
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ['timestamp']
