@@ -121,6 +121,7 @@ const Products = () => {
     // Update URL when page changes
     useEffect(() => {
         setSearchParams({ page: page.toString() }, { replace: true })
+        window.scrollTo({ top: 0, behavior: 'smooth' })
     }, [page, setSearchParams])
 
 
