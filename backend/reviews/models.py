@@ -17,6 +17,7 @@ class Review(models.Model):
     rating = models.PositiveIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='reviews/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -24,6 +25,16 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.rating}★ - {self.customer.name}"
+
+
+class ReviewImage(models.Model):
+    review = models.ForeignKey(
+        Review, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='reviews/attachments/')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Image for {self.review}"
 
 
 class Question(models.Model):

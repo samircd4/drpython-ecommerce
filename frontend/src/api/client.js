@@ -7,9 +7,6 @@ const api = axios.create({
     withCredentials: true,
     xsrfCookieName: 'csrftoken',
     xsrfHeaderName: 'X-CSRFToken',
-    headers: {
-        "Content-Type": "application/json",
-    },
 });
 
 // 🔐 Request interceptor (inject access token)
