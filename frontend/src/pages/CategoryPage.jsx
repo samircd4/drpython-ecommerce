@@ -284,13 +284,13 @@ const CategoryPage = () => {
         }
     }
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center min-h-[50vh]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
-            </div>
-        )
-    }
+    // if (loading) {
+    //     return (
+    //         <div className="flex justify-center items-center min-h-[50vh]">
+    //             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+    //         </div>
+    //     )
+    // }
 
     return (
         <div className="w-[95%] sm:w-[90%] max-w-6xl mx-auto py-8">
@@ -348,26 +348,37 @@ const CategoryPage = () => {
                     onClearAll={handleClearAll}
                 />
 
-                {/* Products Grid */}
-                <motion.div
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
-                    key={slug || 'all'}
-                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 lg:gap-4"
-                >
-                    <AnimatePresence mode='popLayout'>
-                        {filteredProducts.map((product) => (
-                            <motion.div
-                                key={product.id}
-                                variants={itemVariants}
-                                layout
-                            >
-                                <Product product={product} />
-                            </motion.div>
-                        ))}
-                    </AnimatePresence>
-                </motion.div>
+                {/* Products Grid Area */}
+                <div className="relative min-h-[400px]">
+                    {loading && (
+                        <div className="absolute inset-0 z-10 flex justify-center pt-20 bg-white/60 backdrop-blur-[1px] transition-all duration-300">
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+                                <p className="text-sm font-medium text-purple-600 animate-pulse">Filtering products...</p>
+                            </div>
+                        </div>
+                    )}
+
+                    <motion.div
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                        key={slug || 'all'}
+                        className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 gap-3 lg:gap-4 transition-opacity duration-300 ${loading ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}
+                    >
+                        <AnimatePresence mode='popLayout'>
+                            {filteredProducts.map((product) => (
+                                <motion.div
+                                    key={product.id}
+                                    variants={itemVariants}
+                                    layout
+                                >
+                                    <Product product={product} />
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </motion.div>
+                </div>
 
                 {/* Pagination UI */}
                 {totalCount > pageSize && (

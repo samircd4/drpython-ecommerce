@@ -83,7 +83,7 @@ class SimpleProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'wholesale_price', 'image', 'slug', 'rating', 'reviews_count', 'product_type']
+        fields = ['id', 'name', 'price', 'wholesale_price', 'image', 'slug', 'rating', 'reviews_count', 'product_type', 'brand']
 
     def get_price(self, obj):
         return obj.display_price

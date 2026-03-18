@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import api from '../api/client';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const SearchBar = ({ onFocus, onBlur, onOpen, onClose }) => {
     const [showInput, setShowInput] = useState(false);
@@ -66,7 +66,16 @@ const SearchBar = ({ onFocus, onBlur, onOpen, onClose }) => {
         closeSearch();
     }, [location.pathname]);
 
-    const handleSubmit = (e) => e.preventDefault();
+    const navigate = useNavigate();
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (query.trim()) {
+            navigate(`/products?search=${encodeURIComponent(query.trim())}`);
+            closeSearch();
+        }
+    };
+
     const closeSearch = () => {
         setShowInput(false);
         setQuery('');

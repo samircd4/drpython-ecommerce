@@ -1,13 +1,14 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import (
     AllowAny,
     IsAdminUser
 )
-from django_filters.rest_framework import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, CharFilter, NumberFilter
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
+from django.db.models import Q, Min, Max
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 
 from .models import (
@@ -16,6 +17,39 @@ from .models import (
 from .serializers import (
     ProductSerializer, CategorySerializer, BrandSerializer
 )
+
+class ProductFilter(FilterSet):
+    category__name__in = CharFilter(method='filter_category_name_in')
+    brand__name__in = CharFilter(method='filter_brand_name_in')
+    price__gte = NumberFilter(field_name='price', lookup_expr='gte')
+    price__lte = NumberFilter(field_name='price', lookup_expr='lte')
+    rating__gte = NumberFilter(field_name='rating', lookup_expr='gte')
+
+    class Meta:
+        model = Product
+        fields = {
+            'category': ['exact'],
+            'category__name': ['exact'],
+            'category__slug': ['exact'],
+            'brand': ['exact'],
+            'brand__name': ['exact'],
+            'brand__slug': ['exact'],
+            'is_featured': ['exact'],
+            'is_bestseller': ['exact'],
+            'is_active': ['exact'],
+            'rating': ['exact', 'gte'],
+            'price': ['exact', 'gte', 'lte'],
+        }
+
+    def filter_category_name_in(self, queryset, name, value):
+        if not value:
+            return queryset
+        return queryset.filter(category__name__in=value.split(','))
+
+    def filter_brand_name_in(self, queryset, name, value):
+        if not value:
+            return queryset
+        return queryset.filter(brand__name__in=value.split(','))
 
 @extend_schema(tags=['Catalog'])
 class ProductViewSet(viewsets.ModelViewSet):
@@ -35,24 +69,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
 
-    filter_backends = [
-        DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter
-    ]
-
-    # ✅ ONLY REAL DB FIELDS
-    filterset_fields = {
-        'category': ['exact'],
-        'category__slug': ['exact'],
-        'brand': ['exact'],
-        'brand__slug': ['exact'],
-        'is_featured': ['exact'],
-        'is_bestseller': ['exact'],
-        'is_active': ['exact'],
-        'rating': ['exact', 'gte'],
-    }
-
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = ProductFilter
 
     search_fields = [
         'name',
@@ -64,7 +82,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     ]
 
     # ✅ ONLY REAL DB FIELDS
-    ordering_fields = ['created_at', 'rating', 'reviews_count']
+    ordering_fields = ['created_at', 'rating']
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
@@ -139,6 +157,19 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(self.get_serializer(qs, many=True).data)
 
     # ----------------------------
+    # 💰 PRICE RANGE
+    # ----------------------------
+    @extend_schema(summary="Get Min/Max Price")
+    @action(detail=False, methods=['get'])
+    def price_range(self, request):
+        from django.db.models import Min, Max
+        prices = self.get_queryset().aggregate(min_p=Min('price'), max_p=Max('price'))
+        return Response({
+            'min': float(prices['min_p'] or 0),
+            'max': float(prices['max_p'] or 0)
+        })
+
+    # ----------------------------
     # 🔥 BESTSELLERS
     # ----------------------------
     @extend_schema(summary="Bestselling Products")
@@ -192,7 +223,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['name']
     filterset_fields = ['parent']  # Allows filtering by parent=null for roots
 
@@ -217,7 +248,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class BrandViewSet(viewsets.ModelViewSet):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [SearchFilter]
     search_fields = ['name']
 
     def get_permissions(self):

@@ -39,6 +39,11 @@ const Product = ({ product }) => {
                     </div>
                     <span className="text-sm text-gray-500 ml-2">({product.reviews_count})</span>
                 </div>
+                {product.brand && (
+                    <span className="text-[10px] font-bold text-purple-600 uppercase tracking-widest mb-1">
+                        {product.brand.name}
+                    </span>
+                )}
                 <h3 className="text-xl font-semibold mb-2 line-clamp-2 h-14 overflow-hidden">
                     <Link to={`/products/${product.slug}`} className="hover:text-purple-700">
                         {product.name}
