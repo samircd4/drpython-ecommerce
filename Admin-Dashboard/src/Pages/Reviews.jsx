@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
-import { Eye, CheckCircle, XCircle, Star, MessageSquare } from 'lucide-react';
+import { Eye, CheckCircle, XCircle, Star, MessageSquare, Trash2 } from 'lucide-react';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import Pagination from '../Components/Layout/Pagination';
 import FilterBar from '../Components/FilterBar/FilterBar';
+import ConfirmModal from '../Components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 import useProductLink from '../hooks/useProductLink';
 
@@ -26,6 +27,9 @@ const Reviews = () => {
     const [page, setPage] = useState(1);
     const [sortColumn, setSortColumn] = useState('created_at');
     const [sortDirection, setSortDirection] = useState('desc');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [reviewIdToDelete, setReviewIdToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
     const { copyToClipboard } = useProductLink();
 
 
@@ -77,6 +81,29 @@ const Reviews = () => {
         } catch (error) {
             console.error(`Failed to ${action} review:`, error);
             toast.error(`Failed to ${label} review`);
+        }
+    };
+
+    const handleDeleteReview = (reviewId) => {
+        setReviewIdToDelete(reviewId);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!reviewIdToDelete) return;
+        setIsDeleting(true);
+        try {
+            await api.delete(`/reviews/${reviewIdToDelete}/`);
+            setReviews(prev => prev.filter(r => r.id !== reviewIdToDelete));
+            setTotalCount(prev => prev - 1);
+            toast.success("Review deleted successfully");
+            setIsDeleteModalOpen(false);
+        } catch (error) {
+            console.error("Failed to delete review:", error);
+            toast.error("Failed to delete review");
+        } finally {
+            setIsDeleting(false);
+            setReviewIdToDelete(null);
         }
     };
 
@@ -174,7 +201,8 @@ const Reviews = () => {
                                     <div className="flex space-x-2">
                                         <button title="View" className="p-1.5 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-all"><Eye className="h-4 w-4" /></button>
                                         <button title="Approve" onClick={() => handleApproveReview(r.id, 'approve')} className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"><CheckCircle className="h-4 w-4" /></button>
-                                        <button title="Reject" onClick={() => handleApproveReview(r.id, 'reject')} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"><XCircle className="h-4 w-4" /></button>
+                                        <button title="Reject" onClick={() => handleApproveReview(r.id, 'reject')} className="p-1.5 bg-amber-500/10 text-amber-400 rounded-lg hover:bg-amber-500 hover:text-white transition-all cursor-pointer"><XCircle className="h-4 w-4" /></button>
+                                        <button title="Delete" onClick={() => handleDeleteReview(r.id)} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"><Trash2 className="h-4 w-4" /></button>
                                     </div>
                                 </td>
                             </tr>
@@ -187,6 +215,15 @@ const Reviews = () => {
                 <div className="text-sm text-slate-400">showing <span className="text-slate-200 font-semibold">{visible.length}</span> of <span className="text-slate-200 font-semibold">{totalCount || filtered.length}</span> results</div>
                 <Pagination page={page} setPage={setPage} total={totalPages} />
             </div>
+
+            <ConfirmModal 
+                isOpen={isDeleteModalOpen}
+                isLoading={isDeleting}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Are You Sure!"
+                message="Want to delete this review?"
+            />
         </div>
     );
 };

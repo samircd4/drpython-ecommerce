@@ -6,6 +6,7 @@ import BrandTable from '../Components/Product/BrandTable';
 import BrandModal from '../Components/Product/BrandModal';
 import BrandViewModal from '../Components/Product/BrandViewModal';
 import FilterBar from '../Components/FilterBar/FilterBar';
+import ConfirmModal from '../Components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 
 const Brands = () => {
@@ -18,6 +19,9 @@ const Brands = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedBrand, setSelectedBrand] = useState(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [brandIdToDelete, setBrandIdToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchBrands = async () => {
         setLoading(true);
@@ -40,16 +44,26 @@ const Brands = () => {
         return () => window.removeEventListener('refreshData', handleRefresh);
     }, []);
 
-    const handleDeleteBrand = async (brandId) => {
-        if (!window.confirm('Are you sure you want to delete this brand?')) return;
-        const p = api.delete(`/brands/${brandId}/`).then(() => {
-            setBrands(prev => prev.filter(b => b.id !== brandId));
-        });
-        toast.promise(p, {
-            loading: 'Deleting brand...',
-            success: 'Brand deleted successfully',
-            error: 'Failed to delete brand',
-        });
+    const handleDeleteBrand = (brandId) => {
+        setBrandIdToDelete(brandId);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!brandIdToDelete) return;
+        setIsDeleting(true);
+        try {
+            await api.delete(`/brands/${brandIdToDelete}/`);
+            setBrands(prev => prev.filter(b => b.id !== brandIdToDelete));
+            toast.success('Brand deleted successfully');
+            setIsDeleteModalOpen(false);
+        } catch (error) {
+            console.error('Error deleting brand:', error);
+            toast.error('Failed to delete brand');
+        } finally {
+            setIsDeleting(false);
+            setBrandIdToDelete(null);
+        }
     };
 
     const handleAddClick = () => {
@@ -126,6 +140,15 @@ const Brands = () => {
                 isOpen={isViewModalOpen} 
                 onClose={() => setIsViewModalOpen(false)} 
                 brand={selectedBrand} 
+            />
+
+            <ConfirmModal 
+                isOpen={isDeleteModalOpen}
+                isLoading={isDeleting}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Are You Sure!"
+                message="Want to delete this brand?"
             />
         </div>
     );

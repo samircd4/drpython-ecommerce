@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import TransactionTable from '../Components/Transactions/TransactionTable';
 import Pagination from '../Components/Layout/Pagination';
+import ConfirmModal from '../Components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 
 const PaymentModal = ({ payment, isOpen, onClose, onUpdatePayment, readOnly = false }) => {
@@ -130,6 +131,9 @@ const Payments = () => {
     const [selectedPayment, setSelectedPayment] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [paymentIdToDelete, setPaymentIdToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchPayments = async () => {
         setLoading(true);
@@ -182,6 +186,29 @@ const Payments = () => {
         setIsViewModalOpen(true);
     };
 
+    const handleDeletePayment = (paymentId) => {
+        setPaymentIdToDelete(paymentId);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!paymentIdToDelete) return;
+        setIsDeleting(true);
+        try {
+            await api.delete(`/payments/${paymentIdToDelete}/`);
+            setTransactions(prev => prev.filter(t => t.id !== paymentIdToDelete));
+            setTotalCount(prev => prev - 1);
+            toast.success("Payment record deleted successfully");
+            setIsDeleteModalOpen(false);
+        } catch (error) {
+            console.error("Failed to delete payment:", error);
+            toast.error("Failed to delete payment");
+        } finally {
+            setIsDeleting(false);
+            setPaymentIdToDelete(null);
+        }
+    };
+
     const totalPages = Math.max(1, Math.ceil(totalCount / showBy));
     const visibleTransactions = transactions; 
 
@@ -230,6 +257,7 @@ const Payments = () => {
                 onSort={handleSort}
                 onEdit={handleOpenEdit}
                 onView={handleOpenView}
+                onDelete={handleDeletePayment}
             />
 
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -252,6 +280,15 @@ const Payments = () => {
                 onClose={() => setIsViewModalOpen(false)}
                 payment={selectedPayment}
                 readOnly={true}
+            />
+
+            <ConfirmModal 
+                isOpen={isDeleteModalOpen}
+                isLoading={isDeleting}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Are You Sure!"
+                message="Want to delete this payment record?"
             />
         </div>
     );

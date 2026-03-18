@@ -3,6 +3,7 @@ import { Eye, Pencil, Trash2, Download, Loader2, Copy, Save, Check } from 'lucid
 import toast from 'react-hot-toast';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import Pagination from '../Components/Layout/Pagination';
+import ConfirmModal from '../Components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 import useProductLink from '../hooks/useProductLink';
 
@@ -390,6 +391,9 @@ const Orders = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState('view'); // 'view' or 'edit'
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [orderIdToDelete, setOrderIdToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDownloadInvoice = async (orderId) => {
         try {
@@ -477,6 +481,29 @@ const Orders = () => {
         setSelectedOrder(order);
         setModalMode(mode);
         setIsModalOpen(true);
+    };
+
+    const handleDeleteOrder = (orderId) => {
+        setOrderIdToDelete(orderId);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!orderIdToDelete) return;
+        setIsDeleting(true);
+        try {
+            await api.delete(`/orders/${orderIdToDelete}/`);
+            setOrders(prev => prev.filter(o => o.id !== orderIdToDelete));
+            setTotalCount(prev => prev - 1);
+            toast.success("Order deleted successfully");
+            setIsDeleteModalOpen(false);
+        } catch (error) {
+            console.error("Failed to delete order:", error);
+            toast.error("Failed to delete order");
+        } finally {
+            setIsDeleting(false);
+            setOrderIdToDelete(null);
+        }
     };
 
 
@@ -651,7 +678,13 @@ const Orders = () => {
                                         >
                                             <Pencil className="h-4 w-4" />
                                         </button>
-                                        <button title="Delete Order" className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"><Trash2 className="h-4 w-4" /></button>
+                                        <button 
+                                            onClick={() => handleDeleteOrder(o.id)}
+                                            title="Delete Order" 
+                                            className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -679,6 +712,15 @@ const Orders = () => {
                 onClose={() => setIsPaymentModalOpen(false)}
                 payment={selectedOrder?.payment}
                 onUpdatePayment={handleUpdatePayment}
+            />
+
+            <ConfirmModal 
+                isOpen={isDeleteModalOpen}
+                isLoading={isDeleting}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Are You Sure!"
+                message="Want to delete this order?"
             />
         </div>
     );

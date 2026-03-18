@@ -6,6 +6,7 @@ import CategoryTable from '../Components/Product/CategoryTable';
 import CategoryModal from '../Components/Product/CategoryModal';
 import CategoryViewModal from '../Components/Product/CategoryViewModal';
 import FilterBar from '../Components/FilterBar/FilterBar';
+import ConfirmModal from '../Components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 
 const Categories = () => {
@@ -18,6 +19,9 @@ const Categories = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [categoryIdToDelete, setCategoryIdToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchCategories = async () => {
         setLoading(true);
@@ -40,16 +44,26 @@ const Categories = () => {
         return () => window.removeEventListener('refreshData', handleRefresh);
     }, []);
 
-    const handleDeleteCategory = async (categoryId) => {
-        if (!window.confirm('Are you sure you want to delete this category?')) return;
-        const p = api.delete(`/categories/${categoryId}/`).then(() => {
-            setCategories(prev => prev.filter(c => c.id !== categoryId));
-        });
-        toast.promise(p, {
-            loading: 'Deleting category...',
-            success: 'Category deleted successfully',
-            error: 'Failed to delete category',
-        });
+    const handleDeleteCategory = (categoryId) => {
+        setCategoryIdToDelete(categoryId);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!categoryIdToDelete) return;
+        setIsDeleting(true);
+        try {
+            await api.delete(`/categories/${categoryIdToDelete}/`);
+            setCategories(prev => prev.filter(c => c.id !== categoryIdToDelete));
+            toast.success('Category deleted successfully');
+            setIsDeleteModalOpen(false);
+        } catch (error) {
+            console.error('Error deleting category:', error);
+            toast.error('Failed to delete category');
+        } finally {
+            setIsDeleting(false);
+            setCategoryIdToDelete(null);
+        }
     };
 
     const handleAddClick = () => {
@@ -126,6 +140,15 @@ const Categories = () => {
                 isOpen={isViewModalOpen} 
                 onClose={() => setIsViewModalOpen(false)} 
                 category={selectedCategory} 
+            />
+
+            <ConfirmModal 
+                isOpen={isDeleteModalOpen}
+                isLoading={isDeleting}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Are You Sure!"
+                message="Want to delete this category?"
             />
         </div>
     );

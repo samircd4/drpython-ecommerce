@@ -40,11 +40,6 @@ const FilterBar = ({
 
     return (
         <div className="flex flex-wrap gap-3 items-center w-full">
-            <select value={showBy} onChange={(e) => onShowByChange(Number(e.target.value))} className="flex-shrink-0 bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-md px-3 py-2 focus:outline-none">
-                {showOptions.map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                ))}
-            </select>
 
             <div className="relative" ref={ref}>
                 <button type="button" onClick={() => setRatingOpen((v) => !v)} className="flex items-center space-x-2 bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-md px-3 py-2 focus:outline-none">

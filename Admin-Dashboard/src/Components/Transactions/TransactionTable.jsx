@@ -1,12 +1,12 @@
 import React from 'react';
-import { Eye, Pencil, Search } from 'lucide-react';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 
 const SortArrow = ({ column, sortColumn, sortDirection }) => {
     if (sortColumn !== column) return <span className="opacity-20 ml-1 inline-flex flex-col leading-[0] align-middle"><span className="text-[8px]">▲</span><span className="text-[8px]">▼</span></span>;
     return <span className="ml-1 inline-flex flex-col leading-[0] align-middle font-bold text-blue-400"><span className={`text-[8px] ${sortDirection === 'asc' ? 'opacity-100' : 'opacity-20'}`}>▲</span><span className={`text-[8px] ${sortDirection === 'desc' ? 'opacity-100' : 'opacity-20'}`}>▼</span></span>;
 };
 
-const TransactionTable = ({ transactions = [], sortColumn, sortDirection, onSort, onView, onEdit }) => {
+const TransactionTable = ({ transactions = [], sortColumn, sortDirection, onSort, onView, onEdit, onDelete }) => {
     const getMethodIcon = (method) => {
         // Simple text fallback for now, could be icons later
         return <span className="uppercase text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">{method}</span>;
@@ -69,6 +69,13 @@ const TransactionTable = ({ transactions = [], sortColumn, sortDirection, onSort
                                         className="p-1.5 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 hover:text-white transition-all"
                                     >
                                         <Pencil className="h-4 w-4" />
+                                    </button>
+                                    <button 
+                                        onClick={() => onDelete?.(txn.id)}
+                                        title="Delete Payment" 
+                                        className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
                                     </button>
                                 </div>
                             </td>

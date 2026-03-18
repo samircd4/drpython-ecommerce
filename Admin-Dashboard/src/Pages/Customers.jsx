@@ -4,6 +4,7 @@ import FilterBar from '../Components/FilterBar/FilterBar';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import Pagination from '../Components/Layout/Pagination';
+import ConfirmModal from '../Components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 
 const StatusBadge = ({ status }) => {
@@ -25,6 +26,9 @@ const Customers = () => {
     const [page, setPage] = useState(1);
     const [sortColumn, setSortColumn] = useState('name');
     const [sortDirection, setSortDirection] = useState('asc');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [customerIdToDelete, setCustomerIdToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     React.useEffect(() => {
         const fetchCustomers = async () => {
@@ -51,17 +55,27 @@ const Customers = () => {
         fetchCustomers();
     }, [page]);
 
-    const handleDeleteCustomer = async (customerId) => {
-        if (!window.confirm('Are you sure you want to delete this customer?')) return;
-        const p = api.delete(`/customers/${customerId}/`).then(() => {
-            setCustomers(prev => prev.filter(c => c.id !== customerId));
+    const handleDeleteCustomer = (customerId) => {
+        setCustomerIdToDelete(customerId);
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!customerIdToDelete) return;
+        setIsDeleting(true);
+        try {
+            await api.delete(`/customers/${customerIdToDelete}/`);
+            setCustomers(prev => prev.filter(c => c.id !== customerIdToDelete));
             setTotalCount(prev => prev - 1);
-        });
-        toast.promise(p, {
-            loading: 'Deleting customer...',
-            success: 'Customer deleted successfully',
-            error: 'Failed to delete customer',
-        });
+            toast.success('Customer deleted successfully');
+            setIsDeleteModalOpen(false);
+        } catch (error) {
+            console.error('Error deleting customer:', error);
+            toast.error('Failed to delete customer');
+        } finally {
+            setIsDeleting(false);
+            setCustomerIdToDelete(null);
+        }
     };
 
     const handleSort = (column) => {
@@ -182,6 +196,15 @@ const Customers = () => {
                 <div className="text-sm text-slate-400">showing <span className="text-slate-200 font-semibold">{visible.length}</span> of <span className="text-slate-200 font-semibold">{totalCount || filtered.length}</span> results</div>
                 <Pagination page={page} setPage={setPage} total={totalPages} />
             </div>
+
+            <ConfirmModal 
+                isOpen={isDeleteModalOpen}
+                isLoading={isDeleting}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Are You Sure!"
+                message="Want to delete this customer?"
+            />
         </div>
     );
 };

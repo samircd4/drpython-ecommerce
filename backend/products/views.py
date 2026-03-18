@@ -50,6 +50,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         'is_featured': ['exact'],
         'is_bestseller': ['exact'],
         'is_active': ['exact'],
+        'rating': ['exact', 'gte'],
     }
 
 

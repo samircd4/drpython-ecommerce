@@ -4,6 +4,7 @@ import FilterBar from '../Components/FilterBar/FilterBar';
 import BestSellingProductsTable from '../Components/Dashboard/BestSellingProductsTable';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import Pagination from '../Components/Layout/Pagination';
+import ConfirmModal from '../Components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 
 const Products = () => {
@@ -14,51 +15,92 @@ const Products = () => {
     const [sortColumn, setSortColumn] = useState(null);
     const [sortDirection, setSortDirection] = useState('asc');
     const [searchQuery, setSearchQuery] = useState('');
-    const [showBy, setShowBy] = useState(12);
+    const [showBy, setShowBy] = useState(20);
     const [ratingFilter, setRatingFilter] = useState(0);
     const [categoryFilter, setCategoryFilter] = useState('Category');
     const [brandFilter, setBrandFilter] = useState('Brand');
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [productIdToDelete, setProductIdToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
+        const fetchStaticData = async () => {
             try {
-                // Fetch Products, Brands, and Categories in parallel
-                const [productsRes, brandsRes, categoriesRes] = await Promise.all([
-                    api.get('/products/'),
+                const [brandsRes, categoriesRes] = await Promise.all([
                     api.get('/brands/'),
                     api.get('/categories/')
                 ]);
-
-                setProducts(productsRes.data.results || []);
-                setTotalCount(productsRes.data.count || 0);
                 setAllBrands(brandsRes.data.results || []);
                 setAllCategories(categoriesRes.data.results || []);
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching categories/brands:', error);
+            }
+        };
+        fetchStaticData();
+    }, []);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setLoading(true);
+            try {
+                const params = {
+                    page,
+                    page_size: showBy,
+                    search: searchQuery,
+                    rating__gte: ratingFilter > 0 ? ratingFilter : undefined
+                };
+                
+                if (categoryFilter !== 'Category') {
+                    const cat = allCategories.find(c => c.name === categoryFilter);
+                    if (cat) params.category = cat.id;
+                }
+                if (brandFilter !== 'Brand') {
+                    const brand = allBrands.find(b => b.name === brandFilter);
+                    if (brand) params.brand = brand.id;
+                }
+                if (sortColumn) {
+                    params.ordering = sortDirection === 'asc' ? sortColumn : `-${sortColumn}`;
+                }
+
+                const res = await api.get('/products/', { params });
+                setProducts(res.data.results || []);
+                setTotalCount(res.data.count || 0);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                setProducts([]);
+                setTotalCount(0);
             } finally {
                 setLoading(false);
             }
         };
-        fetchData();
-    }, []);
+
+        fetchProducts();
+    }, [page, searchQuery, categoryFilter, brandFilter, ratingFilter, sortColumn, sortDirection, allCategories, allBrands, showBy]);
     
-    const handleDeleteProduct = async (productId) => {
-        if (!window.confirm("Are you sure you want to delete this product?")) return;
+    const handleDeleteProduct = (productId) => {
+        setProductIdToDelete(productId);
+        setIsDeleteModalOpen(true);
+    };
 
-        const deletePromise = api.delete(`/products/${productId}/`)
-            .then(() => {
-                setProducts(prev => prev.filter(p => p.id !== productId));
-                setTotalCount(prev => prev - 1);
-            });
-
-        toast.promise(deletePromise, {
-            loading: 'Deleting product...',
-            success: 'Product deleted successfully',
-            error: 'Failed to delete product',
-        });
+    const handleConfirmDelete = async () => {
+        if (!productIdToDelete) return;
+        
+        setIsDeleting(true);
+        try {
+            await api.delete(`/products/${productIdToDelete}/`);
+            setProducts(prev => prev.filter(p => p.id !== productIdToDelete));
+            setTotalCount(prev => prev - 1);
+            toast.success('Product deleted successfully');
+            setIsDeleteModalOpen(false);
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            toast.error('Failed to delete product');
+        } finally {
+            setIsDeleting(false);
+            setProductIdToDelete(null);
+        }
     };
 
     const handleSort = (column) => {
@@ -68,66 +110,13 @@ const Products = () => {
         }
         setSortColumn(column);
         setSortDirection(direction);
-
-        const sortedProducts = [...products].sort((a, b) => {
-            let valA = a[column];
-            let valB = b[column];
-
-            // Normalize undefined/null
-            if (valA === undefined || valA === null) valA = '';
-            if (valB === undefined || valB === null) valB = '';
-
-            // If either value is a string, compare as string (case-insensitive)
-            if (typeof valA === 'string' || typeof valB === 'string') {
-                const sA = String(valA).toLowerCase();
-                const sB = String(valB).toLowerCase();
-                if (sA < sB) return direction === 'asc' ? -1 : 1;
-                if (sA > sB) return direction === 'asc' ? 1 : -1;
-                return 0;
-            }
-
-            // Otherwise compare numbers
-            const nA = Number(valA);
-            const nB = Number(valB);
-            if (isNaN(nA) || isNaN(nB)) {
-                // Fallback to string compare if values aren't numeric
-                const sA = String(valA).toLowerCase();
-                const sB = String(valB).toLowerCase();
-                if (sA < sB) return direction === 'asc' ? -1 : 1;
-                if (sA > sB) return direction === 'asc' ? 1 : -1;
-                return 0;
-            }
-
-            return direction === 'asc' ? nA - nB : nB - nA;
-        });
-
-        setProducts(sortedProducts);
     };
 
     const categories = allCategories.map(c => c.name).filter(Boolean);
     const brands = allBrands.map(b => b.name).filter(Boolean);
 
-    // Compute filteredProducts from current products and filters
-    const filteredProducts = products.filter((p) => {
-        const q = searchQuery.trim().toLowerCase();
-        if (q) {
-            const matchesSearch = String(p.name).toLowerCase().includes(q) ||
-                String(p.category?.name).toLowerCase().includes(q) ||
-                String(p.brand?.name).toLowerCase().includes(q) ||
-                String(p.product_id).toLowerCase().includes(q) ||
-                String(p.description).toLowerCase().includes(q);
-            if (!matchesSearch) return false;
-        }
-
-        if (ratingFilter && p.rating < ratingFilter) return false;
-        if (categoryFilter && categoryFilter !== 'Category' && p.category?.name !== categoryFilter) return false;
-        if (brandFilter && brandFilter !== 'Brand' && p.brand?.name !== brandFilter) return false;
-        return true;
-    });
-
-    const totalPages = Math.max(1, Math.ceil(filteredProducts.length / showBy));
-    // apply pagination slicing
-    const visibleProducts = filteredProducts.slice((page - 1) * showBy, page * showBy);
+    const totalPages = Math.ceil(totalCount / showBy) || 1;
+    const visibleProducts = products;
 
     return (
         <div className="p-0 sm:px-6 sm:py-4 min-h-screen" style={{ backgroundImage: 'linear-gradient(90deg,var(--bg-start),var(--bg-mid),var(--bg-end))' }}>
@@ -170,10 +159,19 @@ const Products = () => {
             {/* Pagination Bottom */}
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="text-sm text-slate-400">
-                    Showing <span className="text-slate-200 font-semibold">{visibleProducts.length}</span> of <span className="text-slate-200 font-semibold">{filteredProducts.length}</span> entries
+                    Showing <span className="text-slate-200 font-semibold">{visibleProducts.length}</span> of <span className="text-slate-200 font-semibold">{totalCount}</span> entries
                 </div>
                 <Pagination page={page} setPage={setPage} total={totalPages} />
             </div>
+
+            <ConfirmModal 
+                isOpen={isDeleteModalOpen}
+                isLoading={isDeleting}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Are You Sure!"
+                message="Want to delete this product?"
+            />
         </div>
     );
 };
