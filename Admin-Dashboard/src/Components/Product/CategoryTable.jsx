@@ -50,7 +50,7 @@ const CategoryTable = ({ categories, loading, handleDelete }) => {
                                     <div className="flex space-x-2">
                                         <button className="text-purple-400 hover:text-purple-200"><Eye className="h-5 w-5" /></button>
                                         <button className="text-green-400 hover:text-green-200"><Pencil className="h-5 w-5" /></button>
-                                        <button onClick={() => handleDelete && handleDelete(cat.id)} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"><Trash2 className="h-5 w-5" /></button>
+                                        <button onClick={() => handleDelete && handleDelete(cat.id)} disabled={true} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"><Trash2 className="h-5 w-5" /></button>
                                     </div>
                                 </td>
                             </tr>

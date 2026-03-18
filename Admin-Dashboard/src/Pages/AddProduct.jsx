@@ -83,8 +83,6 @@ const AddProduct = () => {
     
     const [formData, setFormData] = useState({
         name: '',
-        product_id: '',
-        sku: '',
         description: '',
         short_description: '',
         price: '',
@@ -125,8 +123,6 @@ const AddProduct = () => {
                     
                     setFormData({
                         name: productData.name || '',
-                        product_id: productData.product_id || '',
-                        sku: productData.sku || '',
                         description: productData.description || '',
                         short_description: productData.short_description || '',
                         price: productData.price || '',
@@ -406,32 +402,7 @@ const AddProduct = () => {
                                             className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all placeholder:text-slate-500"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-medium text-slate-300">UID / Product ID</label>
-                                            <input
-                                                type="text"
-                                                name="product_id"
-                                                placeholder="e.g. LAP-001"
-                                                value={formData.product_id}
-                                                onChange={handleChange}
-                                                readOnly={isView}
-                                                className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all placeholder:text-slate-500"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-sm font-medium text-slate-300">SKU</label>
-                                            <input
-                                                type="text"
-                                                name="sku"
-                                                placeholder="SKU Number"
-                                                value={formData.sku}
-                                                onChange={handleChange}
-                                                readOnly={isView}
-                                                className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all placeholder:text-slate-500"
-                                            />
-                                        </div>
-                                    </div>
+
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-slate-300">Description</label>
                                         <textarea
@@ -445,10 +416,22 @@ const AddProduct = () => {
                                         ></textarea>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-slate-300">Short Description</label>
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-sm font-medium text-slate-300">Short Description</label>
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                                                (formData.short_description?.length || 0) > 150 
+                                                ? 'bg-red-500/10 text-red-400 border-red-500/20' 
+                                                : (formData.short_description?.length || 0) > 130
+                                                ? 'bg-orange-500/10 text-orange-400 border-orange-500/20'
+                                                : 'bg-slate-800 text-slate-500 border-slate-700'
+                                            }`}>
+                                                {formData.short_description?.length || 0} / 160
+                                            </span>
+                                        </div>
                                         <textarea
                                             name="short_description"
                                             rows="2"
+                                            maxLength="160"
                                             placeholder="A brief summary for cards and lists..."
                                             value={formData.short_description}
                                             onChange={handleChange}

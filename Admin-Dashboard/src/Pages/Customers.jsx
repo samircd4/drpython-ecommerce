@@ -181,9 +181,9 @@ const Customers = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs">{new Date(c.created_at).toLocaleDateString()}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex space-x-2">
-                                        <button title="View" className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all"><Eye className="h-4 w-4" /></button>
-                                        <button title="Edit" className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all"><Pencil className="h-4 w-4" /></button>
-                                        <button title="Delete" onClick={() => handleDeleteCustomer(c.id)} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"><Trash2 className="h-4 w-4" /></button>
+                                        <button title="View" className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all cursor-pointer"><Eye className="h-4 w-4" /></button>
+                                        <button title="Edit" className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"><Pencil className="h-4 w-4" /></button>
+                                        <button title="Delete" onClick={() => handleDeleteCustomer(c.id)} disabled={true} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"><Trash2 className="h-4 w-4" /></button>
                                     </div>
                                 </td>
                             </tr>

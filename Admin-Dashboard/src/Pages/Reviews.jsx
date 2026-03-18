@@ -202,7 +202,7 @@ const Reviews = () => {
                                         <button title="View" className="p-1.5 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-all"><Eye className="h-4 w-4" /></button>
                                         <button title="Approve" onClick={() => handleApproveReview(r.id, 'approve')} className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"><CheckCircle className="h-4 w-4" /></button>
                                         <button title="Reject" onClick={() => handleApproveReview(r.id, 'reject')} className="p-1.5 bg-amber-500/10 text-amber-400 rounded-lg hover:bg-amber-500 hover:text-white transition-all cursor-pointer"><XCircle className="h-4 w-4" /></button>
-                                        <button title="Delete" onClick={() => handleDeleteReview(r.id)} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"><Trash2 className="h-4 w-4" /></button>
+                                        <button title="Delete" onClick={() => handleDeleteReview(r.id)} disabled={true} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"><Trash2 className="h-4 w-4" /></button>
                                     </div>
                                 </td>
                             </tr>
