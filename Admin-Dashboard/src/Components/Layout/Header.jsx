@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import { useModals } from "../../Context/ModalContext";
 import api from "../../api/axiosConfig";
+import { useChat } from "../../Context/ChatContext";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 const BACKEND_URL = API_BASE.replace(/\/api\/?$/, '');
@@ -34,6 +35,7 @@ const getFullUrl = (path) => {
 const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
     const { user, logout } = useAuth();
     const { openModal } = useModals();
+    const { unreadCount, refreshUnreadCount } = useChat();
     const navigate = useNavigate();
     const [theme, setTheme] = useState(() => {
         try {
@@ -58,7 +60,6 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
 
     const [showUserDropdown, setShowUserDropdown] = useState(false);
     const [showAddDropdown, setShowAddDropdown] = useState(false);
-    const [unreadCount, setUnreadCount] = useState(0);
     const dropdownRef = useRef(null);
     const addDropdownRef = useRef(null);
 
@@ -75,22 +76,6 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    useEffect(() => {
-        const fetchUnread = async () => {
-            try {
-                const response = await api.get('/chats/');
-                const chats = Array.isArray(response.data) ? response.data : (response.data?.results || []);
-                const total = chats.reduce((acc, chat) => acc + (chat.unread_count || 0), 0);
-                setUnreadCount(total);
-            } catch (err) {
-                console.error("Header: Failed to fetch unread count", err);
-            }
-        };
-        if (user) fetchUnread();
-        const interval = setInterval(fetchUnread, 30000);
-        return () => clearInterval(interval);
-    }, [user]);
-
     const handleMarkAllRead = async () => {
         try {
             const response = await api.get('/chats/');
@@ -98,8 +83,7 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
             const unreadChats = chats.filter(c => c.unread_count > 0);
             
             await Promise.all(unreadChats.map(chat => api.patch(`/chats/read/${chat.id}/`)));
-            setUnreadCount(0);
-            window.dispatchEvent(new CustomEvent('unreadCountRefresh'));
+            refreshUnreadCount();
         } catch (err) {
             console.error("Header: Failed to mark all as read", err);
         }

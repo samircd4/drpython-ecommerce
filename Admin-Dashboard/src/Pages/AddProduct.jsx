@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { Save, ArrowLeft, Image as ImageIcon, Plus, X, Check, AlertCircle, ChevronDown, Star } from 'lucide-react';
+import { Save, Edit, ArrowLeft, Image as ImageIcon, Plus, X, Check, AlertCircle, ChevronDown, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
 import api from '../api/axiosConfig';
@@ -355,12 +355,21 @@ const AddProduct = () => {
         <div className="p-0 sm:p-6 min-h-screen">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <Breadcrumb title={isView ? "View Product" : (isEdit ? "Edit Product" : "Add Product")} paths={["Home", "Products", isView ? "View" : (isEdit ? "Edit" : "Add New")]} />
-                <button
-                    onClick={() => navigate('/products')}
-                    className="flex items-center text-slate-400 hover:text-white transition-colors bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700 cursor-pointer"
-                >
-                    <ArrowLeft className="w-4 h-4 mr-2" /> Back to List
-                </button>
+                {isView ? (
+                    <button
+                        onClick={() => navigate(`/products/edit/${id}`)}
+                        className="flex items-center text-blue-400 hover:text-white transition-colors bg-blue-600/10 px-4 py-1.5 rounded-lg border border-blue-500/20 cursor-pointer shadow-lg shadow-blue-600/5 hover:bg-blue-600/20 font-bold"
+                    >
+                        <Edit className="w-4 h-4 mr-2" /> Edit Product
+                    </button>
+                ) : (
+                    <button
+                        onClick={() => navigate('/products')}
+                        className="flex items-center text-slate-400 hover:text-white transition-colors bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700 cursor-pointer"
+                    >
+                        <ArrowLeft className="w-4 h-4 mr-2" /> Back to List
+                    </button>
+                )}
             </div>
 
 

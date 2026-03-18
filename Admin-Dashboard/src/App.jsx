@@ -201,10 +201,14 @@ function AppContent() {
     );
 }
 
+import { ChatProvider } from "./Context/ChatContext"
+
 function App() {
     return (
         <ModalProvider>
-            <AppContent />
+            <ChatProvider>
+                <AppContent />
+            </ChatProvider>
         </ModalProvider>
     )
 }

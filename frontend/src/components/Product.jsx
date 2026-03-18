@@ -40,8 +40,13 @@ const Product = ({ product }) => {
                     <span className="text-sm text-gray-500 ml-2">({product.reviews_count})</span>
                 </div>
                 {product.brand && (
-                    <span className="text-[10px] font-bold text-purple-600 uppercase tracking-widest mb-1">
-                        {product.brand.name}
+                    <span className="text-xs font-medium text-gray-500 tracking-wide">
+                        Brand: <span className="text-purple-600 font-semibold">{product.brand.name}</span>
+                    </span>
+                )}
+                {product.category && (
+                    <span className="text-xs font-medium text-gray-500 tracking-wide">
+                        Category: <span className="text-purple-600 font-semibold">{product.category.name}</span>
                     </span>
                 )}
                 <h3 className="text-xl font-semibold mb-2 line-clamp-2 h-14 overflow-hidden">

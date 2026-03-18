@@ -57,10 +57,12 @@ const menuItems = [
     { id: "settings", icon: Settings, label: "Settings" },
 ];
 
+import { useChat } from "../../Context/ChatContext";
+
 const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageChange }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const [unreadTotal, setUnreadTotal] = useState(0);
+    const { unreadCount: unreadTotal } = useChat();
     const [expandedItems, setExpandedItems] = useState(new Set(["analytics"]));
     const anyOpen = expandedItems && expandedItems.size > 0;
     const [hideScrollbar, setHideScrollbar] = useState(false);
@@ -88,31 +90,6 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
         }
         return false;
     };
-
-    // Fetch unread count from API
-    useEffect(() => {
-        const fetchUnread = async () => {
-            try {
-                const response = await api.get('/chats/');
-                const chats = Array.isArray(response.data) ? response.data : (response.data?.results || []);
-                const total = chats.reduce((acc, chat) => acc + (chat.unread_count || 0), 0);
-                setUnreadTotal(total);
-            } catch (err) {
-                console.error("Sidebar: Failed to fetch unread count", err);
-            }
-        };
-        if (user) fetchUnread();
-        
-        const handleRefresh = () => fetchUnread();
-        window.addEventListener('unreadCountRefresh', handleRefresh);
-        
-        // Refresh every minute
-        const interval = setInterval(fetchUnread, 60000);
-        return () => {
-            clearInterval(interval);
-            window.removeEventListener('unreadCountRefresh', handleRefresh);
-        };
-    }, [user]);
 
     // On small screens the sidebar becomes a slide-over overlay (no page shift).
     // `mobileOpen` controls visibility on small screens; `collapsed` controls desktop width.

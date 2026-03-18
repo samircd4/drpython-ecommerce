@@ -77,7 +77,7 @@ const Products = () => {
         };
 
         fetchProducts();
-    }, [page, searchQuery, categoryFilter, brandFilter, ratingFilter, sortColumn, sortDirection, allCategories, allBrands, showBy]);
+    }, [page, searchQuery, categoryFilter, brandFilter, ratingFilter, sortColumn, sortDirection, showBy]);
     
     const handleDeleteProduct = (productId) => {
         setProductIdToDelete(productId);

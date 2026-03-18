@@ -41,16 +41,14 @@ const Messages = () => {
         });
     };
 
-    // Layout visibility control
+    // Layout visibility control - Disabled as per user request to keep sidebar visible
     useEffect(() => {
-        // When showChatOnMobile is true OR selectedChatId exists on mobile/narrow view
-        const shouldHide = showChatOnMobile;
-        window.dispatchEvent(new CustomEvent('toggleLayout', { detail: shouldHide }));
-        
+        // We no longer hide the layout when a chat is selected on desktop.
+        // If specific mobile-only hiding is needed, it should be handled differently.
         return () => {
             window.dispatchEvent(new CustomEvent('toggleLayout', { detail: false }));
         };
-    }, [showChatOnMobile]);
+    }, []);
 
     // The active chat derived from the list
     const activeChat = chats.find(c => Number(c.id) === Number(selectedChatId));
@@ -389,18 +387,6 @@ const Messages = () => {
                                                 alt={displayName} 
                                                 className="w-12 h-12 rounded-xl object-cover border border-slate-700 cursor-pointer" 
                                             />
-                                            {/* Avatar */}
-                                            {displayAvatar ? (
-                                                <img 
-                                                    src={displayAvatar} 
-                                                    alt={displayName} 
-                                                    className="w-12 h-12 rounded-xl object-cover border border-slate-700 cursor-pointer" 
-                                                />
-                                            ) : (
-                                                <div className="w-12 h-12 rounded-xl bg-slate-700 flex items-center justify-center border border-slate-700 cursor-pointer">
-                                                    <User className="w-6 h-6 text-slate-400" />
-                                                </div>
-                                            )}
                                             {/* Presence indicator: Individual user status */}
                                             <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-[#071229] ${chat.isOnline ? 'bg-green-500' : 'bg-slate-500'}`} />
                                         </div>
