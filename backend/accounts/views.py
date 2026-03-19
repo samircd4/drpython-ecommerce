@@ -448,7 +448,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
         description="Retrieve the profile of the currently authenticated user.",
         responses={200: CustomerSerializer}
     )
-    @action(detail=False, methods=['get', 'put'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['get', 'put', 'patch'], permission_classes=[IsAuthenticated])
     def me(self, request):
         customer = get_object_or_404(Customer, user=request.user)
 

@@ -22,6 +22,7 @@ import { useAuth } from "../../Context/AuthContext";
 import { useModals } from "../../Context/ModalContext";
 import api from "../../api/axiosConfig";
 import { useChat } from "../../Context/ChatContext";
+import { motion } from "framer-motion";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 const BACKEND_URL = API_BASE.replace(/\/api\/?$/, '');
@@ -135,14 +136,16 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                 <div className="flex items-center space-x-3">
                     {/* Add New Dropdown */}
                     <div className="relative" ref={addDropdownRef}>
-                        <button 
+                        <motion.button 
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                             onClick={() => setShowAddDropdown(!showAddDropdown)}
                             className="flex items-center space-x-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors cursor-pointer group shadow-sm"
                         >
                             <Plus className="w-4 h-4" />
-                            <span className="text-sm font-semibold">New</span>
+                            <span className="hidden sm:inline text-sm font-semibold">New</span>
                             <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showAddDropdown ? 'rotate-180' : ''}`} />
-                        </button>
+                        </motion.button>
 
                         {showAddDropdown && (
                             <div className="absolute right-0 mt-3 w-56 bg-[#0b1a2a] border border-slate-700/50 rounded-xl shadow-2xl py-2 z-[60] animate-in fade-in slide-in-from-top-2 duration-200 origin-top-right">

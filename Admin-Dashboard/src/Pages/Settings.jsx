@@ -1,9 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Breadcrumb from '../Components/Layout/Breadcrumb';
-import { User, Bell, Shield, Palette, Save } from 'lucide-react';
+import { User, Bell, Shield, Palette, Save, Camera, Loader2 } from 'lucide-react';
+import { useAuth } from '../Context/AuthContext';
+import api from '../api/axiosConfig';
+import toast from 'react-hot-toast';
 
 const Settings = () => {
+    const { user, fetchUserProfile } = useAuth();
     const [activeTab, setActiveTab] = useState('profile');
+    const [loading, setLoading] = useState(false);
+    const fileInputRef = useRef(null);
+    
+    const [formData, setFormData] = useState({
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone_number: '',
+        avatar: null
+    });
+    const [avatarPreview, setAvatarPreview] = useState(null);
+
+    useEffect(() => {
+        if (user) {
+            setFormData({
+                first_name: user.first_name || '',
+                last_name: user.last_name || '',
+                email: user.email || '',
+                phone_number: user.phone_number || '',
+                avatar: null
+            });
+            setAvatarPreview(user.avatar || user.social_avatar_url);
+        }
+    }, [user]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFormData(prev => ({ ...prev, avatar: file }));
+            setAvatarPreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleSave = async () => {
+        setLoading(true);
+        try {
+            const data = new FormData();
+            data.append('first_name', formData.first_name);
+            data.append('last_name', formData.last_name);
+            data.append('email', formData.email);
+            data.append('phone_number', formData.phone_number);
+            
+            if (formData.avatar) {
+                data.append('avatar', formData.avatar);
+            }
+
+            await api.patch('/customers/me/', data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            
+            await fetchUserProfile(); // Refresh global user state
+            toast.success('Profile updated successfully!');
+        } catch (error) {
+            console.error('Failed to update profile:', error);
+            const msg = error.response?.data ? JSON.stringify(error.response.data) : 'Failed to update profile';
+            toast.error(msg);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const tabs = [
         { id: 'profile', name: 'Profile Information', icon: User },
@@ -44,40 +113,81 @@ const Settings = () => {
                             <div className="flex items-center gap-6 pb-6 border-b border-slate-800">
                                 <div className="relative group">
                                     <img
-                                        src="https://i.pravatar.cc/150?u=current-user"
+                                        src={avatarPreview || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'Admin')}&background=0D8ABC&color=fff`}
                                         alt="Current User"
                                         className="w-24 h-24 rounded-2xl object-cover border-4 border-slate-800"
                                     />
-                                    <button className="absolute inset-0 flex items-center justify-center bg-black/50 text-white rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity">
-                                        Change
+                                    <input 
+                                        type="file" 
+                                        ref={fileInputRef} 
+                                        onChange={handleAvatarChange} 
+                                        className="hidden" 
+                                        accept="image/*"
+                                    />
+                                    <button 
+                                        onClick={() => fileInputRef.current.click()}
+                                        className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 text-white rounded-2xl opacity-0 group-hover:opacity-100 transition-all scale-95 group-hover:scale-100 cursor-pointer"
+                                    >
+                                        <Camera className="w-6 h-6 mb-1" />
+                                        <span className="text-[10px] font-bold uppercase tracking-wider">Change</span>
                                     </button>
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-white">Samir Ahmed</h3>
-                                    <p className="text-slate-400">Super Admin • Dhaka, Bangladesh</p>
+                                    <h3 className="text-xl font-bold text-white">{user?.name || 'Admin User'}</h3>
+                                    <p className="text-slate-400">
+                                        {user?.is_superuser ? 'Super Admin' : (user?.is_staff ? 'Staff Member' : 'Member')} 
+                                        {user?.address ? ` • ${user.address}` : ''}
+                                    </p>
                                 </div>
                             </div>
 
-                            <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={(e) => e.preventDefault()}>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-400 ml-1">Full Name</label>
-                                    <input type="text" defaultValue="Samir Ahmed" className="w-full bg-[#0b1a2a] border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500" />
+                                    <label className="text-sm font-medium text-slate-400 ml-1">First Name</label>
+                                    <input 
+                                        type="text" 
+                                        name="first_name"
+                                        value={formData.first_name} 
+                                        onChange={handleChange}
+                                        className="w-full bg-[#0b1a2a] border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all" 
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-400 ml-1">Last Name</label>
+                                    <input 
+                                        type="text" 
+                                        name="last_name"
+                                        value={formData.last_name} 
+                                        onChange={handleChange}
+                                        className="w-full bg-[#0b1a2a] border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all" 
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-slate-400 ml-1">Email Address</label>
-                                    <input type="email" defaultValue="samir@example.com" className="w-full bg-[#0b1a2a] border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500" />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-400 ml-1">Role</label>
-                                    <input type="text" readOnly defaultValue="Super Admin" className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-400 cursor-not-allowed" />
+                                    <input 
+                                        type="email" 
+                                        name="email"
+                                        value={formData.email} 
+                                        onChange={handleChange}
+                                        className="w-full bg-[#0b1a2a] border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all" 
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-slate-400 ml-1">Phone Number</label>
-                                    <input type="text" defaultValue="+880 1700 000000" className="w-full bg-[#0b1a2a] border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500" />
+                                    <input 
+                                        type="text" 
+                                        name="phone"
+                                        value={formData.phone} 
+                                        onChange={handleChange}
+                                        className="w-full bg-[#0b1a2a] border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all" 
+                                    />
                                 </div>
-                                <div className="md:col-span-2 space-y-2">
-                                    <label className="text-sm font-medium text-slate-400 ml-1">Bio</label>
-                                    <textarea rows="4" className="w-full bg-[#0b1a2a] border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 resize-none"></textarea>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-400 ml-1">Role</label>
+                                    <input type="text" readOnly value={user?.is_superuser ? 'Super Admin' : (user?.is_staff ? 'Staff Member' : 'Admin')} className="w-full bg-slate-800/30 border border-slate-700/50 rounded-xl px-4 py-2.5 text-slate-500 cursor-not-allowed italic" />
+                                </div>
+                                <div className="md:col-span-1 space-y-2 invisible h-0">
+                                    {/* Spacer/Empty for grid alignment */}
                                 </div>
                             </form>
                         </div>
@@ -137,9 +247,21 @@ const Settings = () => {
 
                     {/* Common Bottom Action */}
                     <div className="mt-8 pt-6 border-t border-slate-800 flex justify-end">
-                        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95">
-                            <Save className="w-5 h-5" />
-                            <span>Save Changes</span>
+                        <button 
+                            onClick={handleSave}
+                            disabled={loading}
+                            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg active:scale-95 ${
+                                loading 
+                                ? 'bg-blue-600/50 text-white/50 cursor-not-allowed' 
+                                : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20 cursor-pointer'
+                            }`}
+                        >
+                            {loading ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <Save className="w-5 h-5" />
+                            )}
+                            <span>{loading ? 'Saving...' : 'Save Changes'}</span>
                         </button>
                     </div>
                 </div>

@@ -163,11 +163,13 @@ class CustomerSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     is_wholesaler = serializers.SerializerMethodField()
     is_email_verified = serializers.SerializerMethodField()
+    first_name = serializers.CharField(source='user.first_name', required=False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
 
     class Meta:
         model = Customer
         fields = [
-            'id', 'user', 'username', 'name',
+            'id', 'user', 'username', 'first_name', 'last_name', 'name',
             'email', 'phone_number', 'customer_type',
             'avatar', 'social_avatar_url', 'is_wholesaler', 'is_email_verified', 'is_staff', 'created_at'
         ]
@@ -206,6 +208,26 @@ class CustomerSerializer(serializers.ModelSerializer):
             pass
             
         return data
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+        first_name = user_data.get('first_name')
+        last_name = user_data.get('last_name')
+
+        # Update User fields if provided
+        user = instance.user
+        if first_name is not None:
+            user.first_name = first_name
+        if last_name is not None:
+            user.last_name = last_name
+        if first_name is not None or last_name is not None:
+            user.save()
+
+        # Update Customer name automatically if first/last name changed
+        if first_name is not None or last_name is not None:
+            instance.name = f"{user.first_name} {user.last_name}".strip() or user.username
+
+        return super().update(instance, validated_data)
 
 
 class AddressSerializer(serializers.ModelSerializer):
