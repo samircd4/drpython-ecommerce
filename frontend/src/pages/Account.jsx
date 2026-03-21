@@ -136,7 +136,7 @@ const Account = () => {
                         x: [0, 50, 0]
                     }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-100 rounded-full blur-[100px] opacity-60"
+                    className="absolute top-[-1%] left-[-10%] w-[50%] h-[50%] bg-purple-100 rounded-full blur-[100px] opacity-60"
                 />
                 <motion.div
                     animate={{

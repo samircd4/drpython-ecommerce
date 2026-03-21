@@ -1,3 +1,5 @@
+import somirCover from "../assets/sarker_shop_architecture.png";
+
 export const teamMembers = [
     {
         id: "nilesh-cmo",
@@ -21,7 +23,7 @@ export const teamMembers = [
         expertise: ["Python", "Django", "React", "RestAPI"],
         bio: "The technical architect behind our high-performance systems. Somir translates complex business needs into elegant, scalable code. With a deep focus on full-stack excellence, he ensures our platform remains at the cutting edge of retail technology.",
         image: "https://avatars.githubusercontent.com/u/61603868?v=4",
-        coverImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=2000",
+        coverImage: somirCover,
         gradient: "from-blue-600 to-cyan-500",
         bgGradient: "from-blue-50 to-cyan-50",
         socials: { github: "https://github.com/samircd4", linkedin: "https://www.linkedin.com/in/samircd4/", mail: "mailto:somir@sarker.shop" },
