@@ -61,22 +61,32 @@ export const CartProvider = ({ children }) => {
     const addToCart = async (product) => {
         const token = localStorage.getItem("access_token");
 
+        // Determine effective price: 
+        // If variant is present, we assume the calling component (like ProductDetails) 
+        // has already provided the correct variant price in product.price.
+        // Otherwise, for simple products, we prioritize: wholesale_price > discount_price > price
+        const effectivePrice = product.variant 
+            ? product.price 
+            : (product.wholesale_price || product.discount_price || product.price);
+        
+        const productWithCorrectPrice = { ...product, price: effectivePrice };
+
         // Optimistic update
         let updatedCart;
         const itemInCart = cartItem.find((item) => {
-            const a = item.id === product.id;
-            const b = (item.variant?.id ?? null) === (product.variant?.id ?? null);
+            const a = item.id === productWithCorrectPrice.id;
+            const b = (item.variant?.id ?? null) === (productWithCorrectPrice.variant?.id ?? null);
             return a && b;
         });
 
         if (itemInCart) {
             updatedCart = cartItem.map((item) => {
-                const same = item.id === product.id && (item.variant?.id ?? null) === (product.variant?.id ?? null);
+                const same = item.id === productWithCorrectPrice.id && (item.variant?.id ?? null) === (productWithCorrectPrice.variant?.id ?? null);
                 return same ? { ...item, quantity: item.quantity + 1 } : item;
             });
             toast.success("Product quantity increased!")
         } else {
-            updatedCart = [...cartItem, { ...product, quantity: 1, image: fixImage(product.image) }];
+            updatedCart = [...cartItem, { ...productWithCorrectPrice, quantity: 1, image: fixImage(productWithCorrectPrice.image) }];
             toast.success("Product is added to cart!")
         }
         setCartItem(updatedCart);
@@ -85,8 +95,8 @@ export const CartProvider = ({ children }) => {
         if (token) {
             try {
                 const response = await api.post('/cart-items/', {
-                    product_id: product.id,
-                    variant_id: product.variant?.id,
+                    product_id: productWithCorrectPrice.id,
+                    variant_id: productWithCorrectPrice.variant?.id,
                     quantity: 1
                 });
 
@@ -94,7 +104,7 @@ export const CartProvider = ({ children }) => {
                 if (!itemInCart && response.data) {
                     const cartItemId = response.data.id;
                     setCartItem(prev => prev.map(item =>
-                        (item.id === product.id && (item.variant?.id ?? null) === (product.variant?.id ?? null))
+                        (item.id === productWithCorrectPrice.id && (item.variant?.id ?? null) === (productWithCorrectPrice.variant?.id ?? null))
                             ? { ...item, cart_item_id: cartItemId }
                             : item
                     ));
