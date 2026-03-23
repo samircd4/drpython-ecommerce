@@ -105,6 +105,9 @@ export default {
           },
         },
       },
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
+      },
       boxShadow: {
         "primary-glow":
           "0 0 15px var(--primary-600), 0 0 25px var(--primary-600), 0 0 35px var(--primary-600)",

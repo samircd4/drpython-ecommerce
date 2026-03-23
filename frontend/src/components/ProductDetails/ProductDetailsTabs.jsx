@@ -89,7 +89,7 @@ const ProductDetailsTabs = ({ product, productReviews = [], onProductUpdate }) =
             </div>
 
             {/* Content Sections */}
-            <div className="mt-16 space-y-32 pb-20">
+            <div className="mt-4 space-y-4 pb-12">
                 <section id="spacification" className="scroll-mt-64">
                     <Spacification specifications={product.specifications || []} />
                 </section>

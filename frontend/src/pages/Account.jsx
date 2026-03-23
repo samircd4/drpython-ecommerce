@@ -126,7 +126,7 @@ const Account = () => {
     };
 
     return (
-        <div className="min-h-screen relative flex items-center justify-center bg-[#f8fafc] overflow-hidden py-12 px-4 sm:px-6 lg:px-8">
+        <div className="relative flex flex-col items-center bg-[#f8fafc] overflow-hidden pt-0 pb-12 px-4 sm:px-6 lg:px-8">
             {/* Background Decorative Elements */}
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
                 <motion.div
