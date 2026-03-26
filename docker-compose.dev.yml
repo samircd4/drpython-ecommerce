@@ -18,7 +18,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: always
-    command: uv run gunicorn ecommerce_api.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2
+    command: uv run daphne -b 0.0.0.0 -p 8000 ecommerce_api.asgi:application
     environment:
       - REDIS_URL=redis://redis:6379/0
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
@@ -118,7 +118,7 @@ services:
 
   admin_dashboard:
     build:
-      context: ./admin-dashboard
+      context: ./Admin-Dashboard
       dockerfile: Dockerfile
       args:
         - VITE_API_BASE_URL=${VITE_API_URL}
