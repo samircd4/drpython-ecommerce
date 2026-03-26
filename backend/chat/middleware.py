@@ -30,24 +30,28 @@ class TokenAuthMiddleware:
         query_params = urllib.parse.parse_qs(query_string)
         token = query_params.get('token', [None])[0]
 
-        if not token:
-            guest_id = query_params.get('guest_id', [None])[0]
-            scope['user'] = AnonymousUser()
-            scope['guest_id'] = guest_id
-            return await self.inner(scope, receive, send)
+        # Always ensure guest_id is in scope for the consumer
+        scope['guest_id'] = query_params.get('guest_id', [None])[0]
+        scope['user'] = AnonymousUser()
 
-        try:
-            # Validate token
-            UntypedToken(token)
-            # Decode payload
-            decoded_data = jwt_decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            user_id = decoded_data.get('user_id')
-            scope['user'] = await get_user(user_id)
-            scope['guest_id'] = None
-        except (InvalidToken, TokenError, Exception):
-            # Token is invalid
-            guest_id = query_params.get('guest_id', [None])[0]
-            scope['user'] = AnonymousUser()
-            scope['guest_id'] = guest_id
+        if token:
+            try:
+                # Validate token
+                UntypedToken(token)
+                # Decode payload (using SimpleJWT settings if possible, otherwise fallback to settings.SECRET_KEY)
+                signing_key = getattr(settings, 'SIMPLE_JWT', {}).get('SIGNING_KEY', settings.SECRET_KEY)
+                algorithm = getattr(settings, 'SIMPLE_JWT', {}).get('ALGORITHM', 'HS256')
+                
+                decoded_data = jwt_decode(token, signing_key, algorithms=[algorithm])
+                user_id = decoded_data.get('user_id')
+                
+                if user_id:
+                    scope['user'] = await get_user(user_id)
+                    # If we have a user, we don't need guest_id
+                    scope['guest_id'] = None
+            except (InvalidToken, TokenError, Exception) as e:
+                # Token is invalid, fallback to AnonymousUser (which is already set)
+                print(f"WS Auth Error: {str(e)}")
 
         return await self.inner(scope, receive, send)
+

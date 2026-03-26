@@ -32,8 +32,10 @@ END
 echo "Applying database migrations..."
 uv run python manage.py migrate --noinput
 
-echo "Collecting static files..."
-uv run python manage.py collectstatic --noinput
+if [ "$DEBUG" = "False" ]; then
+    echo "Collecting static files..."
+    uv run python manage.py collectstatic --noinput
+fi
 
 # If a command is passed to the entrypoint, run it
 if [ $# -gt 0 ]; then

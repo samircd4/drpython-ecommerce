@@ -2,22 +2,33 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.utils.timezone import localtime
+from django.contrib.auth.models import AnonymousUser
 from .models import Conversation, Message
+
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.user = self.scope['user']
-        self.guest_id = self.scope.get('guest_id')
+        try:
+            self.user = self.scope.get('user', AnonymousUser())
+            self.guest_id = self.scope.get('guest_id')
+            
+            # Debug log for production
+            print(f"WS Connect Attempt: user={self.user}, guest_id={self.guest_id}, path={self.scope.get('path')}")
 
-        if not self.user.is_authenticated and not self.guest_id:
+            if not self.user.is_authenticated and not self.guest_id:
+                print("WS Connect Rejected: No auth or guest_id")
+                await self.close()
+                return
+
+            self.groups_joined = set()
+            await self.accept()
+            
+            # Optional: Send welcome message or initial state
+            # await self.send(text_data=json.dumps({"type": "connection_established"}))
+        except Exception as e:
+            print(f"Error in WS Connect: {str(e)}")
             await self.close()
-            return
 
-        self.groups_joined = set()
-        await self.accept()
-        
-        # Notify that user is online
-        await self.broadcast_presence(True)
 
     async def disconnect(self, close_code):
         # Notify that user is offline

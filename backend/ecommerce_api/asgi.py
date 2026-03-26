@@ -43,8 +43,8 @@ application = ProtocolTypeRouter({
             notifications.routing.websocket_urlpatterns +
             orders.routing.websocket_urlpatterns +
             products.routing.websocket_urlpatterns +
-            chat.routing.websocket_urlpatterns +
-            [path("ws/debug/", DebugConsumer.as_asgi())]
+            chat.routing.websocket_urlpatterns
         )
     ),
 })
+

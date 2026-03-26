@@ -15,19 +15,19 @@ services:
     volumes:
       - postgres_data_local:/var/lib/postgresql/data
 
-  backend:
+  backend_api:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: sarker_backend_local
+    container_name: sarker_backend_api_local
     volumes:
       - ./backend:/app
-      - /app/.venv # Protect container's venv from being overwritten by local volume
+      - /app/.venv
       - backend_static_local:/app/staticfiles
       - backend_media_local:/app/media
     environment:
-      - REDIS_URL=redis://redis:6379/0
-      - DATABASE_URL=postgres://sarker_user:sarker_pass@db:5432/sarker_shop
+      - REDIS_URL=redis://sarker_redis_local:6379/0
+      - DATABASE_URL=postgres://sarker_user:sarker_pass@sarker_db_local:5432/sarker_shop
       - DEBUG=True
       - DOMAIN=localhost
       - ALLOWED_HOSTS=*
@@ -40,12 +40,45 @@ services:
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
       - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL:-}
       - UV_COMPILE_BYTECODE=0
-    # command: uv run python manage.py runserver 0.0.0.0:8000
+    command: uv run daphne -b 0.0.0.0 -p 8000 ecommerce_api.asgi:application
     ports:
       - "8000:8000"
     depends_on:
       - redis
       - db
+
+  backend_ws:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sarker_backend_ws_local
+    volumes:
+      - ./backend:/app
+      - /app/.venv
+      - backend_static_local:/app/staticfiles
+      - backend_media_local:/app/media
+    environment:
+      - REDIS_URL=redis://sarker_redis_local:6379/0
+      - DATABASE_URL=postgres://sarker_user:sarker_pass@sarker_db_local:5432/sarker_shop
+      - DEBUG=True
+      - DOMAIN=localhost
+      - ALLOWED_HOSTS=*
+      - FRONTEND_URL=http://localhost:5173
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_SECRET=${GOOGLE_SECRET:-}
+      - EMAIL_HOST=${EMAIL_HOST:-smtp.gmail.com}
+      - EMAIL_PORT=${EMAIL_PORT:-587}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL:-}
+      - UV_COMPILE_BYTECODE=0
+    command: uv run daphne -b 0.0.0.0 -p 8001 ecommerce_api.asgi:application
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis
+      - db
+
 
   celery_worker:
     build:
@@ -57,8 +90,8 @@ services:
       - /app/.venv
     command: uv run celery -A ecommerce_api worker --loglevel=info
     environment:
-      - REDIS_URL=redis://redis:6379/0
-      - DATABASE_URL=postgres://sarker_user:sarker_pass@db:5432/sarker_shop
+      - REDIS_URL=redis://sarker_redis_local:6379/0
+      - DATABASE_URL=postgres://sarker_user:sarker_pass@sarker_db_local:5432/sarker_shop
       - DEBUG=True
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - GOOGLE_SECRET=${GOOGLE_SECRET:-}
@@ -98,12 +131,13 @@ services:
       - "5174:5174"
     environment:
       - VITE_API_BASE_URL=http://localhost:8000/api
-      - VITE_WS_URL=ws://localhost:8000/ws/chat/
+      - VITE_WS_URL=ws://localhost:8001/ws/chat/
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
     command: sh -c "npm install && npm run dev -- --host --port 5174"
     depends_on:
-      - backend
+      - backend_api
+
 
 volumes:
   postgres_data_local:
