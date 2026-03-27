@@ -30,8 +30,6 @@ const NotificationPanel = ({ open, onClose, notifications = [], onMarkRead, onMa
         return `${diffInDays}D`;
     };
 
-    if (!open) return null;
-
     const unreadCount = notifications.filter(n => !n.is_read).length;
 
     return (
