@@ -29,9 +29,11 @@ class TokenAuthMiddleware:
         query_string = scope.get('query_string', b'').decode()
         query_params = urllib.parse.parse_qs(query_string)
         token = query_params.get('token', [None])[0]
+        scope['guest_id'] = query_params.get('guest_id', [None])[0]
+        
+        print(f"DEBUG: WS TokenAuthMiddleware - token: {'received' if token else 'missing'}, guest_id: {scope['guest_id']}")
 
         # Always ensure guest_id is in scope for the consumer
-        scope['guest_id'] = query_params.get('guest_id', [None])[0]
         scope['user'] = AnonymousUser()
 
         if token:

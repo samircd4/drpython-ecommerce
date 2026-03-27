@@ -59,7 +59,10 @@ const useWebSocket = (url) => {
                 }
             }
 
-            const socket = new WebSocket(fullUrl);
+            const token = localStorage.getItem('access_token');
+            const fullWsUrl = token ? `${fullUrl}${fullUrl.includes('?') ? '&' : '?'}token=${token}` : fullUrl;
+
+            const socket = new WebSocket(fullWsUrl);
 
             socket.onopen = () => {
                 if (isMounted.current) {

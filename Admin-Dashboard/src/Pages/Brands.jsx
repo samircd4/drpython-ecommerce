@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Plus } from 'lucide-react';
-import Breadcrumb from '../Components/Layout/Breadcrumb';
-import BrandTable from '../Components/Product/BrandTable';
-import BrandModal from '../Components/Product/BrandModal';
-import BrandViewModal from '../Components/Product/BrandViewModal';
-import FilterBar from '../Components/FilterBar/FilterBar';
-import ConfirmModal from '../Components/Layout/ConfirmModal';
+import Breadcrumb from '../components/Layout/Breadcrumb';
+import BrandTable from '../components/Product/BrandTable';
+import BrandModal from '../components/Product/BrandModal';
+import BrandViewModal from '../components/Product/BrandViewModal';
+import FilterBar from '../components/FilterBar/FilterBar';
+import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 
 const Brands = () => {

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Plus } from 'lucide-react';
-import Breadcrumb from '../Components/Layout/Breadcrumb';
-import CategoryTable from '../Components/Product/CategoryTable';
-import CategoryModal from '../Components/Product/CategoryModal';
-import CategoryViewModal from '../Components/Product/CategoryViewModal';
-import FilterBar from '../Components/FilterBar/FilterBar';
-import ConfirmModal from '../Components/Layout/ConfirmModal';
+import Breadcrumb from '../components/Layout/Breadcrumb';
+import CategoryTable from '../components/Product/CategoryTable';
+import CategoryModal from '../components/Product/CategoryModal';
+import CategoryViewModal from '../components/Product/CategoryViewModal';
+import FilterBar from '../components/FilterBar/FilterBar';
+import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 
 const Categories = () => {

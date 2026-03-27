@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Breadcrumb from "../Components/Layout/Breadcrumb";
-import BestSellingProductsTable from "../Components/Dashboard/BestSellingProductsTable";
-import StatsGrid from "../Components/Dashboard/StatsGrid";
-import PopularClients from "../Components/Dashboard/PopularClients";
-import OrdersOverview from "../Components/Dashboard/OrdersOverview";
-import FilterBar from "../Components/FilterBar/FilterBar";
-import Pagination from "../Components/Layout/Pagination";
+import Breadcrumb from "../components/Layout/Breadcrumb";
+import BestSellingProductsTable from "../components/Dashboard/BestSellingProductsTable";
+import StatsGrid from "../components/Dashboard/StatsGrid";
+import PopularClients from "../components/Dashboard/PopularClients";
+import OrdersOverview from "../components/Dashboard/OrdersOverview";
+import FilterBar from "../components/FilterBar/FilterBar";
+import Pagination from "../components/Layout/Pagination";
 import api from "../api/axiosConfig";
 
 const Dashboard = () => {

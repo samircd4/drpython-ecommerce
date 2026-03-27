@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
-import FilterBar from '../Components/FilterBar/FilterBar';
+import FilterBar from '../components/FilterBar/FilterBar';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
-import Breadcrumb from '../Components/Layout/Breadcrumb';
-import Pagination from '../Components/Layout/Pagination';
-import ConfirmModal from '../Components/Layout/ConfirmModal';
+import Breadcrumb from '../components/Layout/Breadcrumb';
+import Pagination from '../components/Layout/Pagination';
+import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 
 const StatusBadge = ({ status }) => {

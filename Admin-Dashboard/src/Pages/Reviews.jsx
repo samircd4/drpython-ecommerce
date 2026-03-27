@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Eye, CheckCircle, XCircle, Star, MessageSquare, Trash2 } from 'lucide-react';
-import Breadcrumb from '../Components/Layout/Breadcrumb';
-import Pagination from '../Components/Layout/Pagination';
-import FilterBar from '../Components/FilterBar/FilterBar';
-import ConfirmModal from '../Components/Layout/ConfirmModal';
+import Breadcrumb from '../components/Layout/Breadcrumb';
+import Pagination from '../components/Layout/Pagination';
+import FilterBar from '../components/FilterBar/FilterBar';
+import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 import useProductLink from '../hooks/useProductLink';
 

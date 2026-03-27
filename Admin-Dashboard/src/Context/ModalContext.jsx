@@ -6,7 +6,13 @@ export const ModalProvider = ({ children }) => {
     const [modals, setModals] = useState({
         brand: { isOpen: false, data: null },
         category: { isOpen: false, data: null },
-        product: { isOpen: false, data: null }, // Product is usually a page, but adding for completeness
+        product: { isOpen: false, data: null },
+    });
+
+    const [orderModal, setOrderModal] = useState({
+        isOpen: false,
+        order: null,
+        mode: 'view'
     });
 
     const openModal = (type, data = null) => {
@@ -23,8 +29,28 @@ export const ModalProvider = ({ children }) => {
         }));
     };
 
+    const openOrderModal = (order, mode = 'view') => {
+        setOrderModal({ isOpen: true, order, mode });
+    };
+
+    const closeOrderModal = () => {
+        setOrderModal(prev => ({ ...prev, isOpen: false }));
+    };
+
+    const setOrderModalMode = (mode) => {
+        setOrderModal(prev => ({ ...prev, mode }));
+    };
+
     return (
-        <ModalContext.Provider value={{ modals, openModal, closeModal }}>
+        <ModalContext.Provider value={{ 
+            modals, 
+            openModal, 
+            closeModal, 
+            orderModal, 
+            openOrderModal, 
+            closeOrderModal,
+            setOrderModalMode
+        }}>
             {children}
         </ModalContext.Provider>
     );

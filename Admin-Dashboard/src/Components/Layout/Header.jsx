@@ -23,6 +23,10 @@ import { useModals } from "../../Context/ModalContext";
 import api from "../../api/axiosConfig";
 import { useChat } from "../../Context/ChatContext";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
+import OrderPanel from "./OrderPanel";
+import NotificationPanel from "./NotificationPanel";
+import useNotificationSocket from "../../hooks/useNotificationSocket";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 const BACKEND_URL = API_BASE.replace(/\/api\/?$/, '');
@@ -35,7 +39,7 @@ const getFullUrl = (path) => {
 
 const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
     const { user, logout } = useAuth();
-    const { openModal } = useModals();
+    const { openModal, openOrderModal } = useModals();
     const { unreadCount, refreshUnreadCount } = useChat();
     const navigate = useNavigate();
     const [theme, setTheme] = useState(() => {
@@ -61,8 +65,20 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
 
     const [showUserDropdown, setShowUserDropdown] = useState(false);
     const [showAddDropdown, setShowAddDropdown] = useState(false);
+    const [showOrderPanel, setShowOrderPanel] = useState(false);
+    const [showNotificationPanel, setShowNotificationPanel] = useState(false);
+    
+    const [recentOrders, setRecentOrders] = useState([]);
+    const [notifications, setNotifications] = useState([]);
+    const [newOrdersCount, setNewOrdersCount] = useState(0);
+    const [lastKnownOrderId, setLastKnownOrderId] = useState(() => {
+        return parseInt(localStorage.getItem('lastKnownOrderId')) || null;
+    });
+
     const dropdownRef = useRef(null);
     const addDropdownRef = useRef(null);
+    const orderPanelRef = useRef(null);
+    const notificationPanelRef = useRef(null);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -72,10 +88,82 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
             if (addDropdownRef.current && !addDropdownRef.current.contains(event.target)) {
                 setShowAddDropdown(false);
             }
+            if (orderPanelRef.current && !orderPanelRef.current.contains(event.target)) {
+                setShowOrderPanel(false);
+            }
+            if (notificationPanelRef.current && !notificationPanelRef.current.contains(event.target)) {
+                setShowNotificationPanel(false);
+            }
         };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    const fetchHeaderData = async () => {
+        try {
+            // Fetch recent orders
+            const ordersRes = await api.get('/orders/');
+            const orderData = Array.isArray(ordersRes.data) ? ordersRes.data : (ordersRes.data?.results || []);
+            setRecentOrders(orderData.slice(0, 10));
+
+            // Logic for "new orders" badge
+            if (orderData.length > 0) {
+                const latestId = orderData[0].id;
+                if (lastKnownOrderId === null) {
+                    setLastKnownOrderId(latestId);
+                    // Initial load: we consider these "new" if they haven't been seen
+                    setNewOrdersCount(orderData.length);
+                } else if (latestId !== lastKnownOrderId) {
+                    // New orders arrived
+                    const newOnes = orderData.filter(o => o.id > lastKnownOrderId);
+                    if (newOnes.length > 0) {
+                        setNewOrdersCount(prev => prev + newOnes.length);
+                        setLastKnownOrderId(latestId);
+                    }
+                }
+            }
+
+            // Fetch notifications
+            try {
+                const notifRes = await api.get('/notifications/');
+                const notifData = Array.isArray(notifRes.data) ? notifRes.data : (notifRes.data?.results || []);
+                setNotifications(notifData);
+            } catch (e) {
+                setNotifications([]);
+            }
+        } catch (error) {
+            console.error("Header: Failed to fetch data", error);
+        }
+    };
+
+    // WebSocket for True Real-Time Notifications
+    const accessToken = localStorage.getItem('access_token');
+    useNotificationSocket(accessToken, user?.id, (data) => {
+        if (data.type === 'new_order') {
+            toast.success(`New Order: ${data.message || 'Received!'}`, {
+                duration: 5000,
+                position: 'top-right',
+                icon: '🛒'
+            });
+            // Optimistically increment badge
+            setNewOrdersCount(prev => prev + 1);
+            // Refresh full state after a short delay
+            setTimeout(() => {
+                fetchHeaderData();
+            }, 1000);
+        }
+    });
+
+    useEffect(() => {
+        fetchHeaderData();
+    }, [lastKnownOrderId]);
+
+    // Persist lastKnownOrderId when it changes
+    useEffect(() => {
+        if (lastKnownOrderId) {
+            localStorage.setItem('lastKnownOrderId', lastKnownOrderId.toString());
+        }
+    }, [lastKnownOrderId]);
 
     const handleMarkAllRead = async () => {
         try {
@@ -89,6 +177,13 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
             console.error("Header: Failed to mark all as read", err);
         }
     };
+
+    const handleOrderClick = (order) => {
+        setShowOrderPanel(false);
+        openOrderModal(order, 'view');
+    };
+
+
 
     return (
         <div className="relative z-50 shadow-lg backdrop-blur-xl border-b border-slate-800 px-4 sm:px-6 py-2 sm:py-4 h-12 sm:h-16" style={{ backgroundImage: 'linear-gradient(90deg,var(--bg-start),var(--bg-mid),var(--bg-end))' }}>
@@ -122,10 +217,10 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
 
                 {/* Center - hidden on small screens to keep header compact */}
                 <div className="hidden sm:block flex-1 max-w-md mx-8">
-                    <div className="relative">
-                        <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+                    <div className="relative group">
+                        <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-blue-400" />
                         <input
-                            className="w-full pl-10  pr-4 py-2.5 bg-[#0b1a2a] border border-slate-700 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#214b6b] transition-all"
+                            className="w-full pl-10 pr-4 py-2.5 bg-[#0b1a2a] border border-slate-700 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#214b6b] transition-all"
                             type="text"
                             placeholder="Search Anything"
                         />
@@ -202,12 +297,36 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                     
                     <div className="hidden sm:block h-6 w-px bg-slate-700 mx-1"></div>
 
-                    {/* Cart Icon (Mobile & Desktop) */}
-                    <button className="p-2.5 cursor-pointer rounded-xl text-slate-200 hover:bg-slate-800 transition-colors relative">
-                        <ShoppingCart className="w-5 h-5" />
-                    </button>
+                    {/* Cart Icon -> Order Panel */}
+                    <div className="relative" ref={orderPanelRef}>
+                        <button 
+                            onClick={() => {
+                                setShowOrderPanel(!showOrderPanel);
+                                if (!showOrderPanel) setNewOrdersCount(0); // Reset badge when opening
+                                setShowNotificationPanel(false);
+                                setShowUserDropdown(false);
+                                setShowAddDropdown(false);
+                            }}
+                            className={`p-2.5 cursor-pointer rounded-xl transition-colors relative ${
+                                showOrderPanel ? 'bg-blue-600/20 text-blue-400' : 'text-slate-200 hover:bg-slate-800'
+                            }`}
+                        >
+                            <ShoppingCart className="w-5 h-5" />
+                            {newOrdersCount > 0 && (
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#071229]">
+                                    {newOrdersCount}
+                                </span>
+                            )}
+                        </button>
+                        <OrderPanel 
+                            open={showOrderPanel} 
+                            onClose={() => setShowOrderPanel(false)} 
+                            orders={recentOrders}
+                            onOrderClick={handleOrderClick}
+                        />
+                    </div>
 
-                    {/* Notification/Messages */}
+                    {/* Notification/Messages - Messages handled separately by user request */}
                     <button 
                         onClick={() => {
                             handleMarkAllRead();
@@ -223,12 +342,47 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                         )}
                     </button>
 
-                    <button className="relative p-2.5 cursor-pointer rounded-xl text-slate-200 hover:bg-slate-800 transition-colors hidden sm:block">
-                        <Bell className="w-5 h-5" />
-                        <span className="absolute -top-1 w-5 h-5 bg-red-500 text-slate-100 text-xs rounded-full flex items-center justify-center">
-                            3
-                        </span>
-                    </button>
+                    <div className="relative" ref={notificationPanelRef}>
+                        <button 
+                            onClick={() => {
+                                setShowNotificationPanel(!showNotificationPanel);
+                                setShowOrderPanel(false);
+                                setShowUserDropdown(false);
+                                setShowAddDropdown(false);
+                            }}
+                            className={`relative p-2.5 cursor-pointer rounded-xl transition-colors hidden sm:block ${
+                                showNotificationPanel ? 'bg-purple-600/20 text-purple-400' : 'text-slate-200 hover:bg-slate-800'
+                            }`}
+                        >
+                            <Bell className="w-5 h-5" />
+                            {notifications.filter(n => !n.is_read).length > 0 && (
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#071229]">
+                                    {notifications.filter(n => !n.is_read).length}
+                                </span>
+                            )}
+                        </button>
+                        <NotificationPanel 
+                            open={showNotificationPanel}
+                            onClose={() => setShowNotificationPanel(false)}
+                            notifications={notifications}
+                            onMarkRead={async (id) => {
+                                try {
+                                    await api.patch(`/notifications/${id}/read/`);
+                                    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+                                } catch (e) {
+                                    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
+                                }
+                            }}
+                            onMarkAllRead={async () => {
+                                try {
+                                    await api.post('/notifications/read-all/');
+                                    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+                                } catch (e) {
+                                    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+                                }
+                            }}
+                        />
+                    </div>
 
                     {/* User Profile */}
                     <div className="relative" ref={dropdownRef}>
@@ -284,6 +438,7 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                     </div>
                 </div>
             </div>
+
         </div>
     );
 };
