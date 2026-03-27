@@ -21,8 +21,6 @@ const OrderPanel = ({ open, onClose, orders, onOrderClick }) => {
         return `${diffInDays}D AGO`;
     };
 
-    if (!open) return null;
-
     return (
         <AnimatePresence>
             {open && (
