@@ -1,4 +1,4 @@
-import { Eye, Pencil, Trash2, X, Loader2, Save } from 'lucide-react';
+import { Eye, Pencil, Trash2, X, Loader2, Save, Plus } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import Breadcrumb from '../components/Layout/Breadcrumb';
@@ -6,6 +6,7 @@ import TransactionTable from '../components/Transactions/TransactionTable';
 import Pagination from '../components/Layout/Pagination';
 import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
+import { useNavigate } from 'react-router-dom';
 
 const PaymentModal = ({ payment, isOpen, onClose, onUpdatePayment, readOnly = false }) => {
     const [formData, setFormData] = useState({
@@ -117,6 +118,7 @@ const PaymentModal = ({ payment, isOpen, onClose, onUpdatePayment, readOnly = fa
 };
 
 const Payments = () => {
+    const navigate = useNavigate();
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -214,7 +216,16 @@ const Payments = () => {
 
     return (
         <div className="p-0 sm:p-6 min-h-screen bg-transparent">
-            <Breadcrumb title="Payments" paths={["Home", "Payments"]} />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <Breadcrumb title="Payments" paths={["Home", "Payments"]} />
+                <button 
+                    onClick={() => navigate('/payments/new')}
+                    className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-600/20 active:scale-95"
+                >
+                    <Plus className="w-4 h-4" />
+                    Add Payment
+                </button>
+            </div>
 
             <div className="my-6">
                 <div className="flex flex-col sm:flex-row items-center gap-4 bg-[#071229] p-4 rounded-xl border border-slate-800 shadow-sm">

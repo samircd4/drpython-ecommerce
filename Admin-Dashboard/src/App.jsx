@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Routes, Route, Navigate, useLocation, Link } from "react-router-dom"
+import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { useAuth } from "./Context/AuthContext"
 import { ModalProvider, useModals } from "./Context/ModalContext"
 import Header from "./components/Layout/Header"
