@@ -64,11 +64,23 @@ const StatsGrid = ({ stats }) => {
         }
     ];
 
-    const displayStats = stats ? defaultStats.map((s, i) => ({
-        ...s,
-        value: stats[i]?.value || s.value,
-        change: stats[i]?.change || s.change
-    })) : defaultStats;
+    const displayStats = stats ? defaultStats.map((s, i) => {
+        let val = stats[i]?.value || s.value;
+        
+        // Format if it's a number
+        if (typeof val === 'number') {
+            val = val.toLocaleString('en-US', {
+                minimumFractionDigits: s.title === "Total Revenue" ? 0 : 0,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        return {
+            ...s,
+            value: val,
+            change: stats[i]?.change || s.change
+        };
+    }) : defaultStats;
 
     return (
         <div className="rounded-xl bg-[#071229] p-3 shadow-md border border-slate-800/50">

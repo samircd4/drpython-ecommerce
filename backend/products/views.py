@@ -10,6 +10,7 @@ from django_filters.rest_framework import DjangoFilterBackend, FilterSet, CharFi
 from django.shortcuts import get_object_or_404
 from django.db.models import Q, Min, Max
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
+from api.permissions import StaffHasActionPermission
 
 from .models import (
     Product, Category, Brand
@@ -86,7 +87,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsAdminUser()]
+            return [IsAdminUser(), StaffHasActionPermission()]
         return [AllowAny()]
 
     # ----------------------------
@@ -229,7 +230,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsAdminUser()]
+            return [IsAdminUser(), StaffHasActionPermission()]
         return [AllowAny()]
 
     @extend_schema(
@@ -253,6 +254,6 @@ class BrandViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [IsAdminUser()]
+            return [IsAdminUser(), StaffHasActionPermission()]
         return [AllowAny()]
 

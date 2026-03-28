@@ -220,14 +220,17 @@ class CustomerSerializer(serializers.ModelSerializer):
     total_orders = serializers.SerializerMethodField()
     total_spent = serializers.SerializerMethodField()
     recent_orders = serializers.SerializerMethodField()
+    permissions = serializers.SerializerMethodField()
+    groups = serializers.SerializerMethodField()
+    is_superuser = serializers.BooleanField(source='user.is_superuser', read_only=True)
 
     class Meta:
         model = Customer
         fields = [
             'id', 'user', 'username', 'first_name', 'last_name', 'name',
             'email', 'phone_number', 'customer_type',
-            'avatar', 'social_avatar_url', 'is_wholesaler', 'is_email_verified', 'is_staff', 'created_at',
-            'addresses', 'total_orders', 'total_spent', 'recent_orders'
+            'avatar', 'social_avatar_url', 'is_wholesaler', 'is_email_verified', 'is_staff', 'is_superuser', 'created_at',
+            'addresses', 'total_orders', 'total_spent', 'recent_orders', 'permissions', 'groups'
         ]
         read_only_fields = ['user', 'created_at']
 
@@ -264,6 +267,14 @@ class CustomerSerializer(serializers.ModelSerializer):
             return True
         return EmailAddress.objects.filter(user=obj.user, verified=True).exists()
 
+    @extend_schema_field(serializers.ListField(child=serializers.CharField()))
+    def get_permissions(self, obj):
+        return list(obj.user.get_all_permissions())
+
+    @extend_schema_field(serializers.ListField(child=serializers.CharField()))
+    def get_groups(self, obj):
+        return list(obj.user.groups.values_list('name', flat=True))
+
     def to_representation(self, instance):
         """
         Dynamically handle name and avatar fallbacks for the frontend.
@@ -289,6 +300,45 @@ class CustomerSerializer(serializers.ModelSerializer):
             pass
             
         return data
+
+    def create(self, validated_data):
+        user_data = validated_data.pop('user', {})
+        # If user is not provided, we must create one. 
+        # For admin creation, we usually expect email/username details.
+        email = validated_data.get('email')
+        name = validated_data.get('name')
+        
+        if not email:
+            raise serializers.ValidationError({"email": "This field is required for user creation."})
+
+        # Check if user already exists
+        if User.objects.filter(email__iexact=email).exists():
+            user = User.objects.get(email__iexact=email)
+            if hasattr(user, 'customer'):
+                raise serializers.ValidationError({"email": "A customer with this email already exists."})
+        else:
+            # Create a new user
+            username = email.split('@')[0]
+            # Ensure unique username
+            base_username = username
+            count = 1
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}_{count}"
+                count += 1
+            
+            # Default password for admin-created users (they should change it)
+            temp_password = validated_data.pop('password', 'Sarker@123')
+            
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=temp_password,
+                first_name=name.split(' ')[0] if name else '',
+                last_name=' '.join(name.split(' ')[1:]) if name and ' ' in name else ''
+            )
+
+        validated_data['user'] = user
+        return super().create(validated_data)
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})

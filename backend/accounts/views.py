@@ -17,6 +17,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated
 import os
+from api.permissions import StaffHasActionPermission
 
 
 from .models import Customer, Address, Division, District, SubDistrict
@@ -436,7 +437,7 @@ class ResendVerificationEmailView(generics.GenericAPIView):
 class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
     permission_classes = [IsAuthenticated]
-    http_method_names = ['get', 'put', 'patch']
+    http_method_names = ['get', 'post', 'put', 'patch']
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -506,7 +507,7 @@ class DivisionViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return [permissions.AllowAny()]
-        return [permissions.IsAdminUser()]
+        return [permissions.IsAdminUser(), StaffHasActionPermission()]
 
 @extend_schema(tags=['Locations'])
 class DistrictViewSet(viewsets.ModelViewSet):
@@ -527,7 +528,7 @@ class DistrictViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.request.method in permissions.SAFE_METHODS:
             return [permissions.AllowAny()]
-        return [permissions.IsAdminUser()]
+        return [permissions.IsAdminUser(), StaffHasActionPermission()]
 
 @extend_schema(tags=['Locations'])
 class SubDistrictViewSet(viewsets.ModelViewSet):
@@ -555,7 +556,7 @@ class UserViewSet(viewsets.ModelViewSet):
     Manage system users. Admin only.
     """
     serializer_class = AdminUserSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser, StaffHasActionPermission]
 
     def get_queryset(self):
         """
@@ -583,7 +584,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser, StaffHasActionPermission]
     pagination_class = None
 
 

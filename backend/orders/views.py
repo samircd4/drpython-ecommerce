@@ -13,6 +13,8 @@ from django.http import HttpResponse
 from utils.pdf import generate_invoice_pdf
 
 
+from api.permissions import StaffHasActionPermission
+
 @extend_schema(tags=['Orders'])
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
@@ -26,7 +28,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['create', 'validate_coupon']:
             return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated()]
+        return [permissions.IsAuthenticated(), StaffHasActionPermission()]
 
     # --------------------
     # Queryset
@@ -389,7 +391,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
     """
     queryset = PaymentInfo.objects.all()
     serializer_class = PaymentInfoSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, StaffHasActionPermission]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_fields = ['is_paid', 'payment_method']
     search_fields = ['transaction_id', 'paid_from']
@@ -420,4 +422,4 @@ class CouponViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             return [permissions.IsAuthenticated()]
-        return [permissions.IsAdminUser()]
+        return [permissions.IsAdminUser(), StaffHasActionPermission()]

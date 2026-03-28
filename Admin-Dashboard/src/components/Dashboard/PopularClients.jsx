@@ -42,7 +42,11 @@ const PopularClients = ({ clients = [] }) => {
                                     </div>
                                 </td>
                                 <td className="py-4 text-sm text-slate-300 font-medium">{client.orders}</td>
-                                <td className="py-4 text-sm text-slate-300 font-medium">{client.amount}</td>
+                                <td className="py-4 text-sm text-slate-300 font-medium">
+                                    {typeof client.amount === 'number' 
+                                        ? `৳${client.amount.toLocaleString()}` 
+                                        : client.amount}
+                                </td>
                                 <td className="py-4">
                                     <div className="flex items-center gap-2">
                                         <button className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all">

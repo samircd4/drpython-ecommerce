@@ -18,7 +18,7 @@ import {
     Ticket
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import { useModals } from "../../Context/ModalContext";
 import api from "../../api/axiosConfig";
@@ -191,14 +191,14 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
             <div className="flex items-center justify-between h-full">
                 {/* Left section - logo attached to header */}
                 <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-lg bg-transparent flex items-center justify-center">
-                            <img src="/logo-DaOXiO9r.png" alt="logo" className="w-9 h-9 object-contain" />
-                        </div>
-                        <div className="hidden sm:block">
-                            <h1 className="text-lg font-bold text-slate-100 uppercase">Sarker Shop</h1>
-                        </div>
-                    </div>
+                        <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                            <div className="w-10 h-10 rounded-lg bg-transparent flex items-center justify-center">
+                                <img src="/logo-DaOXiO9r.png" alt="logo" className="w-9 h-9 object-contain" />
+                            </div>
+                            <div className="hidden sm:block">
+                                <h1 className="text-lg font-bold text-slate-100 uppercase">Sarker Shop</h1>
+                            </div>
+                        </Link>
 
                     <button
                         onClick={onToggleSidebar}

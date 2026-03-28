@@ -112,16 +112,26 @@ const Customers = () => {
     const visible = isPaginatedByBackend ? filtered : filtered.slice((page - 1) * showBy, page * showBy);
 
     return (
-        <div className="p-0 sm:p-6 min-h-screen bg-transparent">
-            <Breadcrumb 
-                title="Customers" 
-                paths={[
-                    { label: "Home", path: "/" },
-                    { label: "Customers", path: "/customers" }
-                ]} 
-            />
-            <div className="my-4">
-                <div className="flex items-center gap-4 bg-[#071229] p-4 rounded-xl border border-slate-800 shadow-sm">
+        <div className="p-0 sm:p-6 min-h-screen bg-transparent space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <Breadcrumb 
+                    title="Customers" 
+                    paths={[
+                        { label: "Home", path: "/" },
+                        { label: "Customers", path: "/customers" }
+                    ]} 
+                />
+                <button 
+                    onClick={() => navigate('/customers/new')}
+                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+                >
+                    <Plus className="w-4 h-4" />
+                    Add Customer
+                </button>
+            </div>
+
+            <div className="bg-[#071229] p-4 rounded-xl border border-slate-800 shadow-sm">
+                <div className="flex items-center gap-4">
                     <div className="flex-1">
                         <input
                             value={searchQuery}

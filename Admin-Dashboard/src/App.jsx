@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Routes, Route, Navigate, useLocation } from "react-router-dom"
+import { Routes, Route, Navigate, useLocation, Link } from "react-router-dom"
 import { useAuth } from "./Context/AuthContext"
 import { ModalProvider, useModals } from "./Context/ModalContext"
 import Header from "./components/Layout/Header"
@@ -34,11 +34,14 @@ import CustomerEdit from "./pages/CustomerEdit"
 import UserView from "./pages/UserView"
 import UserEdit from "./pages/UserEdit"
 import UserAdd from "./pages/UserAdd"
+import CustomerAdd from "./pages/CustomerAdd"
+import PaymentAdd from "./pages/PaymentAdd"
 
 import Login from "./pages/Auth/Login"
 import Register from "./pages/Auth/Register"
 import ForgotPassword from "./pages/Auth/ForgotPassword"
 import { Toaster } from 'react-hot-toast';
+import ProtectedRoute from "./components/Auth/ProtectedRoute"
 
 // Global Modals
 import BrandModal from "./components/Product/BrandModal"
@@ -162,42 +165,50 @@ function AppContent() {
                         <div className="flex-1 overflow-auto">
                             <Routes>
                                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                                <Route path="/dashboard" element={<Dashboard />} />
-                                <Route path="/analytics" element={<Analytics />} />
-                                <Route path="/overview" element={<Overview />} />
-                                <Route path="/insights" element={<Insights />} />
-                                <Route path="/users" element={<Users />} />
-                                <Route path="/all-users" element={<AllUsers />} />
-                                <Route path="/roles" element={<Roles />} />
-                                <Route path="/activity" element={<Activity />} />
-                                <Route path="/products" element={<Products />} />
-                                <Route path="/products/new" element={<AddProduct />} />
-                                <Route path="/products/edit/:id" element={<AddProduct />} />
-                                <Route path="/products/view/:id" element={<AddProduct />} />
-                                <Route path="/all-products" element={<Products />} />
-                                <Route path="/brands" element={<Brands />} />
-                                <Route path="/categories" element={<Categories />} />
-                                <Route path="/orders" element={<Orders />} />
-                                <Route path="/customers" element={<Customers />} />
-                                <Route path="/inventory" element={<Inventory />} />
-                                <Route path="/payments" element={<Payments />} />
+                                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                                <Route path="/analytics" element={<ProtectedRoute requiredPermission="orders.view_order"><Analytics /></ProtectedRoute>} />
+                                <Route path="/overview" element={<ProtectedRoute requiredPermission="orders.view_order"><Overview /></ProtectedRoute>} />
+                                <Route path="/insights" element={<ProtectedRoute requiredPermission="orders.view_order"><Insights /></ProtectedRoute>} />
+                                
+                                <Route path="/users" element={<ProtectedRoute requiredPermission="auth.view_user"><Users /></ProtectedRoute>} />
+                                <Route path="/all-users" element={<ProtectedRoute requiredPermission="auth.view_user"><AllUsers /></ProtectedRoute>} />
+                                <Route path="/roles" element={<ProtectedRoute requiredPermission="auth.view_user"><Roles /></ProtectedRoute>} />
+                                <Route path="/activity" element={<ProtectedRoute requiredPermission="auth.view_user"><Activity /></ProtectedRoute>} />
+                                
+                                <Route path="/products" element={<ProtectedRoute requiredPermission="products.view_product"><Products /></ProtectedRoute>} />
+                                <Route path="/products/new" element={<ProtectedRoute requiredPermission="products.add_product"><AddProduct /></ProtectedRoute>} />
+                                <Route path="/products/edit/:id" element={<ProtectedRoute requiredPermission="products.change_product"><AddProduct /></ProtectedRoute>} />
+                                <Route path="/products/view/:id" element={<ProtectedRoute requiredPermission="products.view_product"><AddProduct /></ProtectedRoute>} />
+                                <Route path="/all-products" element={<ProtectedRoute requiredPermission="products.view_product"><Products /></ProtectedRoute>} />
+                                
+                                <Route path="/brands" element={<ProtectedRoute requiredPermission="products.view_product"><Brands /></ProtectedRoute>} />
+                                <Route path="/categories" element={<ProtectedRoute requiredPermission="products.view_product"><Categories /></ProtectedRoute>} />
+                                
+                                <Route path="/orders" element={<ProtectedRoute requiredPermission="orders.view_order"><Orders /></ProtectedRoute>} />
+                                <Route path="/customers" element={<ProtectedRoute requiredPermission="accounts.view_customer"><Customers /></ProtectedRoute>} />
+                                <Route path="/customers/new" element={<ProtectedRoute requiredPermission="accounts.add_customer"><CustomerAdd /></ProtectedRoute>} />
+                                <Route path="/inventory" element={<ProtectedRoute requiredPermission="products.view_product"><Inventory /></ProtectedRoute>} />
+                                <Route path="/payments" element={<ProtectedRoute requiredPermission="orders.view_payment"><Payments /></ProtectedRoute>} />
+                                <Route path="/payments/new" element={<ProtectedRoute requiredPermission="orders.add_payment"><PaymentAdd /></ProtectedRoute>} />
+                                
                                 <Route path="/messages" element={<Navigate to="/chats" replace />} />
-                                <Route path="/chats" element={<Messages />} />
-                                <Route path="/product-qna" element={<ProductQnA />} />
-                                <Route path="/contact-messages" element={<ContactMessages />} />
-                                <Route path="/reports" element={<ReportsPage />} />
-                                <Route path="/reviews" element={<Reviews />} />
-                                <Route path="/coupons" element={<Coupons />} />
-                                <Route path="/settings" element={<Settings />} />
+                                <Route path="/chats" element={<ProtectedRoute requiredPermission="accounts.view_customer"><Messages /></ProtectedRoute>} />
+                                <Route path="/product-qna" element={<ProtectedRoute requiredPermission="accounts.view_customer"><ProductQnA /></ProtectedRoute>} />
+                                <Route path="/contact-messages" element={<ProtectedRoute requiredPermission="accounts.view_customer"><ContactMessages /></ProtectedRoute>} />
+                                
+                                <Route path="/reports" element={<ProtectedRoute requiredPermission="orders.view_order"><ReportsPage /></ProtectedRoute>} />
+                                <Route path="/reviews" element={<ProtectedRoute requiredPermission="reviews.view_review"><Reviews /></ProtectedRoute>} />
+                                <Route path="/coupons" element={<ProtectedRoute requiredPermission="orders.view_coupon"><Coupons /></ProtectedRoute>} />
+                                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
-                                {/* Customer Routes */}
-                                <Route path="/customers/view/:id" element={<CustomerView />} />
-                                <Route path="/customers/edit/:id" element={<CustomerEdit />} />
+                                {/* Customer Detailed Views */}
+                                <Route path="/customers/view/:id" element={<ProtectedRoute requiredPermission="accounts.view_customer"><CustomerView /></ProtectedRoute>} />
+                                <Route path="/customers/edit/:id" element={<ProtectedRoute requiredPermission="accounts.change_customer"><CustomerEdit /></ProtectedRoute>} />
 
-                                {/* User Routes */}
-                                <Route path="/users/view/:id" element={<UserView />} />
-                                <Route path="/users/edit/:id" element={<UserEdit />} />
-                                <Route path="/users/add" element={<UserAdd />} />
+                                {/* User Detailed Views */}
+                                <Route path="/users/view/:id" element={<ProtectedRoute requiredPermission="auth.view_user"><UserView /></ProtectedRoute>} />
+                                <Route path="/users/edit/:id" element={<ProtectedRoute requiredPermission="auth.view_user"><UserEdit /></ProtectedRoute>} />
+                                <Route path="/users/add" element={<ProtectedRoute requiredPermission="auth.view_user"><UserAdd /></ProtectedRoute>} />
                                 <Route path="*" element={<div className="p-6 text-slate-300">Page Not Found</div>} />
                             </Routes>
                         </div>

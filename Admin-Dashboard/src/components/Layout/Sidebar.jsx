@@ -25,29 +25,50 @@ import api from "../../api/axiosConfig";
 
 const menuItems = [
     { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", active: true, badge: "New" },
-    { id: "analytics", icon: BarChart3, label: "Analytics", submenu: [{ id: "overview", label: "Overview", icon: BarChart3 }, { id: "reports", label: "Reports", icon: FileText }, { id: "insights", label: "Insights", icon: TrendingUp }] },
-    { id: "users", icon: Users, label: "Users", count: "2.4k", submenu: [{ id: "all-users", label: "All-Users", icon: Users }, { id: "roles", label: "Roles & Permissions", icon: Settings }, { id: "activity", label: "User Activity", icon: Activity }] },
+    { 
+        id: "analytics", 
+        icon: BarChart3, 
+        label: "Analytics", 
+        permission: "orders.view_order", 
+        submenu: [
+            { id: "overview", label: "Overview", icon: BarChart3 }, 
+            { id: "reports", label: "Reports", icon: FileText }, 
+            { id: "insights", label: "Insights", icon: TrendingUp }
+        ] 
+    },
+    { 
+        id: "users", 
+        icon: Users, 
+        label: "Users", 
+        permission: "auth.view_user",
+        submenu: [
+            { id: "all-users", label: "All-Users", icon: Users }, 
+            { id: "roles", label: "Roles & Permissions", icon: Settings }, 
+            { id: "activity", label: "User Activity", icon: Activity }
+        ] 
+    },
     {
         id: "products",
         icon: Package,
         label: "Products",
+        permission: "products.view_product",
         submenu: [
             { id: "all-products", label: "All Products", icon: Package },
             { id: "brands", label: "Brands", icon: Star },
             { id: "categories", label: "Categories", icon: Activity }
         ]
     },
-    { id: "orders", icon: ShoppingBag, label: "Orders" },
-    { id: "coupons", icon: Ticket, label: "Coupons" },
-    { id: "customers", icon: Users, label: "Customers" },
-    { id: "reviews", icon: Star, label: "Reviews" },
-    { id: "inventory", icon: Package, label: "Inventory", count: "847" },
-    { id: "payments", icon: CreditCard, label: "Payments" },
+    { id: "orders", icon: ShoppingBag, label: "Orders", permission: "orders.view_order" },
+    { id: "coupons", icon: Ticket, label: "Coupons", permission: "orders.view_coupon" },
+    { id: "customers", icon: Users, label: "Customers", permission: "accounts.view_customer" },
+    { id: "reviews", icon: Star, label: "Reviews", permission: "reviews.view_review" },
+    { id: "inventory", icon: Package, label: "Inventory", permission: "products.view_product" },
+    { id: "payments", icon: CreditCard, label: "Payments", permission: "orders.view_payment" },
     {
         id: "messages",
         icon: MessageSquare,
         label: "Messages",
-        badge: "12",
+        permission: "accounts.view_customer", 
         submenu: [
             { id: "chats", label: "Chats", icon: MessageSquare },
             { id: "product-qna", label: "Product Q&A", icon: HelpCircle },
@@ -62,6 +83,23 @@ import { useChat } from "../../Context/ChatContext";
 const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageChange }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
+    
+    // Helper to check permissions
+    const hasPermission = (permission) => {
+        if (!permission) return true;
+        if (user?.is_superuser) return true;
+        return user?.permissions?.includes(permission);
+    };
+
+    // Filter menu items based on permissions
+    const filteredMenuItems = menuItems.filter(item => {
+        const canViewParent = hasPermission(item.permission);
+        if (!canViewParent) return false;
+
+        // If it has a submenu, check if at least one sub-item is viewable (if we had sub-perms)
+        // For now, if you can see the parent, you see all sub-items
+        return true;
+    });
     const { unreadCount: unreadTotal } = useChat();
     const [expandedItems, setExpandedItems] = useState(new Set(["analytics"]));
     const anyOpen = expandedItems && expandedItems.size > 0;
@@ -107,7 +145,7 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
         >
             {/* Navigation */}
             <nav className={`flex-1 px-4 py-2 space-y-1 overflow-y-auto ${hideScrollbar ? 'no-scrollbar' : ''}`}>
-                {menuItems.map((item) => (
+                {filteredMenuItems.map((item) => (
                     <div key={item.id}>
                         <button
                             onClick={() => {

@@ -4,20 +4,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from .models import Review, Question
 from .serializers import ReviewSerializer, QuestionSerializer
+from api.permissions import IsReviewOwnerOrReadOnly
 
 
-class IsReviewOwnerOrReadOnly(BasePermission):
-    """
-    Review owners can edit/delete their reviews.
-    Admins can edit/delete all.
-    Everyone can read.
-    """
-
-    def has_object_permission(self, request, view, obj):
-        if request.method in SAFE_METHODS:
-            return True
-        # obj.customer.user should be compared to request.user
-        return obj.customer.user == request.user or request.user.is_staff
+# (Permission class moved to api/permissions.py for centralization)
 
 
 @extend_schema_view(
