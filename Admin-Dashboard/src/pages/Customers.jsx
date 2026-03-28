@@ -113,7 +113,13 @@ const Customers = () => {
 
     return (
         <div className="p-0 sm:p-6 min-h-screen bg-transparent">
-            <Breadcrumb title="Customers" paths={["Home", "Customers"]} />
+            <Breadcrumb 
+                title="Customers" 
+                paths={[
+                    { label: "Home", path: "/" },
+                    { label: "Customers", path: "/customers" }
+                ]} 
+            />
             <div className="my-4">
                 <div className="flex items-center gap-4 bg-[#071229] p-4 rounded-xl border border-slate-800 shadow-sm">
                     <div className="flex-1">
@@ -163,9 +169,13 @@ const Customers = () => {
                     </thead>
                     <tbody className="bg-transparent divide-y divide-slate-700">
                         {loading ? (
-                            <tr><td colSpan="9" className="text-center py-8 text-slate-400">Loading customers...</td></tr>
+                            <tr><td colSpan="10" className="text-center py-8 text-slate-400 font-medium">Loading customers...</td></tr>
                         ) : visible.map(c => (
-                            <tr key={c.id} className="hover:bg-slate-800 transition-colors">
+                            <tr 
+                                key={c.id} 
+                                onClick={() => navigate(`/customers/view/${c.id}`)}
+                                className="group hover:bg-slate-800/80 transition-all cursor-pointer border-b border-slate-800 last:border-0"
+                            >
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-100 font-medium text-sm">C-{c.id}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <img
@@ -179,13 +189,17 @@ const Customers = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-300 font-mono text-sm">{c.phone_number || 'N/A'}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-300 text-sm">{c.is_wholesaler ? 'Wholesale' : (c.customer_type || 'Retail')}</td>
                                 <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={c.is_email_verified ? 'Active' : 'Pending'} /></td>
-                                <td className="px-6 py-4 whitespace-nowrap text-slate-300 text-sm">N/A</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-slate-300 text-sm font-semibold">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                                        {c.total_orders || 0}
+                                    </div>
+                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs">{new Date(c.created_at).toLocaleDateString()}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">
+                                <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex space-x-2">
-                                        <button onClick={() => navigate(`/customers/view/${c.id}`)} title="View" className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all cursor-pointer"><Eye className="h-4 w-4" /></button>
-                                        <button onClick={() => navigate(`/customers/edit/${c.id}`)} title="Edit" className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"><Pencil className="h-4 w-4" /></button>
-                                        <button title="Delete" onClick={() => handleDeleteCustomer(c.id)} disabled={true} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"><Trash2 className="h-4 w-4" /></button>
+                                        <button onClick={() => navigate(`/customers/edit/${c.id}`)} title="Edit" className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-white transition-all cursor-pointer shadow-lg shadow-emerald-500/0 hover:shadow-emerald-500/20"><Pencil className="h-4 w-4" /></button>
+                                        <button title="Delete" onClick={() => handleDeleteCustomer(c.id)} disabled={true} className="p-2 bg-red-500/10 text-red-500/30 rounded-xl cursor-not-allowed border border-red-500/5"><Trash2 className="h-4 w-4" /></button>
                                     </div>
                                 </td>
                             </tr>

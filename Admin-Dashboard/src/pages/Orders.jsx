@@ -252,12 +252,20 @@ const Orders = () => {
                         {loading ? (
                             <tr><td colSpan="10" className="text-center py-8 text-slate-400">Loading orders...</td></tr>
                         ) : visible.map(o => (
-                            <tr key={o.id} className="hover:bg-slate-800 transition-colors">
+                            <tr 
+                                key={o.id} 
+                                onClick={() => handleOpenModal(o, 'view')}
+                                className="hover:bg-slate-800 transition-colors cursor-pointer"
+                            >
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-100 font-medium text-sm">{o.id}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-300 font-medium text-sm">{o.full_name}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-400 text-sm max-w-[200px] truncate">
                                     {o.items?.map((i, idx) => (
-                                        <span key={idx} className="hover:text-blue-400 transition-colors cursor-pointer" onClick={() => copyToClipboard(i.product?.slug, i.product?.name)}>
+                                        <span 
+                                            key={idx} 
+                                            className="hover:text-blue-400 transition-colors cursor-pointer" 
+                                            onClick={(e) => { e.stopPropagation(); copyToClipboard(i.product?.slug, i.product?.name); }}
+                                        >
                                             {i.product?.name}{idx < o.items.length - 1 ? ', ' : ''}
                                         </span>
                                     )) || 'No Items'}
@@ -267,12 +275,12 @@ const Orders = () => {
                                 <td className="px-6 py-4 whitespace-nowrap"><PaymentBadge ps={o.payment?.is_paid ? 'Paid' : 'Unpaid'} /></td>
                                 <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={o.status || 'Pending'} /></td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs font-mono">{new Date(o.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">
+                                <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                     <button onClick={() => handleDownloadInvoice(o.id)} disabled={downloadingOrderId === o.id} className={`inline-block p-1.5 rounded-lg transition-all ${downloadingOrderId === o.id ? 'bg-slate-700 text-slate-400' : 'bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white cursor-pointer'}`}>
                                         {downloadingOrderId === o.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
                                     </button>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
+                                <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex space-x-2">
                                         <button onClick={() => handleOpenModal(o, 'view')} className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all cursor-pointer"><Eye className="h-4 w-4" /></button>
                                         <button onClick={() => handleOpenModal(o, 'edit')} className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"><Pencil className="h-4 w-4" /></button>

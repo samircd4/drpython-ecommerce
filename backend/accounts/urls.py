@@ -17,7 +17,9 @@ from .views import (
     SubDistrictViewSet,
     GoogleLogin,
     FacebookLogin,
-    UserViewSet
+    UserViewSet,
+    GroupViewSet,
+    PermissionViewSet
 )
 
 router = DefaultRouter()
@@ -27,6 +29,8 @@ router.register(r'divisions', DivisionViewSet, basename='division')
 router.register(r'districts', DistrictViewSet, basename='district')
 router.register(r'sub-districts', SubDistrictViewSet, basename='sub-district')
 router.register(r'users', UserViewSet, basename='user')
+router.register(r'groups', GroupViewSet, basename='group')
+router.register(r'permissions', PermissionViewSet, basename='permission')
 
 urlpatterns = [
     # Auth Endpoints

@@ -54,8 +54,12 @@ const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleS
                 <tbody className="bg-transparent divide-y divide-slate-700">
                     {products && products.length > 0 ? (
                         products.map((product) => (
-                            <tr key={product.id} className="hover:bg-slate-800/60 transition-colors">
-                                <td className="px-6 py-4 whitespace-nowrap">
+                            <tr 
+                                key={product.id} 
+                                onClick={() => navigate(`/products/view/${product.id}`)}
+                                className="hover:bg-slate-800/60 transition-colors cursor-pointer"
+                            >
+                                <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                     <input type="checkbox" className="rounded bg-slate-800 border-slate-700" />
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-100">{product.product_id || product.sku}</td>
@@ -68,7 +72,7 @@ const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleS
                                         />
                                         <div className="ml-4 max-w-[200px]">
                                             <h3 
-                                                onClick={() => copyToClipboard(product.slug, product.name)}
+                                                onClick={(e) => { e.stopPropagation(); copyToClipboard(product.slug, product.name); }}
                                                 className="text-sm font-medium text-slate-100 truncate cursor-pointer hover:text-blue-400 transition-colors"
                                                 title="Click to copy product link"
                                             >
@@ -127,7 +131,7 @@ const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleS
                                         <span className="w-2 h-2 rounded-full bg-red-500 inline-block shadow-[0_0_8px_rgba(239,68,68,0.5)]"></span>
                                     )}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex space-x-2">
                                         <button 
                                             onClick={() => navigate(`/products/view/${product.id}`)}

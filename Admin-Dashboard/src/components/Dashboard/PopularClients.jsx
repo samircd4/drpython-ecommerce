@@ -1,15 +1,17 @@
 import React from "react";
 import { MessageSquare, Eye, MoreHorizontal } from "lucide-react";
 
-const PopularClients = () => {
-    const clients = [
-        { id: 1, name: "Miron Mahmud", orders: 648, amount: "$5500", avatar: "https://i.pravatar.cc/150?u=miron" },
-        { id: 2, name: "Tahmina Bonny", orders: 590, amount: "$4400", avatar: "https://i.pravatar.cc/150?u=tahmina" },
-        { id: 3, name: "Labonno Khan", orders: 408, amount: "$3300", avatar: "https://i.pravatar.cc/150?u=labonno" },
-        { id: 4, name: "Sheikh Adabali", orders: 357, amount: "$2200", avatar: "https://i.pravatar.cc/150?u=sheikh" },
-        { id: 5, name: "Johara Khatun", orders: 289, amount: "$1100", avatar: "https://i.pravatar.cc/150?u=johara" },
-        { id: 6, name: "Kurulus Osman", orders: 194, amount: "$789", avatar: "https://i.pravatar.cc/150?u=osman" },
+const PopularClients = ({ clients = [] }) => {
+    const defaultClients = [
+        { id: 1, name: "Miron Mahmud", orders: 648, amount: "৳5500", avatar: "https://i.pravatar.cc/150?u=miron" },
+        { id: 2, name: "Tahmina Bonny", orders: 590, amount: "৳4400", avatar: "https://i.pravatar.cc/150?u=tahmina" },
+        { id: 3, name: "Labonno Khan", orders: 408, amount: "৳3300", avatar: "https://i.pravatar.cc/150?u=labonno" },
+        { id: 4, name: "Sheikh Adabali", orders: 357, amount: "৳2200", avatar: "https://i.pravatar.cc/150?u=sheikh" },
+        { id: 5, name: "Johara Khatun", orders: 289, amount: "৳1100", avatar: "https://i.pravatar.cc/150?u=johara" },
+        { id: 6, name: "Kurulus Osman", orders: 194, amount: "৳789", avatar: "https://i.pravatar.cc/150?u=osman" },
     ];
+
+    const displayClients = clients.length > 0 ? clients : defaultClients;
 
     return (
         <div className="bg-[#071229] border border-slate-800 rounded-xl p-6 text-white shadow-lg h-full">
@@ -31,7 +33,7 @@ const PopularClients = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/50">
-                        {clients.map((client) => (
+                        {displayClients.map((client) => (
                             <tr key={client.id} className="group hover:bg-slate-800/20 transition-colors">
                                 <td className="py-4">
                                     <div className="flex items-center gap-3">

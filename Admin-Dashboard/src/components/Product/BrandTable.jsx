@@ -25,7 +25,11 @@ const BrandTable = ({ brands, loading, handleDelete, onEdit, onView }) => {
                 <tbody className="bg-transparent divide-y divide-slate-700">
                     {brands && brands.length > 0 ? (
                         brands.map((brand) => (
-                            <tr key={brand.id} className="hover:bg-slate-800 transition-colors">
+                            <tr 
+                                key={brand.id} 
+                                onClick={() => onView && onView(brand)}
+                                className="hover:bg-slate-800 transition-colors cursor-pointer"
+                            >
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-100">{brand.id}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <img
@@ -36,7 +40,7 @@ const BrandTable = ({ brands, loading, handleDelete, onEdit, onView }) => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-100">{brand.name}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-mono">{brand.slug}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex space-x-2">
                                         <button 
                                             title="View Details"

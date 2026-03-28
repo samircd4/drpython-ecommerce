@@ -7,6 +7,7 @@ import FilterBar from '../components/FilterBar/FilterBar';
 import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 import useProductLink from '../hooks/useProductLink';
+import { useNavigate } from 'react-router-dom';
 
 
 const StatusBadge = ({ status }) => {
@@ -19,6 +20,7 @@ const StatusBadge = ({ status }) => {
 };
 
 const Reviews = () => {
+    const navigate = useNavigate();
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
     const [totalCount, setTotalCount] = useState(0);
@@ -167,7 +169,11 @@ const Reviews = () => {
                         {loading ? (
                             <tr><td colSpan="8" className="text-center py-8 text-slate-400">Loading reviews...</td></tr>
                         ) : visible.map(r => (
-                            <tr key={r.id} className="hover:bg-slate-800 transition-colors">
+                            <tr 
+                                key={r.id} 
+                                onClick={() => navigate(`/products/view/${r.product_id || r.product}`)}
+                                className="hover:bg-slate-800 transition-colors cursor-pointer"
+                            >
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-400 text-xs font-mono">{r.id}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center gap-3">
@@ -177,7 +183,7 @@ const Reviews = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-300 text-sm">
                                     <span 
-                                        onClick={() => copyToClipboard(r.product_slug || r.product?.slug, r.product_name || r.product?.name)}
+                                        onClick={(e) => { e.stopPropagation(); copyToClipboard(r.product_slug || r.product?.slug, r.product_name || r.product?.name); }}
                                         className="cursor-pointer hover:text-blue-400 transition-colors"
                                         title="Click to copy product link"
                                     >
@@ -197,9 +203,15 @@ const Reviews = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs">
                                     {new Date(r.created_at).toLocaleDateString()}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
+                                <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex space-x-2">
-                                        <button title="View" className="p-1.5 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-all"><Eye className="h-4 w-4" /></button>
+                                        <button 
+                                            onClick={() => navigate(`/products/view/${r.product_id || r.product}`)}
+                                            title="View" 
+                                            className="p-1.5 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-all cursor-pointer"
+                                        >
+                                            <Eye className="h-4 w-4" />
+                                        </button>
                                         <button title="Approve" onClick={() => handleApproveReview(r.id, 'approve')} className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"><CheckCircle className="h-4 w-4" /></button>
                                         <button title="Reject" onClick={() => handleApproveReview(r.id, 'reject')} className="p-1.5 bg-amber-500/10 text-amber-400 rounded-lg hover:bg-amber-500 hover:text-white transition-all cursor-pointer"><XCircle className="h-4 w-4" /></button>
                                         <button title="Delete" onClick={() => handleDeleteReview(r.id)} disabled={true} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"><Trash2 className="h-4 w-4" /></button>

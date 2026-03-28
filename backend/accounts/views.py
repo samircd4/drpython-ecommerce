@@ -1,5 +1,6 @@
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
+from django.db.models import Q
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
@@ -25,7 +26,7 @@ from .serializers import (
     ChangePasswordSerializer, LogoutSerializer, ForgotPasswordSerializer, ResetPasswordSerializer,
     ResendVerificationEmailSerializer,
     CustomTokenObtainPairSerializer,
-    AdminUserSerializer,
+    AdminUserSerializer, GroupSerializer, PermissionSerializer,
 )
 from drf_spectacular.utils import extend_schema, OpenApiTypes
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
@@ -553,9 +554,19 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     Manage system users. Admin only.
     """
-    queryset = User.objects.all().order_by('-date_joined')
     serializer_class = AdminUserSerializer
     permission_classes = [permissions.IsAdminUser]
+
+    def get_queryset(self):
+        """
+        Filter users: only Staff, Admins, and Wholesalers.
+        Exclude regular retail customers.
+        """
+        return User.objects.filter(
+            Q(is_staff=True) | 
+            Q(is_superuser=True) |
+            Q(customer__customer_type='wholesale')
+        ).distinct().order_by('-date_joined')
 
     @extend_schema(
         summary="List Users",
@@ -563,3 +574,25 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+
+@extend_schema(tags=['Accounts'])
+class GroupViewSet(viewsets.ModelViewSet):
+    """
+    List available groups (roles). Admin only.
+    """
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+    permission_classes = [permissions.IsAdminUser]
+    pagination_class = None
+
+
+@extend_schema(tags=['Accounts'])
+class PermissionViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List all available permissions. Admin only.
+    """
+    queryset = Permission.objects.all().order_by('content_type__app_label', 'codename')
+    serializer_class = PermissionSerializer
+    permission_classes = [permissions.IsAdminUser]
+    pagination_class = None

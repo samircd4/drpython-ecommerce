@@ -238,8 +238,13 @@ CORS_ALLOWED_ORIGINS = [
     "https://admin.sarker.shop",
     "https://dev-admin.sarker.shop",
 ]
+
+# When True, all origins are allowed. Since we use credentials, 
+# django-cors-headers will reflect the requester's Origin.
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True  # Legacy support
 CORS_ALLOW_CREDENTIALS = True
+CORS_PREFLIGHT_MAX_AGE = 86400
 
 from corsheaders.defaults import default_headers
 
@@ -258,8 +263,8 @@ CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(',')]
 if DEBUG:
     CSRF_TRUSTED_ORIGINS += [
         'http://localhost:5173',
-        'http://127.0.0.1:5173',
         'http://localhost:5174',
+        'http://127.0.0.1:5173',
         'http://127.0.0.1:5174',
         'http://localhost:8000',
         'http://127.0.0.1:8000',

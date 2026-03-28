@@ -1,7 +1,7 @@
 import React from 'react';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 
-const CategoryTable = ({ categories, loading, handleDelete }) => {
+const CategoryTable = ({ categories, loading, handleDelete, onEdit, onView }) => {
     if (loading) {
         return (
             <div className="flex items-center justify-center p-20 bg-[#0b1a2a]/50 rounded-2xl border border-slate-800">
@@ -26,7 +26,11 @@ const CategoryTable = ({ categories, loading, handleDelete }) => {
                 <tbody className="bg-transparent divide-y divide-slate-700">
                     {categories && categories.length > 0 ? (
                         categories.map((cat) => (
-                            <tr key={cat.id} className="hover:bg-slate-800 transition-colors">
+                            <tr 
+                                key={cat.id} 
+                                onClick={() => onView && onView(cat)}
+                                className="hover:bg-slate-800 transition-colors cursor-pointer"
+                            >
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-100">{cat.id}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <img
@@ -46,10 +50,20 @@ const CategoryTable = ({ categories, loading, handleDelete }) => {
                                         <span className="text-slate-500 italic">None</span>
                                     )}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex space-x-2">
-                                        <button className="text-purple-400 hover:text-purple-200"><Eye className="h-5 w-5" /></button>
-                                        <button className="text-green-400 hover:text-green-200"><Pencil className="h-5 w-5" /></button>
+                                        <button 
+                                            onClick={() => onView && onView(cat)}
+                                            className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all cursor-pointer"
+                                        >
+                                            <Eye className="h-5 w-5" />
+                                        </button>
+                                        <button 
+                                            onClick={() => onEdit && onEdit(cat)}
+                                            className="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500 hover:text-white transition-all cursor-pointer"
+                                        >
+                                            <Pencil className="h-5 w-5" />
+                                        </button>
                                         <button onClick={() => handleDelete && handleDelete(cat.id)} disabled={true} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"><Trash2 className="h-5 w-5" /></button>
                                     </div>
                                 </td>

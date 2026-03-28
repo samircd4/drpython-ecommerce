@@ -1,5 +1,6 @@
 from django.urls import path, include
 from .views import api_root
+from . import analytics
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from django.contrib.auth.decorators import login_required
 
@@ -11,6 +12,7 @@ urlpatterns = [
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
     path('chats/', include('chat.urls')),
+    path('dashboard/stats/', analytics.DashboardStatsView.as_view(), name='dashboard-stats'),
     path('', include('accounts.urls')),
     path('', include('orders.urls')),
     path('', include('products.urls')),

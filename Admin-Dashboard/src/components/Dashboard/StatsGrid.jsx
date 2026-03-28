@@ -20,12 +20,12 @@ const StatCard = ({ title, value, change, icon: Icon, gradient, iconBg, iconColo
     </div>
 );
 
-const StatsGrid = () => {
-    const stats = [
+const StatsGrid = ({ stats }) => {
+    const defaultStats = [
         {
             title: "Total Revenue",
-            value: "$12,430",
-            change: "+ 95%",
+            value: "৳0",
+            change: "0%",
             icon: CircleDollarSign,
             gradient: "bg-gradient-to-r from-[#13b58b] to-[#0ea5a8]",
             iconBg: "bg-[#096e55]",
@@ -34,8 +34,8 @@ const StatsGrid = () => {
         },
         {
             title: "Total Orders",
-            value: "1,204",
-            change: "+ 96%",
+            value: "0",
+            change: "0%",
             icon: ShoppingCart,
             gradient: "bg-gradient-to-r from-[#7c3aed] to-[#ec4899]",
             iconBg: "bg-[#340876]",
@@ -44,8 +44,8 @@ const StatsGrid = () => {
         },
         {
             title: "Total Customers",
-            value: "8,342",
-            change: "+ 90%",
+            value: "0",
+            change: "0%",
             icon: CircleUserRound,
             gradient: "bg-gradient-to-r from-[#2563eb] to-[#06b6d4]",
             iconBg: "bg-[#06518f]",
@@ -54,8 +54,8 @@ const StatsGrid = () => {
         },
         {
             title: "Total Reviews",
-            value: "8,342",
-            change: "+ 98%",
+            value: "0",
+            change: "0%",
             icon: Star,
             gradient: "bg-gradient-to-r from-[#f09205] to-[#b7ae55]",
             iconBg: "bg-[#9d6d07]",
@@ -64,10 +64,16 @@ const StatsGrid = () => {
         }
     ];
 
+    const displayStats = stats ? defaultStats.map((s, i) => ({
+        ...s,
+        value: stats[i]?.value || s.value,
+        change: stats[i]?.change || s.change
+    })) : defaultStats;
+
     return (
         <div className="rounded-xl bg-[#071229] p-3 shadow-md border border-slate-800/50">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {stats.map((stat, index) => (
+                {displayStats.map((stat, index) => (
                     <StatCard key={index} {...stat} />
                 ))}
             </div>

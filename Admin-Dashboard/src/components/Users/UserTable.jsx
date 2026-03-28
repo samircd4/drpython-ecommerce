@@ -25,7 +25,11 @@ const UserTable = ({ users = [], loading = false }) => {
                     ) : users.length === 0 ? (
                         <tr><td colSpan="8" className="text-center py-10 text-slate-400">No users found.</td></tr>
                     ) : users.map((user) => (
-                        <tr key={user.id} className="hover:bg-slate-800 transition-colors">
+                        <tr 
+                            key={user.id} 
+                            onClick={() => navigate(`/users/view/${user.id}`)}
+                            className="group hover:bg-slate-800/80 transition-all cursor-pointer border-b border-slate-800 last:border-0"
+                        >
                             <td className="px-6 py-4 whitespace-nowrap text-slate-100 font-medium">U-{user.id}</td>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <img
@@ -56,15 +60,12 @@ const UserTable = ({ users = [], loading = false }) => {
                             <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs">
                                 {user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                 <div className="flex space-x-2">
-                                    <button onClick={() => navigate(`/users/view/${user.id}`)} title="View" className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all cursor-pointer">
-                                        <Eye className="h-4 w-4" />
-                                    </button>
-                                    <button onClick={() => navigate(`/users/edit/${user.id}`)} title="Edit" className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer">
+                                    <button onClick={() => navigate(`/users/edit/${user.id}`)} title="Edit" className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-white transition-all cursor-pointer shadow-lg shadow-emerald-500/0 hover:shadow-emerald-500/20">
                                         <Pencil className="h-4 w-4" />
                                     </button>
-                                    <button title="Delete" disabled className="p-1.5 bg-red-500/10 text-red-400/30 rounded-lg cursor-not-allowed">
+                                    <button title="Delete" disabled className="p-2 bg-red-500/10 text-red-500/30 rounded-xl cursor-not-allowed border border-red-500/5">
                                         <Trash2 className="h-4 w-4" />
                                     </button>
                                 </div>

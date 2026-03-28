@@ -33,6 +33,7 @@ import CustomerView from "./pages/CustomerView"
 import CustomerEdit from "./pages/CustomerEdit"
 import UserView from "./pages/UserView"
 import UserEdit from "./pages/UserEdit"
+import UserAdd from "./pages/UserAdd"
 
 import Login from "./pages/Auth/Login"
 import Register from "./pages/Auth/Register"
@@ -196,6 +197,7 @@ function AppContent() {
                                 {/* User Routes */}
                                 <Route path="/users/view/:id" element={<UserView />} />
                                 <Route path="/users/edit/:id" element={<UserEdit />} />
+                                <Route path="/users/add" element={<UserAdd />} />
                                 <Route path="*" element={<div className="p-6 text-slate-300">Page Not Found</div>} />
                             </Routes>
                         </div>

@@ -10,6 +10,7 @@ import api from "../api/axiosConfig";
 
 const Dashboard = () => {
     const [products, setProducts] = useState([]);
+    const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [allCategories, setAllCategories] = useState([]);
     const [allBrands, setAllBrands] = useState([]);
@@ -26,18 +27,18 @@ const Dashboard = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // Fetch Products, Brands, and Categories in parallel
-                const [productsRes, brandsRes, categoriesRes] = await Promise.all([
+                // Fetch Products, Brands, Categories, and Dashboard Stats in parallel
+                const [productsRes, brandsRes, categoriesRes, statsRes] = await Promise.all([
                     api.get('/products/'),
                     api.get('/brands/'),
-                    api.get('/categories/')
+                    api.get('/categories/'),
+                    api.get('/dashboard/stats/')
                 ]);
 
-                // On Dashboard, we can prioritize showing products marked as bestsellers if the API supports it
-                // For now, we use the results from the first page
                 setProducts(productsRes.data.results || []);
                 setAllBrands(brandsRes.data.results || []);
                 setAllCategories(categoriesRes.data.results || []);
+                setStats(statsRes.data);
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
             } finally {
@@ -115,13 +116,16 @@ const Dashboard = () => {
 
     return (
         <div className="p-0 sm:p-6 min-h-screen bg-transparent bg-slate-900/50">
-            <Breadcrumb title="Dashboard" paths={["Home"]} />
+            <Breadcrumb 
+                title="Dashboard" 
+                paths={[{ label: "Home", path: "/" }]} 
+            />
 
-            <StatsGrid />
+            <StatsGrid stats={stats?.summary} />
 
             <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <PopularClients />
-                <OrdersOverview />
+                <PopularClients clients={stats?.popular_clients} />
+                <OrdersOverview data={stats?.orders_overview} />
             </div>
 
             <div className="mt-6 rounded-xl bg-[#071229] p-6 shadow-md border border-slate-800 text-white">

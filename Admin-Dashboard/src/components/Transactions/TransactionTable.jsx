@@ -35,7 +35,11 @@ const TransactionTable = ({ transactions = [], sortColumn, sortDirection, onSort
                 </thead>
                 <tbody className="bg-transparent divide-y divide-slate-700">
                     {transactions.map((txn) => (
-                        <tr key={txn.id} className="hover:bg-slate-800 transition-colors">
+                        <tr 
+                            key={txn.id} 
+                            onClick={() => onView?.(txn)}
+                            className="hover:bg-slate-800 transition-colors cursor-pointer"
+                        >
                             <td className="px-6 py-4 whitespace-nowrap text-slate-100 font-mono text-sm">#{txn.id}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-slate-300 font-medium">{txn.customer_name || 'Anonymous'}</td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -54,7 +58,7 @@ const TransactionTable = ({ transactions = [], sortColumn, sortDirection, onSort
                                 </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-slate-400 text-sm font-mono">{new Date(txn.payment_date).toLocaleDateString()}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                 <div className="flex justify-center space-x-2">
                                     <button 
                                         onClick={() => onView?.(txn)}

@@ -350,7 +350,14 @@ const AddProduct = () => {
     return (
         <div className="p-0 sm:p-6 min-h-screen">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <Breadcrumb title={isView ? "View Product" : (isEdit ? "Edit Product" : "Add Product")} paths={["Home", "Products", isView ? "View" : (isEdit ? "Edit" : "Add New")]} />
+                <Breadcrumb 
+                    title={isView ? "View Product" : (isEdit ? "Edit Product" : "Add Product")} 
+                    paths={[
+                        { label: "Home", path: "/" },
+                        { label: "Products", path: "/products" },
+                        { label: isView ? "View" : (isEdit ? "Edit" : "Add New"), path: isEdit ? `/products/edit/${id}` : (isView ? `/products/view/${id}` : "/products/new") }
+                    ]} 
+                />
                 {isView ? (
                     <button
                         onClick={() => navigate(`/products/edit/${id}`)}

@@ -156,13 +156,64 @@ from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 
 
+from django.contrib.auth.models import User, Group, Permission
+
+class PermissionSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Django Permission model.
+    """
+    class Meta:
+        model = Permission
+        fields = ['id', 'name', 'codename', 'content_type']
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Django Group model.
+    """
+    permissions = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Permission.objects.all(),
+        required=False
+    )
+
+    class Meta:
+        model = Group
+        fields = ['id', 'name', 'permissions']
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    """
+    Matches the UI screenshot exactly.
+    """
+    division = serializers.SlugRelatedField(slug_field='name', queryset=Division.objects.all())
+    district = serializers.SlugRelatedField(slug_field='name', queryset=District.objects.all())
+    sub_district = serializers.SlugRelatedField(slug_field='name', queryset=SubDistrict.objects.all())
+
+    class Meta:
+        model = Address
+        fields = [
+            'id',
+            'full_name', 'phone',           # Contact
+            'address',                      # House/Road
+            'division', 'district', 'sub_district',  # Location
+            'address_type', 'is_default'    # Meta
+        ]
+
+    def create(self, validated_data):
+        # Automatically assign the logged-in user's customer profile
+        user = self.context['request'].user
+        validated_data['customer'] = user.customer
+        return super().create(validated_data)
+
+
 class CustomerSerializer(serializers.ModelSerializer):
     """
     Read/Write customer details.
     """
     username = serializers.CharField(source='user.username', read_only=True)
     is_wholesaler = serializers.SerializerMethodField()
-    is_email_verified = serializers.SerializerMethodField()
+    is_email_verified = serializers.BooleanField(required=False)
     first_name = serializers.CharField(source='user.first_name', required=False)
     last_name = serializers.CharField(source='user.last_name', required=False)
     addresses = AddressSerializer(many=True, read_only=True)
@@ -178,7 +229,7 @@ class CustomerSerializer(serializers.ModelSerializer):
             'avatar', 'social_avatar_url', 'is_wholesaler', 'is_email_verified', 'is_staff', 'created_at',
             'addresses', 'total_orders', 'total_spent', 'recent_orders'
         ]
-        read_only_fields = ['user', 'customer_type', 'created_at']
+        read_only_fields = ['user', 'created_at']
 
     @extend_schema_field(serializers.IntegerField())
     def get_total_orders(self, obj):
@@ -209,6 +260,8 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(serializers.BooleanField())
     def get_is_email_verified(self, obj):
+        if obj.is_email_verified:
+            return True
         return EmailAddress.objects.filter(user=obj.user, verified=True).exists()
 
     def to_representation(self, instance):
@@ -258,29 +311,6 @@ class CustomerSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class AddressSerializer(serializers.ModelSerializer):
-    """
-    Matches the UI screenshot exactly.
-    """
-    division = serializers.SlugRelatedField(slug_field='name', queryset=Division.objects.all())
-    district = serializers.SlugRelatedField(slug_field='name', queryset=District.objects.all())
-    sub_district = serializers.SlugRelatedField(slug_field='name', queryset=SubDistrict.objects.all())
-
-    class Meta:
-        model = Address
-        fields = [
-            'id',
-            'full_name', 'phone',           # Contact
-            'address',                      # House/Road
-            'division', 'district', 'sub_district',  # Location
-            'address_type', 'is_default'    # Meta
-        ]
-
-    def create(self, validated_data):
-        # Automatically assign the logged-in user's customer profile
-        user = self.context['request'].user
-        validated_data['customer'] = user.customer
-        return super().create(validated_data)
 
 
 # --- Location Serializers ---
@@ -313,11 +343,18 @@ class AdminUserSerializer(serializers.ModelSerializer):
     """
     Serializer for User model for admin-level management.
     """
+    groups = serializers.SlugRelatedField(
+        many=True,
+        slug_field='name',
+        queryset=Group.objects.all(),
+        required=False
+    )
+
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
-            'is_staff', 'is_active', 'is_superuser', 'last_login', 'date_joined'
+            'is_staff', 'is_active', 'is_superuser', 'last_login', 'date_joined', 'groups'
         ]
         read_only_fields = ['id', 'date_joined', 'last_login']
 

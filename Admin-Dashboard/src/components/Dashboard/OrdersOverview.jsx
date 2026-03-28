@@ -1,17 +1,32 @@
 import React, { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 
-const OrdersOverview = () => {
+const OrdersOverview = ({ data: apiData = [] }) => {
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
-    const data = [
+    const statusConfig = {
+        'pending': { color: "#3b82f6", bgClass: "bg-blue-500" },
+        'shipped': { color: "#a855f7", bgClass: "bg-purple-500" },
+        'received': { color: "#10b981", bgClass: "bg-emerald-500" },
+        'delivered': { color: "#10b981", bgClass: "bg-emerald-500" },
+        'cancelled': { color: "#ef4444", bgClass: "bg-red-500" },
+        'refunded': { color: "#f59e0b", bgClass: "bg-amber-500" },
+    };
+
+    const defaultData = [
         { label: "Pending", value: 547, percentage: 20, color: "#3b82f6", bgClass: "bg-blue-500" },
         { label: "Shipped", value: 398, percentage: 28, color: "#a855f7", bgClass: "bg-purple-500" },
-        { label: "Recieved", value: 605, percentage: 31, color: "#10b981", bgClass: "bg-emerald-500" },
+        { label: "Received", value: 605, percentage: 31, color: "#10b981", bgClass: "bg-emerald-500" },
         { label: "Cancelled", value: 249, percentage: 13, color: "#ef4444", bgClass: "bg-red-500" },
         { label: "Refunded", value: 176, percentage: 9, color: "#f59e0b", bgClass: "bg-amber-500" },
     ];
+
+    const data = apiData.length > 0 ? apiData.map(item => ({
+        ...item,
+        color: statusConfig[item.status_code?.toLowerCase()]?.color || "#94a3b8",
+        bgClass: statusConfig[item.status_code?.toLowerCase()]?.bgClass || "bg-slate-400"
+    })) : defaultData;
 
     const size = 220;
     const center = size / 2;
