@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HelpCircle, MessageSquare, Trash2, CheckCircle, Clock } from 'lucide-react';
-import Breadcrumb from '../Components/Layout/Breadcrumb';
-import Pagination from '../Components/Layout/Pagination';
+import Breadcrumb from '../components/Layout/Breadcrumb';
+import Pagination from '../components/Layout/Pagination';
 import api from '../api/axiosConfig';
 import useProductLink from '../hooks/useProductLink';
 

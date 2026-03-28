@@ -2,8 +2,8 @@ import { useState, useEffect } from "react"
 import { Routes, Route, Navigate, useLocation } from "react-router-dom"
 import { useAuth } from "./Context/AuthContext"
 import { ModalProvider, useModals } from "./Context/ModalContext"
-import Header from "./Components/Layout/Header"
-import Sidebar from "./Components/Layout/Sidebar"
+import Header from "./components/Layout/Header"
+import Sidebar from "./components/Layout/Sidebar"
 import Dashboard from "./pages/Dashboard"
 import Analytics from "./pages/Analytics"
 import Overview from "./pages/Overview"
@@ -33,11 +33,11 @@ import ForgotPassword from "./pages/Auth/ForgotPassword"
 import { Toaster } from 'react-hot-toast';
 
 // Global Modals
-import BrandModal from "./Components/Product/BrandModal"
-import BrandViewModal from "./Components/Product/BrandViewModal"
-import CategoryModal from "./Components/Product/CategoryModal"
-import CategoryViewModal from "./Components/Product/CategoryViewModal"
-import GlobalOrderModal from "./Components/Layout/GlobalOrderModal"
+import BrandModal from "./components/Product/BrandModal"
+import BrandViewModal from "./components/Product/BrandViewModal"
+import CategoryModal from "./components/Product/CategoryModal"
+import CategoryViewModal from "./components/Product/CategoryViewModal"
+import GlobalOrderModal from "./components/Layout/GlobalOrderModal"
 
 const GlobalModals = () => {
     const { modals, closeModal } = useModals();

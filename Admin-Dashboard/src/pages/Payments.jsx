@@ -1,10 +1,10 @@
 import { Eye, Pencil, Trash2, X, Loader2, Save } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import Breadcrumb from '../Components/Layout/Breadcrumb';
-import TransactionTable from '../Components/Transactions/TransactionTable';
-import Pagination from '../Components/Layout/Pagination';
-import ConfirmModal from '../Components/Layout/ConfirmModal';
+import Breadcrumb from '../components/Layout/Breadcrumb';
+import TransactionTable from '../components/Transactions/TransactionTable';
+import Pagination from '../components/Layout/Pagination';
+import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 
 const PaymentModal = ({ payment, isOpen, onClose, onUpdatePayment, readOnly = false }) => {

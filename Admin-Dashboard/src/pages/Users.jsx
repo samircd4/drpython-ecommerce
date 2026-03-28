@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import Breadcrumb from '../Components/Layout/Breadcrumb';
-import Pagination from '../Components/Layout/Pagination';
-import UserTable from '../Components/Users/UserTable';
+import Breadcrumb from '../components/Layout/Breadcrumb';
+import Pagination from '../components/Layout/Pagination';
+import UserTable from '../components/Users/UserTable';
 import mockUsers from '../data/users.json';
 
 const Users = () => {

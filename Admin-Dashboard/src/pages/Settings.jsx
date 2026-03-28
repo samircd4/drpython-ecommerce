@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Breadcrumb from '../Components/Layout/Breadcrumb';
+import Breadcrumb from '../components/Layout/Breadcrumb';
 import { User, Bell, Shield, Palette, Save, Camera, Loader2 } from 'lucide-react';
 import { useAuth } from '../Context/AuthContext';
 import api from '../api/axiosConfig';

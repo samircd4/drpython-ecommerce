@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight, Plus, Clock, MapPin, Calendar as CalendarIcon } from "lucide-react";
-import Breadcrumb from "../Components/Layout/Breadcrumb";
+import Breadcrumb from "../components/Layout/Breadcrumb";
 
 const Calendar = () => {
     const [currentDate, setCurrentDate] = useState(new Date());

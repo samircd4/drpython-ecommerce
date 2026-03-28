@@ -1,6 +1,6 @@
 import React from "react";
 import { TrendingUp, DollarSign, ShoppingBag, Users, Download, ArrowUpRight, ArrowDownRight } from "lucide-react";
-import Breadcrumb from "../Components/Layout/Breadcrumb";
+import Breadcrumb from "../components/Layout/Breadcrumb";
 import reportData from "../data/reports.json";
 
 const Reports = () => {

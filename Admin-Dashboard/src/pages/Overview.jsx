@@ -1,5 +1,5 @@
 import { CircleDollarSign, CircleUserRound, ShoppingCart, Star } from "lucide-react";
-import Breadcrumb from "../Components/Layout/Breadcrumb";
+import Breadcrumb from "../components/Layout/Breadcrumb";
 
 const Overview = () => {
     return (

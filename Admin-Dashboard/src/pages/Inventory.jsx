@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import Breadcrumb from '../Components/Layout/Breadcrumb';
-import Pagination from '../Components/Layout/Pagination';
-import InventoryTable from '../Components/Inventory/InventoryTable';
+import Breadcrumb from '../components/Layout/Breadcrumb';
+import Pagination from '../components/Layout/Pagination';
+import InventoryTable from '../components/Inventory/InventoryTable';
 import mockInventory from '../data/inventory.json';
 
 const Inventory = () => {

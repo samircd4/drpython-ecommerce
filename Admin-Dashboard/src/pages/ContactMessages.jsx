@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, User, Trash2, ExternalLink, Calendar } from 'lucide-react';
-import Breadcrumb from '../Components/Layout/Breadcrumb';
-import Pagination from '../Components/Layout/Pagination';
+import Breadcrumb from '../components/Layout/Breadcrumb';
+import Pagination from '../components/Layout/Pagination';
 import api from '../api/axiosConfig';
 
 const ContactMessages = () => {

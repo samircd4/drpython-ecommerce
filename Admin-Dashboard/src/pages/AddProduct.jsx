@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Save, Edit, ArrowLeft, Image as ImageIcon, Plus, X, Check, AlertCircle, ChevronDown, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
-import Breadcrumb from '../Components/Layout/Breadcrumb';
+import Breadcrumb from '../components/Layout/Breadcrumb';
 import api from '../api/axiosConfig';
 
 
