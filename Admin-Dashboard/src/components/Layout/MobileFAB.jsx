@@ -50,7 +50,7 @@ const MobileFAB = () => {
     };
 
     return (
-        <div className="fixed bottom-6 right-6 z-50 sm:hidden" ref={fabRef}>
+        <div className="fixed bottom-6 right-6 z-50" ref={fabRef}>
             {/* Menu Items */}
             <AnimatePresence>
                 {open && (
