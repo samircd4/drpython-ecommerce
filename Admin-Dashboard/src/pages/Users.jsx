@@ -1,21 +1,41 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Breadcrumb from '../components/Layout/Breadcrumb';
 import Pagination from '../components/Layout/Pagination';
 import UserTable from '../components/Users/UserTable';
-import mockUsers from '../data/users.json';
+import api from '../api/axiosConfig';
+import toast from 'react-hot-toast';
 
 const Users = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(1);
     const [showBy, setShowBy] = useState(12);
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            setLoading(true);
+            try {
+                const response = await api.get('/users/');
+                setUsers(response.data);
+            } catch (err) {
+                console.error("Failed to fetch users:", err);
+                toast.error("Failed to load users list.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUsers();
+    }, []);
 
     const filteredUsers = useMemo(() => {
-        return mockUsers.filter(user =>
-            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.role.toLowerCase().includes(searchQuery.toLowerCase())
+        return users.filter(user =>
+            (user.username || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (user.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (user.first_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (user.last_name || '').toLowerCase().includes(searchQuery.toLowerCase())
         );
-    }, [searchQuery]);
+    }, [searchQuery, users]);
 
     const totalPages = Math.max(1, Math.ceil(filteredUsers.length / showBy));
     const visibleUsers = filteredUsers.slice((page - 1) * showBy, page * showBy);
@@ -45,14 +65,11 @@ const Users = () => {
                                 {[12, 24, 48].map(n => <option key={n} value={n}>{n}</option>)}
                             </select>
                         </div>
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium">
-                            Add User
-                        </button>
                     </div>
                 </div>
             </div>
 
-            <UserTable users={visibleUsers} />
+            <UserTable users={visibleUsers} loading={loading} />
 
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="text-sm text-slate-400">

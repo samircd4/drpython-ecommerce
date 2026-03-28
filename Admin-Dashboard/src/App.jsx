@@ -21,13 +21,19 @@ import Payments from "./pages/Payments"
 import Messages from "./pages/Messages"
 import ProductQnA from "./pages/ProductQnA"
 import ContactMessages from "./pages/ContactMessages"
-import Calendar from "./pages/Calendar"
 import ReportsPage from "./pages/Reports"
 import Reviews from "./pages/Reviews"
 import Brands from "./pages/Brands"
 import Categories from "./pages/Categories"
 import Settings from "./pages/Settings"
 import Coupons from "./pages/Coupons"
+
+// Customers & Users Detailed Pages
+import CustomerView from "./pages/CustomerView"
+import CustomerEdit from "./pages/CustomerEdit"
+import UserView from "./pages/UserView"
+import UserEdit from "./pages/UserEdit"
+
 import Login from "./pages/Auth/Login"
 import Register from "./pages/Auth/Register"
 import ForgotPassword from "./pages/Auth/ForgotPassword"
@@ -178,11 +184,18 @@ function AppContent() {
                                 <Route path="/chats" element={<Messages />} />
                                 <Route path="/product-qna" element={<ProductQnA />} />
                                 <Route path="/contact-messages" element={<ContactMessages />} />
-                                <Route path="/calendar" element={<Calendar />} />
                                 <Route path="/reports" element={<ReportsPage />} />
                                 <Route path="/reviews" element={<Reviews />} />
                                 <Route path="/coupons" element={<Coupons />} />
                                 <Route path="/settings" element={<Settings />} />
+
+                                {/* Customer Routes */}
+                                <Route path="/customers/view/:id" element={<CustomerView />} />
+                                <Route path="/customers/edit/:id" element={<CustomerEdit />} />
+
+                                {/* User Routes */}
+                                <Route path="/users/view/:id" element={<UserView />} />
+                                <Route path="/users/edit/:id" element={<UserEdit />} />
                                 <Route path="*" element={<div className="p-6 text-slate-300">Page Not Found</div>} />
                             </Routes>
                         </div>

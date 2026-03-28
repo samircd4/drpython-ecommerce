@@ -1,6 +1,5 @@
 import {
     BarChart3,
-    Calendar,
     ChevronDown,
     CreditCard,
     FileText,
@@ -55,7 +54,6 @@ const menuItems = [
             { id: "contact-messages", label: "Contact Messages", icon: Mail }
         ]
     },
-    { id: "calendar", icon: Calendar, label: "Calendar" },
     { id: "settings", icon: Settings, label: "Settings" },
 ];
 

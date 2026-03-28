@@ -6,6 +6,7 @@ import Breadcrumb from '../components/Layout/Breadcrumb';
 import Pagination from '../components/Layout/Pagination';
 import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
+import { useNavigate } from 'react-router-dom';
 
 const StatusBadge = ({ status }) => {
     const map = { Active: 'bg-green-500 text-white', Pending: 'bg-yellow-500 text-black', Banned: 'bg-red-500 text-white' };
@@ -18,6 +19,7 @@ const SortArrow = ({ column, sortColumn, sortDirection }) => {
 };
 
 const Customers = () => {
+    const navigate = useNavigate();
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [totalCount, setTotalCount] = useState(0);
@@ -181,8 +183,8 @@ const Customers = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs">{new Date(c.created_at).toLocaleDateString()}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex space-x-2">
-                                        <button title="View" className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all cursor-pointer"><Eye className="h-4 w-4" /></button>
-                                        <button title="Edit" className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"><Pencil className="h-4 w-4" /></button>
+                                        <button onClick={() => navigate(`/customers/view/${c.id}`)} title="View" className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all cursor-pointer"><Eye className="h-4 w-4" /></button>
+                                        <button onClick={() => navigate(`/customers/edit/${c.id}`)} title="Edit" className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"><Pencil className="h-4 w-4" /></button>
                                         <button title="Delete" onClick={() => handleDeleteCustomer(c.id)} disabled={true} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"><Trash2 className="h-4 w-4" /></button>
                                     </div>
                                 </td>

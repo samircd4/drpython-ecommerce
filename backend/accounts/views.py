@@ -25,6 +25,7 @@ from .serializers import (
     ChangePasswordSerializer, LogoutSerializer, ForgotPasswordSerializer, ResetPasswordSerializer,
     ResendVerificationEmailSerializer,
     CustomTokenObtainPairSerializer,
+    AdminUserSerializer,
 )
 from drf_spectacular.utils import extend_schema, OpenApiTypes
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
@@ -547,3 +548,18 @@ class SubDistrictViewSet(viewsets.ModelViewSet):
         if self.request.method in permissions.SAFE_METHODS:
             return [permissions.AllowAny()]
         return [permissions.IsAdminUser()]
+@extend_schema(tags=['Accounts'])
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    Manage system users. Admin only.
+    """
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = AdminUserSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    @extend_schema(
+        summary="List Users",
+        description="List all system users (staff, admins, customers).",
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)

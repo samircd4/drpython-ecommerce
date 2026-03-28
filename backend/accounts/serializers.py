@@ -165,15 +165,43 @@ class CustomerSerializer(serializers.ModelSerializer):
     is_email_verified = serializers.SerializerMethodField()
     first_name = serializers.CharField(source='user.first_name', required=False)
     last_name = serializers.CharField(source='user.last_name', required=False)
+    addresses = AddressSerializer(many=True, read_only=True)
+    total_orders = serializers.SerializerMethodField()
+    total_spent = serializers.SerializerMethodField()
+    recent_orders = serializers.SerializerMethodField()
 
     class Meta:
         model = Customer
         fields = [
             'id', 'user', 'username', 'first_name', 'last_name', 'name',
             'email', 'phone_number', 'customer_type',
-            'avatar', 'social_avatar_url', 'is_wholesaler', 'is_email_verified', 'is_staff', 'created_at'
+            'avatar', 'social_avatar_url', 'is_wholesaler', 'is_email_verified', 'is_staff', 'created_at',
+            'addresses', 'total_orders', 'total_spent', 'recent_orders'
         ]
         read_only_fields = ['user', 'customer_type', 'created_at']
+
+    @extend_schema_field(serializers.IntegerField())
+    def get_total_orders(self, obj):
+        return obj.orders.count()
+
+    @extend_schema_field(serializers.DecimalField(max_digits=12, decimal_places=2))
+    def get_total_spent(self, obj):
+        from django.db.models import Sum
+        total = obj.orders.aggregate(total=Sum('total_amount'))['total']
+        return total or 0
+
+    @extend_schema_field(serializers.ListField(child=serializers.DictField()))
+    def get_recent_orders(self, obj):
+        recent = obj.orders.all()[:5]
+        return [
+            {
+                'id': order.id,
+                'created_at': order.created_at,
+                'status': order.order_status.display_name if order.order_status else 'Pending',
+                'total_amount': order.total_amount
+            }
+            for order in recent
+        ]
 
     @extend_schema_field(serializers.BooleanField())
     def get_is_wholesaler(self, obj):
@@ -279,4 +307,18 @@ class ResendVerificationEmailSerializer(serializers.Serializer):
         required=True,
         help_text="Email address to resend the verification link to."
     )
+
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for User model for admin-level management.
+    """
+    class Meta:
+        model = User
+        fields = [
+            'id', 'username', 'email', 'first_name', 'last_name',
+            'is_staff', 'is_active', 'is_superuser', 'last_login', 'date_joined'
+        ]
+        read_only_fields = ['id', 'date_joined', 'last_login']
+
 
