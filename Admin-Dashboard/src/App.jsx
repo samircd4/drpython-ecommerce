@@ -27,6 +27,7 @@ import Reviews from "./pages/Reviews"
 import Brands from "./pages/Brands"
 import Categories from "./pages/Categories"
 import Settings from "./pages/Settings"
+import Coupons from "./pages/Coupons"
 import Login from "./pages/Auth/Login"
 import Register from "./pages/Auth/Register"
 import ForgotPassword from "./pages/Auth/ForgotPassword"
@@ -38,6 +39,7 @@ import BrandViewModal from "./components/Product/BrandViewModal"
 import CategoryModal from "./components/Product/CategoryModal"
 import CategoryViewModal from "./components/Product/CategoryViewModal"
 import GlobalOrderModal from "./components/Layout/GlobalOrderModal"
+import MobileFAB from "./components/Layout/MobileFAB"
 
 const GlobalModals = () => {
     const { modals, closeModal } = useModals();
@@ -179,6 +181,7 @@ function AppContent() {
                                 <Route path="/calendar" element={<Calendar />} />
                                 <Route path="/reports" element={<ReportsPage />} />
                                 <Route path="/reviews" element={<Reviews />} />
+                                <Route path="/coupons" element={<Coupons />} />
                                 <Route path="/settings" element={<Settings />} />
                                 <Route path="*" element={<div className="p-6 text-slate-300">Page Not Found</div>} />
                             </Routes>
@@ -187,6 +190,7 @@ function AppContent() {
                 </div>
             </div>
             <GlobalModals />
+            <MobileFAB />
             <Toaster 
                 position="bottom-right"
                 toastOptions={{

@@ -14,7 +14,8 @@ import {
     Tag,
     ShoppingBag,
     CreditCard,
-    Users
+    Users,
+    Ticket
 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -230,7 +231,7 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                 {/* Right */}
                 <div className="flex items-center space-x-3">
                     {/* Add New Dropdown */}
-                    <div className="relative" ref={addDropdownRef}>
+                    <div className="relative hidden sm:block" ref={addDropdownRef}>
                         <motion.button 
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
@@ -291,6 +292,11 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                                     <Users className="w-4 h-4 text-slate-400 group-hover:text-pink-400" />
                                     <span>Customer</span>
                                 </button>
+
+                                <button onClick={() => { navigate('/coupons'); setShowAddDropdown(false); }} className="w-full flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer group">
+                                    <Ticket className="w-4 h-4 text-slate-400 group-hover:text-yellow-400" />
+                                    <span>Coupon</span>
+                                </button>
                             </div>
                         )}
                     </div>
@@ -350,7 +356,7 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                                 setShowUserDropdown(false);
                                 setShowAddDropdown(false);
                             }}
-                            className={`relative p-2.5 cursor-pointer rounded-xl transition-colors hidden sm:block ${
+                            className={`relative p-2.5 cursor-pointer rounded-xl transition-colors ${
                                 showNotificationPanel ? 'bg-purple-600/20 text-purple-400' : 'text-slate-200 hover:bg-slate-800'
                             }`}
                         >

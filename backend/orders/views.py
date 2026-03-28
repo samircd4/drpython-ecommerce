@@ -402,3 +402,22 @@ class PaymentViewSet(viewsets.ModelViewSet):
         if hasattr(self.request.user, 'customer'):
             return PaymentInfo.objects.filter(order__customer=self.request.user.customer)
         return PaymentInfo.objects.none()
+
+
+@extend_schema(tags=['Coupons'])
+class CouponViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing Coupons (Admin only).
+    """
+    queryset = Coupon.objects.all().order_by('-created_at')
+    serializer_class = CouponSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    filterset_fields = ['active', 'discount_type']
+    search_fields = ['code']
+    ordering_fields = ['created_at', 'valid_from', 'valid_to', 'discount_value']
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAdminUser()]

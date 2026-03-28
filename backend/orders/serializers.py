@@ -49,7 +49,8 @@ class OrderProductSerializer(serializers.ModelSerializer):
 class CouponSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coupon
-        fields = ['id', 'code', 'discount_type', 'discount_value', 'min_purchase', 'valid_from', 'valid_to', 'active']
+        fields = ['id', 'code', 'discount_type', 'discount_value', 'min_purchase', 'valid_from', 'valid_to', 'active', 'usage_limit', 'times_used', 'created_at']
+        read_only_fields = ['times_used', 'created_at']
 
 
 class OrderVariantSerializer(serializers.ModelSerializer):

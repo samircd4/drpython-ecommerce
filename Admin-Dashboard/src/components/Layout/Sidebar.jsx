@@ -16,7 +16,8 @@ import {
     TrendingUp,
     Star,
     Mail,
-    HelpCircle
+    HelpCircle,
+    Ticket
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -38,6 +39,7 @@ const menuItems = [
         ]
     },
     { id: "orders", icon: ShoppingBag, label: "Orders" },
+    { id: "coupons", icon: Ticket, label: "Coupons" },
     { id: "customers", icon: Users, label: "Customers" },
     { id: "reviews", icon: Star, label: "Reviews" },
     { id: "inventory", icon: Package, label: "Inventory", count: "847" },
