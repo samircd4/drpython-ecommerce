@@ -27,6 +27,7 @@ import Brands from "./pages/Brands"
 import Categories from "./pages/Categories"
 import Settings from "./pages/Settings"
 import Coupons from "./pages/Coupons"
+import DataManagement from "./pages/DataManagement"
 
 // Customers & Users Detailed Pages
 import CustomerView from "./pages/CustomerView"
@@ -210,6 +211,7 @@ function AppContent() {
                                 <Route path="/users/edit/:id" element={<ProtectedRoute requiredPermission="auth.view_user"><UserEdit /></ProtectedRoute>} />
                                 <Route path="/users/add" element={<ProtectedRoute requiredPermission="auth.view_user"><UserAdd /></ProtectedRoute>} />
                                 <Route path="*" element={<div className="p-6 text-slate-300">Page Not Found</div>} />
+                                <Route path="/export-import" element={<ProtectedRoute requiredPermission="auth.view_user"><DataManagement /></ProtectedRoute>} />
                             </Routes>
                         </div>
                     </div>

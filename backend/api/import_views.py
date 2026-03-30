@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import BasePermission
 
 from registry.models import EXPORT_REGISTRY
-from services.import_service import import_from_excel
+from services.import_service import process_import_file
 
 
 class IsSuperUser(BasePermission):
@@ -24,8 +24,13 @@ def import_data(request, model_name):
     if not file:
         return Response({"error": "No file provided"}, status=400)
 
-    created, errors = import_from_excel(
+    ext = file.name.split('.')[-1].lower() if '.' in file.name else ''
+    if ext not in ['csv', 'json', 'xls', 'xlsx']:
+        return Response({"error": f"Unsupported file format '{ext}'. Please use csv, json, or excel files."}, status=400)
+
+    created, errors = process_import_file(
         file,
+        ext,
         config["serializer"]
     )
 

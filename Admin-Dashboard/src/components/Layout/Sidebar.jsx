@@ -75,8 +75,10 @@ const menuItems = [
             { id: "contact-messages", label: "Contact Messages", icon: Mail }
         ]
     },
+    { id: "export-import", icon: FileText, label: "Export/Import" },
     { id: "settings", icon: Settings, label: "Settings" },
 ];
+
 
 import { useChat } from "../../Context/ChatContext";
 

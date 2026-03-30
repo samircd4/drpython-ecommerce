@@ -1,85 +1,32 @@
-import React, { useState } from "react";
+import React from "react";
 
 const Insights = () => {
-    const [file, setFile] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState("");
-
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
-    };
-
-    const handleUpload = async () => {
-        if (!file) {
-            setMessage("Please select a file first.");
-            return;
-        }
-
-        setLoading(true);
-        setMessage("");
-
-        try {
-            const formData = new FormData();
-            formData.append("file", file);
-
-            const token = localStorage.getItem("access_token");
-            console.log(token);
-
-
-            const res = await fetch("http://localhost:8000/api/import/brands/", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-                body: formData,
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                setMessage(`Uploaded successfully! Created: ${data.created}`);
-            } else {
-                setMessage(data.error || "Upload failed");
-            }
-        } catch (error) {
-            setMessage("Something went wrong!");
-        }
-
-        setLoading(false);
-    };
-
     return (
         <div className="p-0 sm:p-6 min-h-screen bg-transparent bg-slate-900/50">
-            <div className="rounded-xl bg-[#071229] p-6 shadow-md">
-                <h2 className="text-2xl font-bold text-slate-100">Insights</h2>
-                <p className="mt-2 text-slate-300">Insights and trends.</p>
-
-                {/* Upload Box */}
-                <div className="mt-6 p-4 border border-slate-700 rounded-lg">
-                    <h3 className="text-slate-200 font-semibold mb-3">
-                        Import Excel File
-                    </h3>
-
-                    <input
-                        type="file"
-                        accept=".xlsx,.xls"
-                        onChange={handleFileChange}
-                        className="block w-full text-slate-200 mb-3"
-                    />
-
-                    <button
-                        onClick={handleUpload}
-                        disabled={loading}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
-                    >
-                        {loading ? "Uploading..." : "Upload"}
-                    </button>
-
-                    {message && (
-                        <p className="mt-3 text-sm text-slate-300">
-                            {message}
-                        </p>
-                    )}
+            <div className="rounded-xl bg-[#071229] p-8 shadow-md max-w-4xl mx-auto border border-slate-800 text-center">
+                <div className="mb-6">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-900/20 text-blue-400 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                    </div>
+                    <h2 className="text-3xl font-bold text-slate-100">Insights & Analytics</h2>
+                    <p className="mt-4 text-slate-400 text-lg">Your data-driven growth strategies and performance metrics will appear here.</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12">
+                    <div className="p-4 rounded-lg bg-slate-800/20 border border-slate-700/50">
+                        <p className="text-slate-500 text-xs uppercase font-semibold mb-1">Coming Soon</p>
+                        <p className="text-slate-200 font-medium">Predictive Sales</p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-slate-800/20 border border-slate-700/50">
+                        <p className="text-slate-500 text-xs uppercase font-semibold mb-1">Coming Soon</p>
+                        <p className="text-slate-200 font-medium">Customer Retention</p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-slate-800/20 border border-slate-700/50">
+                        <p className="text-slate-500 text-xs uppercase font-semibold mb-1">Coming Soon</p>
+                        <p className="text-slate-200 font-medium">Inventory Health</p>
+                    </div>
                 </div>
             </div>
         </div>
