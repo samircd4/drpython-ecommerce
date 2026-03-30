@@ -4,6 +4,9 @@ from . import analytics
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from django.contrib.auth.decorators import login_required
 
+from .export_views import export_data
+from .import_views import import_data
+
 urlpatterns = [
     path('', api_root, name='api-root'),
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
@@ -18,4 +21,6 @@ urlpatterns = [
     path('', include('products.urls')),
     path('', include('reviews.urls')),
     path('', include('web.urls')),
+    path("export/<str:model_name>/", export_data, name="export-data"),
+    path("import/<str:model_name>/", import_data, name="import-data"),
 ]

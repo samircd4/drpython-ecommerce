@@ -47,4 +47,8 @@ def api_root(request, format=None):
             'contact': reverse('contact-list', request=request, format=format),
             'subscribe': reverse('subscribe-list', request=request, format=format),
         },
+        'export_import': {
+            'export': reverse('export-data', args=['products'], request=request, format=format),
+            'import': reverse('import-data', args=['products'], request=request, format=format),
+        },
     })

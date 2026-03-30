@@ -11,6 +11,10 @@ const RatingStars = ({ count = 0 }) => {
     return <div className="flex items-center space-x-0.5">{stars}</div>;
 };
 
+const exportProductData = () => {
+    window.open("http://localhost:8000/api/export/products/", "_blank");
+}
+
 const FilterBar = ({
     showBy = 10,
     onShowByChange = () => { },
@@ -70,6 +74,11 @@ const FilterBar = ({
                 <option value="Brand">Brand</option>
                 {brands.map((b) => <option key={b} value={b}>{b}</option>)}
             </select>
+            <div>
+                <button type="button" onClick={() => exportProductData()} className="flex-shrink-0 bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-md px-3 py-2 focus:outline-none cursor-pointer">
+                    <span className="text-sm">Export</span>
+                </button>
+            </div>
 
             <div className="flex-1 min-w-0">
                 <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search..." className="w-full bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-md px-3 py-2 focus:outline-none" />
