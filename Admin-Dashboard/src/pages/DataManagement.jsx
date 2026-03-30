@@ -12,6 +12,10 @@ const DataManagement = () => {
         { id: "brands", name: "Brands" },
         { id: "customers", name: "Customers" },
         { id: "reviews", name: "Reviews" },
+        {id: "categories", name: "Categories"},
+        {id: "orders", name: "Orders"},
+        {id: "payment_infos", name: "Payment Infos"},
+        {id: "coupons", name: "Coupons"},
     ];
 
     const exportFormats = [
@@ -28,7 +32,7 @@ const DataManagement = () => {
     const handleExport = () => {
         const token = localStorage.getItem("access_token");
         // Removed trailing slash logic as per previous backend fix
-        const url = `http://localhost:8000/api/data-mgmt/export-file/${selectedModel}?format=${exportFormat}`;
+        const url = `http://localhost:8000/api/export/${selectedModel}`;
         
         fetch(url, {
             method: 'GET',
@@ -74,7 +78,7 @@ const DataManagement = () => {
             const token = localStorage.getItem("access_token");
 
             // Added data-mgmt path
-            const res = await fetch(`http://localhost:8000/api/data-mgmt/import-file/${selectedModel}`, {
+            const res = await fetch(`http://localhost:8000/api/import/${selectedModel}`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,

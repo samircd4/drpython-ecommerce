@@ -8,8 +8,8 @@ from .export_views import export_data
 from .import_views import import_data
 
 urlpatterns = [
-    path("data-mgmt/export-file/<str:model_name>", export_data, name="export-data"),
-    path("data-mgmt/import-file/<str:model_name>", import_data, name="import-data"),
+    path("export/<str:model_name>", export_data, name="export-data"),
+    path("import/<str:model_name>", import_data, name="import-data"),
 
 
     path('', api_root, name='api-root'),
