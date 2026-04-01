@@ -24,12 +24,13 @@ import { useAuth } from "../../Context/AuthContext";
 import api from "../../api/axiosConfig";
 
 const menuItems = [
-    { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", active: true, badge: "New" },
+    { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", active: true},
     { 
         id: "analytics", 
         icon: BarChart3, 
         label: "Analytics", 
-        permission: "orders.view_order", 
+        permission: "orders.view_order",
+        badge: "Beta", 
         submenu: [
             { id: "overview", label: "Overview", icon: BarChart3 }, 
             { id: "reports", label: "Reports", icon: FileText }, 
@@ -41,6 +42,7 @@ const menuItems = [
         icon: Users, 
         label: "Users", 
         permission: "auth.view_user",
+        count: 10,
         submenu: [
             { id: "all-users", label: "All-Users", icon: Users }, 
             { id: "roles", label: "Roles & Permissions", icon: Settings }, 
@@ -52,6 +54,7 @@ const menuItems = [
         icon: Package,
         label: "Products",
         permission: "products.view_product",
+        count: 10,
         submenu: [
             { id: "all-products", label: "All Products", icon: Package },
             { id: "brands", label: "Brands", icon: Star },
@@ -75,7 +78,7 @@ const menuItems = [
             { id: "contact-messages", label: "Contact Messages", icon: Mail }
         ]
     },
-    { id: "export-import", icon: FileText, label: "Export/Import" },
+    { id: "export-import", icon: FileText, label: "Export/Import", badge: "New" },
     { id: "settings", icon: Settings, label: "Settings" },
 ];
 
@@ -173,7 +176,9 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
                                         {item.id === 'messages' && unreadTotal > 0 && (
                                             <span className="px-2 py-1 text-xs bg-red-600 text-slate-100 rounded-full">{unreadTotal}</span>
                                         )}
-                                        {item.id === 'dashboard' && item.badge && <span className="px-2 py-1 text-xs bg-red-600 text-slate-100 rounded-full">{item.badge}</span>}
+                                        {item.id === 'dashboard' && item.badge && <span className="px-2 py-1 text-xs bg-slate-600 text-slate-100 rounded-sm">{item.badge}</span>}
+                                        {item.id === 'analytics' && item.badge && <span className="px-2 py-1 text-xs bg-slate-600 text-slate-100 rounded-sm">{item.badge}</span>}
+                                        {item.id === 'export-import' && item.badge && <span className="px-2 py-1 text-xs bg-slate-600 text-slate-100 rounded-sm">{item.badge}</span>}
                                         {item.count && <span className="px-2 py-1 text-xs bg-slate-700 text-slate-200 rounded-full">{item.count}</span>}
                                     </>
                                 )}

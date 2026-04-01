@@ -17,6 +17,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated
 import os
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from api.permissions import StaffHasActionPermission
 
 
@@ -437,14 +439,16 @@ class ResendVerificationEmailView(generics.GenericAPIView):
 class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
     permission_classes = [IsAuthenticated]
-    http_method_names = ['get', 'post', 'put', 'patch']
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    search_fields = ['name', 'email', 'phone_number']
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
             return Customer.objects.none()
         if self.request.user.is_staff:
-            return Customer.objects.all()
-        return Customer.objects.filter(user=self.request.user)
+            return Customer.objects.all().order_by('-created_at')
+        return Customer.objects.filter(user=self.request.user).order_by('-created_at')
 
     @extend_schema(
         summary="Get Current Customer Profile",

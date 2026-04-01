@@ -222,7 +222,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 @extend_schema(tags=['Catalog'])
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().order_by('-id')
     serializer_class = CategorySerializer
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['name']
@@ -247,7 +247,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 @extend_schema(tags=['Catalog'])
 class BrandViewSet(viewsets.ModelViewSet):
-    queryset = Brand.objects.all()
+    queryset = Brand.objects.all().order_by('-id')
     serializer_class = BrandSerializer
     filter_backends = [SearchFilter]
     search_fields = ['name']

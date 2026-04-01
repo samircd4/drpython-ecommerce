@@ -30,7 +30,6 @@ const TransactionTable = ({ transactions = [], sortColumn, sortDirection, onSort
                                 <div className="flex items-center whitespace-nowrap">{col.label} <SortArrow column={col.id} sortColumn={sortColumn} sortDirection={sortDirection} /></div>
                             </th>
                         ))}
-                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody className="bg-transparent divide-y divide-slate-700">
@@ -58,32 +57,6 @@ const TransactionTable = ({ transactions = [], sortColumn, sortDirection, onSort
                                 </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-slate-400 text-sm font-mono">{new Date(txn.payment_date).toLocaleDateString()}</td>
-                            <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                                <div className="flex justify-center space-x-2">
-                                    <button 
-                                        onClick={() => onView?.(txn)}
-                                        title="View Details" 
-                                        className="p-1.5 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-all cursor-pointer"
-                                    >
-                                        <Eye className="h-4 w-4" />
-                                    </button>
-                                    <button 
-                                        onClick={() => onEdit?.(txn)}
-                                        title="Edit Payment" 
-                                        className="p-1.5 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 hover:text-white transition-all cursor-pointer"
-                                    >
-                                        <Pencil className="h-4 w-4" />
-                                    </button>
-                                    <button 
-                                        onClick={() => onDelete?.(txn.id)}
-                                        title="Delete Payment"
-                                        disabled={true} 
-                                        className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </button>
-                                </div>
-                            </td>
                         </tr>
                     ))}
                 </tbody>

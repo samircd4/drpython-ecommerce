@@ -15,7 +15,6 @@ const Products = () => {
     const [sortColumn, setSortColumn] = useState(null);
     const [sortDirection, setSortDirection] = useState('asc');
     const [searchQuery, setSearchQuery] = useState('');
-    const [showBy, setShowBy] = useState(20);
     const [ratingFilter, setRatingFilter] = useState(0);
     const [categoryFilter, setCategoryFilter] = useState('Category');
     const [brandFilter, setBrandFilter] = useState('Brand');
@@ -47,7 +46,7 @@ const Products = () => {
             try {
                 const params = {
                     page,
-                    page_size: showBy,
+                    page_size: 20,
                     search: searchQuery,
                     rating__gte: ratingFilter > 0 ? ratingFilter : undefined
                 };
@@ -77,7 +76,7 @@ const Products = () => {
         };
 
         fetchProducts();
-    }, [page, searchQuery, categoryFilter, brandFilter, ratingFilter, sortColumn, sortDirection, showBy]);
+    }, [page, searchQuery, categoryFilter, brandFilter, ratingFilter, sortColumn, sortDirection]);
     
     const handleDeleteProduct = (productId) => {
         setProductIdToDelete(productId);
@@ -115,7 +114,7 @@ const Products = () => {
     const categories = allCategories.map(c => c.name).filter(Boolean);
     const brands = allBrands.map(b => b.name).filter(Boolean);
 
-    const totalPages = Math.ceil(totalCount / showBy) || 1;
+    const totalPages = Math.ceil(totalCount / 20) || 1;
     const visibleProducts = products;
 
     return (
@@ -125,8 +124,6 @@ const Products = () => {
             {/* Top Filter Section (use shared FilterBar) */}
             <div className="my-6">
                 <FilterBar
-                    showBy={showBy}
-                    onShowByChange={(n) => { setShowBy(n); setPage(1); }}
                     rating={ratingFilter}
                     onRatingChange={(r) => { setRatingFilter(r); setPage(1); }}
                     category={categoryFilter}
@@ -135,7 +132,6 @@ const Products = () => {
                     onBrandChange={(b) => { setBrandFilter(b); setPage(1); }}
                     searchQuery={searchQuery}
                     setSearchQuery={(v) => { setSearchQuery(v); setPage(1); }}
-                    showOptions={[12, 24, 48]}
                     categories={categories}
                     brands={brands}
                 />

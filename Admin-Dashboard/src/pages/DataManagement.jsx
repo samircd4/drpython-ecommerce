@@ -169,7 +169,7 @@ const DataManagement = () => {
 
                         <button
                             onClick={handleExport}
-                            className="w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg"
+                            className="w-full px-4 py-3 cursor-pointer bg-slate-700 hover:bg-slate-600 text-white rounded-lg"
                         >
                             Download {exportFormat.toUpperCase()}
                         </button>
@@ -192,7 +192,7 @@ const DataManagement = () => {
                         <button
                             onClick={handleImport}
                             disabled={loading || !file}
-                            className={`w-full px-4 py-3 rounded-lg ${
+                            className={`w-full px-4 py-3 rounded-lg cursor-pointer ${
                                 loading || !file
                                     ? "bg-slate-800 text-slate-500"
                                     : "bg-blue-600 hover:bg-blue-500 text-white"

@@ -8,7 +8,7 @@ import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 import { useNavigate } from 'react-router-dom';
 
-const PaymentModal = ({ payment, isOpen, onClose, onUpdatePayment, readOnly = false }) => {
+const PaymentModal = ({ payment, isOpen, onClose, onUpdatePayment, readOnly = false, onEditClick, onDeleteClick }) => {
     const [formData, setFormData] = useState({
         transaction_id: payment?.transaction_id || '',
         amount: payment?.amount || 0,
@@ -97,6 +97,26 @@ const PaymentModal = ({ payment, isOpen, onClose, onUpdatePayment, readOnly = fa
                                 <span className="text-slate-500 font-bold uppercase">Date</span>
                                 <span className="text-slate-300 font-mono">{new Date(payment.payment_date).toLocaleString()}</span>
                             </div>
+
+                            <div className="flex items-center gap-3 pt-4 mt-4 border-t border-slate-800">
+                                {onEditClick && (
+                                    <button 
+                                        onClick={onEditClick}
+                                        className="flex-1 flex items-center justify-center py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-all font-bold text-sm shadow-lg gap-2 cursor-pointer"
+                                    >
+                                        <Pencil className="w-4 h-4" /> Edit
+                                    </button>
+                                )}
+                                {onDeleteClick && (
+                                    <button 
+                                        onClick={onDeleteClick}
+                                        className="disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-500 disabled:hover:text-red-500 disabled:hover:cursor-not-allowed flex-1 flex items-center justify-center py-2.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all font-bold text-sm shadow-lg gap-2"
+                                        disabled={true}
+                                    >
+                                        <Trash2 className="w-4 h-4" /> Delete
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -125,7 +145,6 @@ const Payments = () => {
     const [typeFilter, setTypeFilter] = useState('All');
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
-    const [showBy, setShowBy] = useState(12);
     const [sortColumn, setSortColumn] = useState('payment_date');
     const [sortDirection, setSortDirection] = useState('desc');
 
@@ -211,7 +230,7 @@ const Payments = () => {
         }
     };
 
-    const totalPages = Math.max(1, Math.ceil(totalCount / showBy));
+    const totalPages = Math.max(1, Math.ceil(totalCount / 20));
     const visibleTransactions = transactions; 
 
     return (
@@ -220,7 +239,7 @@ const Payments = () => {
                 <Breadcrumb title="Payments" paths={["Home", "Payments"]} />
                 <button 
                     onClick={() => navigate('/payments/new')}
-                    className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-600/20 active:scale-95"
+                    className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-600/20 active:scale-95 cursor-pointer"
                 >
                     <Plus className="w-4 h-4" />
                     Add Payment
@@ -247,16 +266,6 @@ const Payments = () => {
                             <option value="Payment">Payment</option>
                             <option value="Refund">Refund</option>
                         </select>
-                        <div className="flex items-center gap-2 text-slate-400 text-sm">
-                            <span>Show:</span>
-                            <select
-                                value={showBy}
-                                onChange={(e) => { setShowBy(Number(e.target.value)); setPage(1); }}
-                                className="bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-lg px-2 py-1.5 focus:outline-none"
-                            >
-                                {[12, 24, 48].map(n => <option key={n} value={n}>{n}</option>)}
-                            </select>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -291,6 +300,14 @@ const Payments = () => {
                 onClose={() => setIsViewModalOpen(false)}
                 payment={selectedPayment}
                 readOnly={true}
+                onEditClick={() => {
+                    setIsViewModalOpen(false);
+                    handleOpenEdit(selectedPayment);
+                }}
+                onDeleteClick={() => {
+                    setIsViewModalOpen(false);
+                    handleDeletePayment(selectedPayment.id);
+                }}
             />
 
             <ConfirmModal 

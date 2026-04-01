@@ -145,7 +145,7 @@ const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleS
                                         >
                                             <Pencil className="h-4 w-4" />
                                         </button>
-                                        <button onClick={() => handleDelete && handleDelete(product.id)} disabled={true} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <button onClick={() => handleDelete && handleDelete(product.id)} className="p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-all cursor-pointer">
                                             <Trash2 className="h-4 w-4" />
                                         </button>
                                     </div>

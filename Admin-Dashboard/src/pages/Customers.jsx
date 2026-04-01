@@ -23,7 +23,6 @@ const Customers = () => {
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [totalCount, setTotalCount] = useState(0);
-    const [showBy, setShowBy] = useState(12);
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(1);
     const [sortColumn, setSortColumn] = useState('name');
@@ -37,7 +36,7 @@ const Customers = () => {
             setLoading(true);
             try {
                 const response = await api.get(`/customers/`, {
-                    params: { page: page }
+                    params: { page: page, search: searchQuery }
                 });
                 
                 if (response.data && response.data.results) {
@@ -55,7 +54,7 @@ const Customers = () => {
         };
 
         fetchCustomers();
-    }, [page]);
+    }, [page, searchQuery]);
 
     const handleDeleteCustomer = (customerId) => {
         setCustomerIdToDelete(customerId);
@@ -96,20 +95,8 @@ const Customers = () => {
         setCustomers(sorted);
     };
 
-    const filtered = useMemo(() => {
-        if (!searchQuery) return customers;
-        const q = searchQuery.toLowerCase();
-        return customers.filter(c => 
-            (c.name || '').toLowerCase().includes(q) || 
-            (c.email || '').toLowerCase().includes(q) || 
-            (c.phone_number || '').includes(q)
-        );
-    }, [customers, searchQuery]);
-
-    const totalPages = Math.max(1, Math.ceil(totalCount > 0 ? totalCount / showBy : filtered.length / showBy));
-    
-    const isPaginatedByBackend = totalCount > customers.length;
-    const visible = isPaginatedByBackend ? filtered : filtered.slice((page - 1) * showBy, page * showBy);
+    const totalPages = Math.max(1, Math.ceil(totalCount / 20));
+    const visible = customers;
 
     return (
         <div className="p-0 sm:p-6 min-h-screen bg-transparent space-y-6">
@@ -123,7 +110,7 @@ const Customers = () => {
                 />
                 <button 
                     onClick={() => navigate('/customers/new')}
-                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95 cursor-pointer"
                 >
                     <Plus className="w-4 h-4" />
                     Add Customer
@@ -139,16 +126,6 @@ const Customers = () => {
                             placeholder="Search customers..."
                             className="w-full bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 transition-colors text-sm"
                         />
-                    </div>
-                    <div className="flex items-center gap-2 text-slate-400 text-sm">
-                        <span>Show:</span>
-                        <select
-                            value={showBy}
-                            onChange={(e) => { setShowBy(Number(e.target.value)); setPage(1); }}
-                            className="bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-lg px-2 py-1.5 focus:outline-none"
-                        >
-                            {[12, 24, 48].map(n => <option key={n} value={n}>{n}</option>)}
-                        </select>
                     </div>
                 </div>
             </div>
@@ -209,7 +186,7 @@ const Customers = () => {
                                 <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex space-x-2">
                                         <button onClick={() => navigate(`/customers/edit/${c.id}`)} title="Edit" className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-white transition-all cursor-pointer shadow-lg shadow-emerald-500/0 hover:shadow-emerald-500/20"><Pencil className="h-4 w-4" /></button>
-                                        <button title="Delete" onClick={() => handleDeleteCustomer(c.id)} disabled={true} className="p-2 bg-red-500/10 text-red-500/30 rounded-xl cursor-not-allowed border border-red-500/5"><Trash2 className="h-4 w-4" /></button>
+                                        <button title="Delete" onClick={() => handleDeleteCustomer(c.id)} className="p-2 bg-red-500/10 text-red-500 hover:text-white hover:bg-red-500 rounded-xl transition-all cursor-pointer"><Trash2 className="h-4 w-4" /></button>
                                     </div>
                                 </td>
                             </tr>
@@ -219,7 +196,7 @@ const Customers = () => {
             </div>
 
             <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-sm text-slate-400">showing <span className="text-slate-200 font-semibold">{visible.length}</span> of <span className="text-slate-200 font-semibold">{totalCount || filtered.length}</span> results</div>
+                <div className="text-sm text-slate-400">showing <span className="text-slate-200 font-semibold">{visible.length}</span> of <span className="text-slate-200 font-semibold">{totalCount}</span> results</div>
                 <Pagination page={page} setPage={setPage} total={totalPages} />
             </div>
 

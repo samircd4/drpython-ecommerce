@@ -93,7 +93,7 @@ const CategoryModal = ({ isOpen, onClose, category, onSave }) => {
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
                         {category ? 'Edit Category' : 'Add New Category'}
                     </h3>
-                    <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+                    <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
                         <X className="h-5 w-5" />
                     </button>
                 </div>
@@ -170,14 +170,14 @@ const CategoryModal = ({ isOpen, onClose, category, onSave }) => {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-2.5 bg-slate-800 text-slate-300 rounded-xl hover:bg-slate-700 transition-colors font-semibold shadow-lg"
+                            className="flex-1 px-4 py-2.5 bg-slate-800 text-slate-300 rounded-xl hover:bg-slate-700 transition-colors font-semibold shadow-lg cursor-pointer"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-500 transition-all font-semibold shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                            className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-500 transition-all font-semibold shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                         >
                             {loading ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

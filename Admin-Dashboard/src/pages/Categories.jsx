@@ -7,13 +7,15 @@ import CategoryModal from '../components/Product/CategoryModal';
 import CategoryViewModal from '../components/Product/CategoryViewModal';
 import FilterBar from '../components/FilterBar/FilterBar';
 import ConfirmModal from '../components/Layout/ConfirmModal';
+import Pagination from '../components/Layout/Pagination';
 import api from '../api/axiosConfig';
 
 const Categories = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [showBy, setShowBy] = useState(12);
+    const [page, setPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
 
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,8 +28,14 @@ const Categories = () => {
     const fetchCategories = async () => {
         setLoading(true);
         try {
-            const response = await api.get('/categories/');
+            const response = await api.get('/categories/', {
+                params: {
+                    page,
+                    search: searchQuery
+                }
+            });
             setCategories(response.data.results || []);
+            setTotalCount(response.data.count || 0);
         } catch (error) {
             console.error('Error fetching categories:', error);
         } finally {
@@ -42,7 +50,7 @@ const Categories = () => {
         const handleRefresh = () => fetchCategories();
         window.addEventListener('refreshData', handleRefresh);
         return () => window.removeEventListener('refreshData', handleRefresh);
-    }, []);
+    }, [page, searchQuery]);
 
     const handleDeleteCategory = (categoryId) => {
         setCategoryIdToDelete(categoryId);
@@ -85,15 +93,8 @@ const Categories = () => {
         fetchCategories();
     };
 
-    const filteredCategories = categories.filter((c) => {
-        const q = searchQuery.trim().toLowerCase();
-        if (q) {
-            return c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q);
-        }
-        return true;
-    });
-
-    const visibleCategories = filteredCategories.slice(0, showBy);
+    const totalPages = Math.max(1, Math.ceil(totalCount / 20));
+    const visibleCategories = categories;
 
     return (
         <div className="p-0 sm:px-6 sm:py-4 min-h-screen" style={{ backgroundImage: 'linear-gradient(90deg,var(--bg-start),var(--bg-mid),var(--bg-end))' }}>
@@ -101,7 +102,7 @@ const Categories = () => {
                 <Breadcrumb title="Categories" paths={["Home", "Products", "Categories"]} />
                 <button 
                     onClick={handleAddClick}
-                    className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl hover:bg-emerald-500 transition-all font-semibold shadow-lg shadow-emerald-600/20 w-fit"
+                    className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl hover:bg-emerald-500 transition-all font-semibold shadow-lg shadow-emerald-600/20 w-fit cursor-pointer"
                 >
                     <Plus className="h-5 w-5" /> Add Category
                 </button>
@@ -109,11 +110,8 @@ const Categories = () => {
 
             <div className="my-6">
                 <FilterBar
-                    showBy={showBy}
-                    onShowByChange={setShowBy}
                     searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                    showOptions={[12, 24, 48, 96]}
+                    setSearchQuery={(q) => { setSearchQuery(q); setPage(1); }}
                     // Simplified filter for categories
                     categories={[]}
                     brands={[]}
@@ -127,6 +125,13 @@ const Categories = () => {
                 onEdit={handleEditClick}
                 onView={handleViewClick}
             />
+
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-sm text-slate-400">
+                    Showing <span className="text-slate-200 font-semibold">{visibleCategories.length}</span> of <span className="text-slate-200 font-semibold">{totalCount}</span> categories
+                </div>
+                <Pagination page={page} setPage={setPage} total={totalPages} />
+            </div>
 
             {/* Modals */}
             <CategoryModal 

@@ -12,7 +12,7 @@ const CategoryViewModal = ({ isOpen, onClose, category }) => {
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">
                         Category Details
                     </h3>
-                    <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+                    <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
                         <X className="h-5 w-5" />
                     </button>
                 </div>
@@ -68,7 +68,7 @@ const CategoryViewModal = ({ isOpen, onClose, category }) => {
                 <div className="px-6 py-4 bg-slate-800/30 border-t border-slate-800 flex justify-end">
                     <button
                         onClick={onClose}
-                        className="px-6 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 border border-slate-700 transition-colors text-sm font-semibold"
+                        className="px-6 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 border border-slate-700 transition-colors text-sm font-semibold cursor-pointer"
                     >
                         Close
                     </button>

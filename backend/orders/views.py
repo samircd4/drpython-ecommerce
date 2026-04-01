@@ -399,10 +399,10 @@ class PaymentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_staff:
-            return PaymentInfo.objects.all()
+            return PaymentInfo.objects.all().order_by('-created_at')
         # For regular users, they might only see payments related to their orders
         if hasattr(self.request.user, 'customer'):
-            return PaymentInfo.objects.filter(order__customer=self.request.user.customer)
+            return PaymentInfo.objects.filter(order__customer=self.request.user.customer).order_by('-created_at')
         return PaymentInfo.objects.none()
 
 

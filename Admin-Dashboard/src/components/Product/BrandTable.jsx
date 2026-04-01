@@ -59,8 +59,8 @@ const BrandTable = ({ brands, loading, handleDelete, onEdit, onView }) => {
                                         <button 
                                             title="Delete Brand"
                                             onClick={() => handleDelete && handleDelete(brand.id)}
+                                            className="p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-500 disabled:hover:text-red-500 disabled:hover:cursor-not-allowed"
                                             disabled={true}
-                                            className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             <Trash2 className="h-5 w-5" />
                                         </button>
