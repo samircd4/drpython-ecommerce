@@ -163,7 +163,7 @@ class Product(models.Model):
     )
 
     short_description = models.TextField(
-        blank=True, max_length=160
+        blank=True, max_length=500
     )
     description = models.TextField(blank=True)
 
@@ -336,7 +336,7 @@ class ProductSpecification(models.Model):
         help_text="e.g. RAM, Storage, Color, Battery"
     )
     value = models.CharField(
-        max_length=100,
+        max_length=500,
         help_text="e.g. 6GB, 128GB, Blue, 5000mAh"
     )
 
