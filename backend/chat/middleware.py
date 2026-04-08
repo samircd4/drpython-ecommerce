@@ -48,9 +48,13 @@ class TokenAuthMiddleware:
                 user_id = decoded_data.get('user_id')
                 
                 if user_id:
-                    scope['user'] = await get_user(user_id)
-                    # If we have a user, we don't need guest_id
-                    scope['guest_id'] = None
+                    try:
+                        scope['user'] = await get_user(user_id)
+                        # If we have a user, we don't need guest_id
+                        scope['guest_id'] = None
+                    except Exception as e:
+                        print(f"WS User Lookup Error: {str(e)}")
+                        scope['user'] = AnonymousUser()
             except (InvalidToken, TokenError, Exception) as e:
                 # Token is invalid, fallback to AnonymousUser (which is already set)
                 print(f"WS Auth Error: {str(e)}")

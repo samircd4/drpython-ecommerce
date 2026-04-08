@@ -7,14 +7,11 @@ For more information on this file, see
 https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 """
 
-import os
-import django
-
-# Must be set BEFORE any Django/app-level imports
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ecommerce_api.settings')
-django.setup()
-
 from django.core.asgi import get_asgi_application
+
+# Initialize Django ASGI application early
+django_asgi_app = get_asgi_application()
+
 from django.urls import path
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
@@ -37,7 +34,7 @@ class DebugConsumer(AsyncWebsocketConsumer):
 
 
 application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
+    "http": django_asgi_app,
     "websocket": TokenAuthMiddleware(
         URLRouter(
             notifications.routing.websocket_urlpatterns +

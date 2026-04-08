@@ -357,6 +357,9 @@ class OrderSerializer(serializers.ModelSerializer):
                     # We need to calculate subtotal first to verify coupon fully
                     pass # We'll do it after creating items if needed, or before
 
+            # Clean validated_data of fields that are not in the model
+            validated_data.pop('status', None)
+
             order = Order.objects.create(
                 customer=customer,
                 order_status=pending_status,

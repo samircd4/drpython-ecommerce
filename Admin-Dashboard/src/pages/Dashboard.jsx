@@ -14,10 +14,10 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [allCategories, setAllCategories] = useState([]);
     const [allBrands, setAllBrands] = useState([]);
-    const [sortColumn, setSortColumn] = useState(null);
-    const [sortDirection, setSortDirection] = useState('asc');
+    const [sortColumn, setSortColumn] = useState('sold_count');
+    const [sortDirection, setSortDirection] = useState('desc');
     const [searchQuery, setSearchQuery] = useState('');
-    const [showBy, setShowBy] = useState(12);
+    const [showBy, setShowBy] = useState(20);
     const [ratingFilter, setRatingFilter] = useState(0);
     const [categoryFilter, setCategoryFilter] = useState('Category');
     const [brandFilter, setBrandFilter] = useState('Brand');
@@ -148,7 +148,7 @@ const Dashboard = () => {
                         onBrandChange={(b) => { setBrandFilter(b); setPage(1); }}
                         searchQuery={searchQuery}
                         setSearchQuery={(v) => { setSearchQuery(v); setPage(1); }}
-                        showOptions={[12, 24, 48, 96]}
+                        showOptions={[20, 50, 100]}
                         categories={categories}
                         brands={brands}
                     />

@@ -80,10 +80,11 @@ class SimpleProductSerializer(serializers.ModelSerializer):
     price = serializers.SerializerMethodField()
     wholesale_price = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
+    sold_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'wholesale_price', 'image', 'slug', 'rating', 'reviews_count', 'product_type', 'brand']
+        fields = ['id', 'name', 'price', 'wholesale_price', 'image', 'slug', 'rating', 'reviews_count', 'product_type', 'brand', 'sold_count']
 
     def get_price(self, obj):
         return obj.display_price
@@ -128,6 +129,7 @@ class ProductSerializer(serializers.ModelSerializer):
     related_products = SimpleProductSerializer(many=True, read_only=True)
     reviews = ReviewSerializer(many=True, read_only=True)
     questions = QuestionSerializer(many=True, read_only=True)
+    sold_count = serializers.IntegerField(read_only=True)
 
 
     # ---------- WRITE ONLY INPUT ----------
@@ -179,7 +181,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'related_products',
 
             'rating', 'reviews_count', 'reviews', 'questions',
-            'product_type', 'stock_quantity', 'is_featured', 'is_bestseller', 'is_active',
+            'product_type', 'stock_quantity', 'sold_count', 'is_featured', 'is_bestseller', 'is_active',
             'created_at', 'updated_at',
         ]
 

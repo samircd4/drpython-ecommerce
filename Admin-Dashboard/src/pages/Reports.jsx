@@ -12,6 +12,7 @@ const Reports = () => {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState(null);
     const [analytics, setAnalytics] = useState(null);
+    const [hoveredData, setHoveredData] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -137,10 +138,13 @@ const Reports = () => {
                             </button>
                         </div>
                     </div>
-
                     <div className="relative h-72 w-full group">
                         {/* Custom SVG Area Chart Layout */}
-                        <svg className="w-full h-full overflow-visible" viewBox="0 0 600 200">
+                        <svg 
+                            className="w-full h-full overflow-visible" 
+                            viewBox="0 0 600 200"
+                            onMouseLeave={() => setHoveredData(null)}
+                        >
                             {/* Grid Lines */}
                             {[0, 50, 100, 150, 200].map(y => (
                                 <line key={y} x1="0" y1={y} x2="600" y2={y} stroke="#1e293b" strokeWidth="1" strokeDasharray="4 4" />
@@ -168,26 +172,62 @@ const Reports = () => {
                                 />
                             )}
 
-                            {/* Data Points */}
-                            {monthly_stats.map((s, i) => (
-                                <g key={i} className="group/dot">
-                                    <circle
-                                        cx={i * (600 / (monthly_stats.length - 1))}
-                                        cy={200 - (s.sales / maxSales * 180)}
-                                        r="6"
-                                        fill="#3b82f6"
-                                        className="cursor-pointer transition-all duration-300"
-                                    />
-                                    <circle
-                                        cx={i * (600 / (monthly_stats.length - 1))}
-                                        cy={200 - (s.sales / maxSales * 180)}
-                                        r="12"
-                                        fill="#3b82f6"
-                                        fillOpacity="0"
-                                        className="cursor-pointer group-hover/dot:fill-opacity-10 transition-all"
-                                    />
-                                </g>
-                            ))}
+                            {/* Focus Line */}
+                            {hoveredData && (
+                                <line 
+                                    x1={hoveredData.x} 
+                                    y1="0" 
+                                    x2={hoveredData.x} 
+                                    y2="200" 
+                                    stroke="#3b82f6" 
+                                    strokeWidth="1" 
+                                    strokeDasharray="4 4"
+                                    className="opacity-50 animate-pulse"
+                                />
+                            )}
+
+                            {/* Data Points & Hover Targets */}
+                            {monthly_stats.map((s, i) => {
+                                const x = i * (600 / (monthly_stats.length - 1));
+                                const y = 200 - (s.sales / maxSales * 180);
+                                const isHovered = hoveredData?.index === i;
+
+                                return (
+                                    <g key={i} className="group/dot">
+                                        {/* Larger invisible hit area */}
+                                        <rect
+                                            x={x - 25}
+                                            y="0"
+                                            width="50"
+                                            height="200"
+                                            fill="transparent"
+                                            className="cursor-pointer"
+                                            onMouseEnter={() => setHoveredData({ ...s, x, y, index: i })}
+                                        />
+                                        
+                                        <circle
+                                            cx={x}
+                                            cy={y}
+                                            r={isHovered ? "8" : "5"}
+                                            fill={isHovered ? "#60a5fa" : "#3b82f6"}
+                                            className="transition-all duration-300 pointer-events-none"
+                                            stroke={isHovered ? "white" : "none"}
+                                            strokeWidth="2"
+                                        />
+                                        
+                                        {isHovered && (
+                                            <circle
+                                                cx={x}
+                                                cy={y}
+                                                r="15"
+                                                fill="#3b82f6"
+                                                fillOpacity="0.1"
+                                                className="animate-ping pointer-events-none"
+                                            />
+                                        )}
+                                    </g>
+                                );
+                            })}
 
                             {/* Labels */}
                             {monthly_stats.map((s, i) => (
@@ -211,6 +251,60 @@ const Reports = () => {
                                 </linearGradient>
                             </defs>
                         </svg>
+
+                        {/* Tooltip Overlay */}
+                        {hoveredData && (
+                            <div 
+                                className="absolute z-50 pointer-events-none transition-all duration-200"
+                                style={{ 
+                                    left: `${(hoveredData.x / 600) * 100}%`, 
+                                    top: `${(hoveredData.y / 200) * 100}%`,
+                                }}
+                            >
+                                <div 
+                                    className="bg-[#0b1a2a]/95 backdrop-blur-md border border-blue-500/30 rounded-xl p-4 shadow-2xl min-w-[180px] relative"
+                                    style={{
+                                        transform: hoveredData.index === 0 
+                                            ? 'translate(0%, -110%)' 
+                                            : hoveredData.index === monthly_stats.length - 1 
+                                                ? 'translate(-100%, -110%)' 
+                                                : 'translate(-50%, -110%)'
+                                    }}
+                                >
+                                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/5">
+                                        <span className="text-xs font-black text-white uppercase tracking-[0.2em]">{hoveredData.month}</span>
+                                        <TrendingUp className="w-3 h-3 text-blue-400" />
+                                    </div>
+                                    <div className="space-y-2.5">
+                                        <div className="flex justify-between items-center text-[10px]">
+                                            <span className="text-slate-500 font-bold uppercase tracking-widest">Revenue</span>
+                                            <span className="text-white font-black font-mono">৳{hoveredData.sales.toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-[10px]">
+                                            <span className="text-slate-500 font-bold uppercase tracking-widest">Orders</span>
+                                            <span className="text-blue-400 font-black">{hoveredData.orders}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-[10px]">
+                                            <span className="text-slate-500 font-bold uppercase tracking-widest">Profit (Est)</span>
+                                            <span className="text-emerald-400 font-black font-mono">৳{hoveredData.profit.toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Arrow */}
+                                    <div 
+                                        className="absolute -bottom-1 w-2 h-2 bg-[#0b1a2a] rotate-45 border-r border-b border-blue-500/30" 
+                                        style={{
+                                            left: hoveredData.index === 0 
+                                                ? '20px' 
+                                                : hoveredData.index === monthly_stats.length - 1 
+                                                    ? 'calc(100% - 20px)' 
+                                                    : '50%',
+                                            transform: 'translateX(-50%) rotate(45deg)'
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 

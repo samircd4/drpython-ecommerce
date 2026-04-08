@@ -216,12 +216,41 @@ const AddOrder = () => {
     const subtotal = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const grandTotal = subtotal + parseFloat(formData.delivery_charge || 0) + parseFloat(formData.tax || 0) - parseFloat(formData.discount || 0);
 
+    const validateForm = () => {
+        const requiredFields = {
+            full_name: "Customer Name",
+            phone: "Phone Number",
+            shipping_address: "Street Address",
+            division: "Division",
+            district: "District"
+        };
+
+        for (const [key, label] of Object.entries(requiredFields)) {
+            if (!formData[key] || formData[key].trim() === '') {
+                toast.error(`${label} is required.`);
+                return false;
+            }
+        }
+
+        // Phone validation (BD format: 013-019 followed by 8 digits)
+        const phoneRegex = /^01[3-9]\d{8}$/;
+        if (!phoneRegex.test(formData.phone)) {
+            toast.error("Please enter a valid Bangladesh phone number (01XXXXXXXXX).");
+            return false;
+        }
+
+        if (orderItems.length === 0) {
+            toast.error("Please add at least one product to the order.");
+            return false;
+        }
+
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (orderItems.length === 0) {
-            toast.error("Please add at least one product.");
-            return;
-        }
+        
+        if (!validateForm()) return;
 
         setLoading(true);
         try {
@@ -240,7 +269,18 @@ const AddOrder = () => {
             navigate('/orders');
         } catch (error) {
             console.error('Error creating order:', error);
-            const msg = error.response?.data ? JSON.stringify(error.response.data) : "Failed to create order";
+            const data = error.response?.data;
+            let msg = "Failed to create order";
+            
+            if (data) {
+                if (typeof data === 'object') {
+                    msg = Object.entries(data)
+                        .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)
+                        .join(' | ');
+                } else {
+                    msg = data;
+                }
+            }
             toast.error(msg);
         } finally {
             setLoading(false);

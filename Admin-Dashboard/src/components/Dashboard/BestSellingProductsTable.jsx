@@ -33,7 +33,7 @@ const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleS
                             { id: 'price', label: 'Price' },
                             { id: 'stock_quantity', label: 'Stock' },
                             { id: 'rating', label: 'Rating' },
-                            { id: 'product_type', label: 'Type' },
+                            { id: 'sold_count', label: 'Ordered' },
                             { id: 'is_active', label: 'Status' }
                         ].map((col) => (
                             <th
@@ -121,8 +121,10 @@ const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleS
                                         <span className="text-slate-500 text-xs">({product.reviews_count || 0})</span>
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-mono text-blue-400 uppercase text-[11px] tracking-wider">
-                                    {product.product_type}
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 font-bold text-center">
+                                    <span className="bg-slate-800 text-blue-400 px-3 py-1.5 rounded-lg border border-slate-700">
+                                        {product.sold_count || 0}
+                                    </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300 text-center">
                                     {product.is_active ? (

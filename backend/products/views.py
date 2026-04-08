@@ -66,7 +66,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             'reviews__customer'
         )
         .annotate(
-            sold_count=Coalesce(Sum('orderitem__quantity'), 0)
+            sold_count=Coalesce(Sum('order_items__quantity'), 0)
         )
     )
 
