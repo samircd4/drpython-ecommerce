@@ -1,5 +1,5 @@
 import React from "react";
-import { CircleDollarSign, ShoppingCart, CircleUserRound, Star } from "lucide-react";
+import { CircleDollarSign, ShoppingCart, CircleUserRound, Star, ShoppingBag } from "lucide-react";
 
 const StatCard = ({ title, value, change, icon: Icon, gradient, iconBg, iconColor, badgeBg }) => (
     <div className={`p-4 rounded-lg text-slate-100 ${gradient}`}>
@@ -61,6 +61,16 @@ const StatsGrid = ({ stats }) => {
             iconBg: "bg-[#9d6d07]",
             iconColor: "text-[#453d04]",
             badgeBg: "bg-[#886c09]"
+        },
+        {
+            title: "Total Products",
+            value: "0",
+            change: "0%",
+            icon: ShoppingBag,
+            gradient: "bg-gradient-to-r from-[#ef4444] to-[#f97316]",
+            iconBg: "bg-[#991b1b]",
+            iconColor: "text-[#fee2e2]",
+            badgeBg: "bg-[#b91c1c]"
         }
     ];
 
@@ -73,6 +83,7 @@ const StatsGrid = ({ stats }) => {
                 minimumFractionDigits: s.title === "Total Revenue" ? 0 : 0,
                 maximumFractionDigits: 2
             });
+            if (s.title === "Total Revenue") val = "৳" + val;
         }
         
         return {
@@ -84,7 +95,7 @@ const StatsGrid = ({ stats }) => {
 
     return (
         <div className="rounded-xl bg-[#071229] p-3 shadow-md border border-slate-800/50">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {displayStats.map((stat, index) => (
                     <StatCard key={index} {...stat} />
                 ))}

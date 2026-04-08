@@ -8,7 +8,8 @@ from rest_framework.permissions import (
 )
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, CharFilter, NumberFilter
 from django.shortcuts import get_object_or_404
-from django.db.models import Q, Min, Max
+from django.db.models import Q, Min, Max, Sum
+from django.db.models.functions import Coalesce
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 from api.permissions import StaffHasActionPermission
 
@@ -64,6 +65,9 @@ class ProductViewSet(viewsets.ModelViewSet):
             'related_products',
             'reviews__customer'
         )
+        .annotate(
+            sold_count=Coalesce(Sum('orderitem__quantity'), 0)
+        )
     )
 
     serializer_class = ProductSerializer
@@ -82,8 +86,9 @@ class ProductViewSet(viewsets.ModelViewSet):
         'category__name'
     ]
 
-    # ✅ ONLY REAL DB FIELDS
-    ordering_fields = ['created_at', 'rating']
+    # ✅ Default ordering: Last added product first
+    ordering = ['-created_at']
+    ordering_fields = ['created_at', 'rating', 'sold_count']
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:

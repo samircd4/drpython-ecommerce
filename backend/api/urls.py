@@ -20,6 +20,7 @@ urlpatterns = [
 
     path('chats/', include('chat.urls')),
     path('dashboard/stats/', analytics.DashboardStatsView.as_view(), name='dashboard-stats'),
+    path('dashboard/analytics/', analytics.AnalyticsDetailView.as_view(), name='dashboard-analytics-detail'),
     path('', include('accounts.urls')),
     path('', include('orders.urls')),
     path('', include('products.urls')),

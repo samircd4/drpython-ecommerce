@@ -1,41 +1,114 @@
-import React from "react";
-import { TrendingUp, DollarSign, ShoppingBag, Users, Download, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { 
+    TrendingUp, DollarSign, ShoppingBag, 
+    Users, Download, ArrowUpRight, ArrowDownRight,
+    Search, Filter, Calendar
+} from "lucide-react";
+import api from "../api/axiosConfig";
 import Breadcrumb from "../components/Layout/Breadcrumb";
-import reportData from "../data/reports.json";
+import Loader from "../components/Layout/Loader";
 
 const Reports = () => {
-    const { monthlyStats, categories } = reportData;
+    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState(null);
+    const [analytics, setAnalytics] = useState(null);
 
-    // Simple SVG Charts implementation
-    const maxSales = Math.max(...monthlyStats.map(s => s.sales));
-    const maxProfit = Math.max(...monthlyStats.map(s => s.profit));
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [statsRes, analyticsRes] = await Promise.all([
+                    api.get('/dashboard/stats/'),
+                    api.get('/dashboard/analytics/')
+                ]);
+                setStats(statsRes.data);
+                setAnalytics(analyticsRes.data);
+            } catch (error) {
+                console.error("Error fetching reports data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
-    const stats = [
-        { label: "Total Revenue", value: "$42,500", trend: "+12.5%", isUp: true, icon: DollarSign, color: "blue" },
-        { label: "Total Orders", value: "842", trend: "+5.1%", isUp: true, icon: ShoppingBag, color: "emerald" },
-        { label: "New Customers", value: "128", trend: "-2.4%", isUp: false, icon: Users, color: "purple" },
-        { label: "Avg. ROI", value: "24.2%", trend: "+8.3%", isUp: true, icon: TrendingUp, color: "orange" },
+    if (loading) return <Loader />;
+    if (!stats || !analytics) return <div className="p-6 text-white text-center">Failed to load reports.</div>;
+
+    const { summary } = stats;
+    const { monthly_stats, categories } = analytics;
+
+    // Derived stats for the summary cards
+    const reportStats = [
+        { 
+            label: "Total Revenue", 
+            value: `৳${summary[0]?.value.toLocaleString()}`, 
+            trend: summary[0]?.change, 
+            isUp: summary[0]?.change.startsWith('+'), 
+            icon: DollarSign, 
+            color: "blue" 
+        },
+        { 
+            label: "Total Orders", 
+            value: summary[1]?.value.toLocaleString(), 
+            trend: summary[1]?.change, 
+            isUp: summary[1]?.change.startsWith('+'), 
+            icon: ShoppingBag, 
+            color: "emerald" 
+        },
+        { 
+            label: "Total Customers", 
+            value: summary[2]?.value.toLocaleString(), 
+            trend: summary[2]?.change, 
+            isUp: summary[2]?.change.startsWith('+'), 
+            icon: Users, 
+            color: "purple" 
+        },
+        { 
+            label: "Total Products", 
+            value: summary[4]?.value.toLocaleString(), 
+            trend: summary[4]?.change, 
+            isUp: summary[4]?.change.startsWith('+'), 
+            icon: Briefcase, 
+            color: "orange" 
+        },
     ];
+
+    const maxSales = Math.max(...monthly_stats.map(s => s.sales), 1);
 
     return (
         <div className="p-0 sm:p-6 min-h-screen bg-transparent bg-slate-900/50">
-            <Breadcrumb title="Reports" paths={["Home", "Reports"]} />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <Breadcrumb title="Reports" paths={[{label: "Home", path: "/"}, {label: "Reports", path: "/reports"}]} />
+                <div className="flex gap-2">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                        <input 
+                            type="text" 
+                            placeholder="Search reports..." 
+                            className="pl-10 pr-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-xs text-white outline-none focus:border-blue-500 transition-all"
+                        />
+                    </div>
+                    <button className="flex items-center gap-2 bg-[#0b1a2a] border border-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-xl hover:border-blue-500 transition-all cursor-pointer">
+                        <Filter className="w-4 h-4" /> Filter
+                    </button>
+                </div>
+            </div>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
-                {stats.map((stat, i) => {
+                {reportStats.map((stat, i) => {
                     const Icon = stat.icon;
                     return (
                         <div key={i} className="bg-[#071229] border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
                             <div className={`absolute top-0 right-0 w-24 h-24 bg-${stat.color}-600/10 rounded-full -translate-y-12 translate-x-12 blur-2xl group-hover:bg-${stat.color}-600/20 transition-all`} />
 
                             <div className="flex items-center gap-4 mb-4">
-                                <div className={`p-3 rounded-xl bg-${stat.color}-500/10 text-${stat.color}-500`}>
-                                    <Icon className="w-6 h-6" />
+                                <div className={`p-3 rounded-xl bg-slate-800 text-${stat.color}-500 border border-slate-700 group-hover:scale-110 transition-transform`}>
+                                    <Icon className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">{stat.label}</p>
-                                    <h3 className="text-2xl font-black text-white">{stat.value}</h3>
+                                    <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">{stat.label}</p>
+                                    <h3 className="text-xl font-black text-white">{stat.value}</h3>
                                 </div>
                             </div>
                             <div className="flex items-center gap-1.5">
@@ -50,76 +123,89 @@ const Reports = () => {
                 })}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 pb-12">
                 {/* Sales Performance Chart (SVG) */}
                 <div className="lg:col-span-2 bg-[#071229] border border-slate-800 rounded-2xl p-6 shadow-xl">
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <h3 className="text-lg font-bold text-white uppercase tracking-tight">Sales Performance</h3>
+                            <h3 className="text-lg font-black text-white uppercase tracking-tight">Financial Trajectory</h3>
                             <p className="text-slate-400 text-xs uppercase tracking-widest font-medium">Monthly revenue visualization</p>
                         </div>
                         <div className="flex gap-2">
-                            <button className="flex items-center gap-2 bg-[#0b1a2a] border border-slate-700 text-slate-300 text-xs font-bold px-3 py-1.5 rounded-lg hover:border-blue-500 transition-all">
+                             <button className="flex items-center gap-2 bg-blue-600 border border-blue-500 text-white text-[10px] font-black px-4 py-2 rounded-xl hover:bg-blue-700 transition-all cursor-pointer shadow-lg shadow-blue-600/20 uppercase tracking-widest">
                                 <Download className="w-3.5 h-3.5" /> Export PDF
                             </button>
                         </div>
                     </div>
 
-                    <div className="relative h-64 w-full group">
+                    <div className="relative h-72 w-full group">
                         {/* Custom SVG Area Chart Layout */}
                         <svg className="w-full h-full overflow-visible" viewBox="0 0 600 200">
                             {/* Grid Lines */}
-                            {[0, 50, 100, 150].map(y => (
+                            {[0, 50, 100, 150, 200].map(y => (
                                 <line key={y} x1="0" y1={y} x2="600" y2={y} stroke="#1e293b" strokeWidth="1" strokeDasharray="4 4" />
                             ))}
 
                             {/* Area Fill */}
-                            <path
-                                d={`M0,200 ${monthlyStats.map((s, i) => `L${i * (600 / (monthlyStats.length - 1))},${200 - (s.sales / maxSales * 150)}`).join(' ')} L600,200 Z`}
-                                fill="url(#gradient-blue)"
-                                fillOpacity="0.2"
-                            />
+                            {monthly_stats.length > 1 && (
+                                <path
+                                    d={`M0,200 ${monthly_stats.map((s, i) => `L${i * (600 / (monthly_stats.length - 1))},${200 - (s.sales / maxSales * 180)}`).join(' ')} L600,200 Z`}
+                                    fill="url(#grad-blue-rep)"
+                                    fillOpacity="0.2"
+                                />
+                            )}
 
                             {/* Line */}
-                            <path
-                                d={monthlyStats.map((s, i) => `${i === 0 ? 'M' : 'L'}${i * (600 / (monthlyStats.length - 1))},${200 - (s.sales / maxSales * 150)}`).join(' ')}
-                                fill="none"
-                                stroke="#3b82f6"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"
-                            />
+                            {monthly_stats.length > 1 && (
+                                <path
+                                    d={monthly_stats.map((s, i) => `${i === 0 ? 'M' : 'L'}${i * (600 / (monthly_stats.length - 1))},${200 - (s.sales / maxSales * 180)}`).join(' ')}
+                                    fill="none"
+                                    stroke="#3b82f6"
+                                    strokeWidth="4"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="drop-shadow-[0_0_12px_rgba(59,130,246,0.5)]"
+                                />
+                            )}
 
                             {/* Data Points */}
-                            {monthlyStats.map((s, i) => (
-                                <circle
-                                    key={i}
-                                    cx={i * (600 / (monthlyStats.length - 1))}
-                                    cy={200 - (s.sales / maxSales * 150)}
-                                    r="4"
-                                    fill="#3b82f6"
-                                    className="cursor-pointer hover:r-6 hover:fill-white transition-all duration-300"
-                                />
+                            {monthly_stats.map((s, i) => (
+                                <g key={i} className="group/dot">
+                                    <circle
+                                        cx={i * (600 / (monthly_stats.length - 1))}
+                                        cy={200 - (s.sales / maxSales * 180)}
+                                        r="6"
+                                        fill="#3b82f6"
+                                        className="cursor-pointer transition-all duration-300"
+                                    />
+                                    <circle
+                                        cx={i * (600 / (monthly_stats.length - 1))}
+                                        cy={200 - (s.sales / maxSales * 180)}
+                                        r="12"
+                                        fill="#3b82f6"
+                                        fillOpacity="0"
+                                        className="cursor-pointer group-hover/dot:fill-opacity-10 transition-all"
+                                    />
+                                </g>
                             ))}
 
                             {/* Labels */}
-                            {monthlyStats.map((s, i) => (
+                            {monthly_stats.map((s, i) => (
                                 <text
                                     key={i}
-                                    x={i * (600 / (monthlyStats.length - 1))}
-                                    y="220"
+                                    x={i * (600 / (monthly_stats.length - 1))}
+                                    y="225"
                                     textAnchor="middle"
                                     fill="#64748b"
                                     fontSize="10"
-                                    className="font-bold uppercase tracking-tighter"
+                                    className="font-black uppercase tracking-tighter"
                                 >
                                     {s.month}
                                 </text>
                             ))}
 
                             <defs>
-                                <linearGradient id="gradient-blue" x1="0" y1="0" x2="0" y2="1">
+                                <linearGradient id="grad-blue-rep" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stopColor="#3b82f6" />
                                     <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
                                 </linearGradient>
@@ -128,23 +214,27 @@ const Reports = () => {
                     </div>
                 </div>
 
-                {/* Sales by Category (Progress Bars) */}
+                {/* Sales by Category (Vertical bars/list) */}
                 <div className="bg-[#071229] border border-slate-800 rounded-2xl p-6 shadow-xl">
-                    <h3 className="text-lg font-bold text-white uppercase tracking-tight mb-6">Market Share</h3>
+                    <h3 className="text-lg font-black text-white uppercase tracking-tight mb-8">Segment Dominance</h3>
                     <div className="space-y-6">
                         {categories.map((cat, i) => (
                             <div key={i}>
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-bold text-slate-300 uppercase tracking-tighter">{cat.name}</span>
-                                    <span className="text-sm font-black text-white">{cat.value}%</span>
+                                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{cat.name}</span>
+                                    <div className="text-right">
+                                        <span className="text-sm font-black text-white">{cat.value}%</span>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">{cat.count} units</p>
+                                    </div>
                                 </div>
                                 <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
                                     <div
-                                        className={`h-full bg-gradient-to-r ${i === 0 ? 'from-blue-600 to-blue-400' :
+                                        className={`h-full bg-gradient-to-r ${
+                                            i === 0 ? 'from-blue-600 to-blue-400' :
                                             i === 1 ? 'from-emerald-600 to-emerald-400' :
-                                                i === 2 ? 'from-purple-600 to-purple-400' :
-                                                    'from-orange-600 to-orange-400'
-                                            }`}
+                                            i === 2 ? 'from-purple-600 to-purple-400' :
+                                            'from-orange-600 to-orange-400'
+                                        }`}
                                         style={{ width: `${cat.value}%` }}
                                     />
                                 </div>
@@ -152,13 +242,13 @@ const Reports = () => {
                         ))}
                     </div>
 
-                    <div className="mt-8 pt-6 border-t border-slate-800">
-                        <div className="flex items-center justify-between p-4 bg-[#0b1a2a] rounded-xl border border-dashed border-slate-700">
+                    <div className="mt-12 pt-8 border-t border-slate-800">
+                        <div className="flex items-center justify-between p-4 bg-[#0b1a2a] rounded-2xl border border-dashed border-slate-700">
                             <div className="flex flex-col">
-                                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Growth Forecast</span>
-                                <span className="text-sm font-black text-emerald-500 uppercase">+18.4% YoY</span>
+                                <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Annual Yield</span>
+                                <span className="text-md font-black text-emerald-500 uppercase">+৳{((summary[0]?.value || 0) * 1.2).toLocaleString()} EST.</span>
                             </div>
-                            <TrendingUp className="w-5 h-5 text-emerald-500" />
+                            <TrendingUp className="w-6 h-6 text-emerald-500" />
                         </div>
                     </div>
                 </div>
@@ -166,5 +256,12 @@ const Reports = () => {
         </div>
     );
 };
+
+// Internal icon replacement for Briefcase
+const Briefcase = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+    </svg>
+);
 
 export default Reports;

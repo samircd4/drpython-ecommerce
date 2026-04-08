@@ -37,6 +37,7 @@ import UserEdit from "./pages/UserEdit"
 import UserAdd from "./pages/UserAdd"
 import CustomerAdd from "./pages/CustomerAdd"
 import PaymentAdd from "./pages/PaymentAdd"
+import AddOrder from "./pages/AddOrder"
 
 import Login from "./pages/Auth/Login"
 import Register from "./pages/Auth/Register"
@@ -186,6 +187,7 @@ function AppContent() {
                                 <Route path="/categories" element={<ProtectedRoute requiredPermission="products.view_product"><Categories /></ProtectedRoute>} />
                                 
                                 <Route path="/orders" element={<ProtectedRoute requiredPermission="orders.view_order"><Orders /></ProtectedRoute>} />
+                                <Route path="/orders/add" element={<ProtectedRoute requiredPermission="orders.add_order"><AddOrder /></ProtectedRoute>} />
                                 <Route path="/customers" element={<ProtectedRoute requiredPermission="accounts.view_customer"><Customers /></ProtectedRoute>} />
                                 <Route path="/customers/new" element={<ProtectedRoute requiredPermission="accounts.add_customer"><CustomerAdd /></ProtectedRoute>} />
                                 <Route path="/inventory" element={<ProtectedRoute requiredPermission="products.view_product"><Inventory /></ProtectedRoute>} />

@@ -29,7 +29,7 @@ const Dashboard = () => {
             try {
                 // Fetch Products, Brands, Categories, and Dashboard Stats in parallel
                 const [productsRes, brandsRes, categoriesRes, statsRes] = await Promise.all([
-                    api.get('/products/'),
+                    api.get('/products/?ordering=-sold_count'),
                     api.get('/brands/'),
                     api.get('/categories/'),
                     api.get('/dashboard/stats/')
@@ -63,6 +63,12 @@ const Dashboard = () => {
             // Handle nested objects for sort if necessary (though Table handle labels)
             if (column === 'category') valA = a.category?.name;
             if (column === 'brand') valA = a.brand?.name;
+            if (column === 'category') valB = b.category?.name;
+            if (column === 'brand') valB = b.brand?.name;
+            if (column === 'price') {
+                valA = a.discount_price && parseFloat(a.discount_price) > 0 ? parseFloat(a.discount_price) : parseFloat(a.price || 0);
+                valB = b.discount_price && parseFloat(b.discount_price) > 0 ? parseFloat(b.discount_price) : parseFloat(b.price || 0);
+            }
 
             if (valA === undefined || valA === null) valA = '';
             if (valB === undefined || valB === null) valB = '';

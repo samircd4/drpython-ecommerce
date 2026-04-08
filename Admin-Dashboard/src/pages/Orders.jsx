@@ -1,7 +1,7 @@
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Eye, Pencil, Trash2, Download, Loader2, Copy, Check, ChevronUp, ChevronDown } from 'lucide-react';
+import { Eye, Pencil, Trash2, Download, Loader2, Copy, Check, ChevronUp, ChevronDown, Plus } from 'lucide-react';
 import Breadcrumb from '../components/Layout/Breadcrumb';
 import Pagination from '../components/Layout/Pagination';
 import ConfirmModal from '../components/Layout/ConfirmModal';
@@ -54,6 +54,7 @@ const Orders = () => {
 
     const [sortColumn, setSortColumn] = React.useState('created_at');
     const [sortDirection, setSortDirection] = React.useState('desc');
+    const navigate = useNavigate();
     const { copyToClipboard } = useProductLink();
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -185,7 +186,13 @@ const Orders = () => {
 
     return (
         <div className="p-0 sm:p-6 min-h-screen">
-            <Breadcrumb title="Orders" paths={["Home", "Dashboard", "Orders"]} />
+            <div className="flex justify-between items-center mb-4">
+                <Breadcrumb title="Orders" paths={["Home", "Dashboard", "Orders"]} />
+                <button onClick={() => navigate('/orders/add')} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors cursor-pointer text-sm font-semibold">
+                    <Plus className="w-4 h-4" />
+                    <span>Add Order</span>
+                </button>
+            </div>
 
             <div className="my-6">
                 <div className="flex flex-wrap gap-4 bg-[#071229] p-4 rounded-xl border border-slate-800 shadow-sm items-center">

@@ -4,11 +4,13 @@ from rest_framework import permissions
 from django.db.models import Sum, Count, Q
 from django.utils import timezone
 from datetime import timedelta
+from django.db.models.functions import TruncMonth, TruncDay
 from decimal import Decimal
 
 from orders.models import Order, OrderStatus
 from accounts.models import Customer
 from reviews.models import Review
+from products.models import Product
 
 class DashboardStatsView(APIView):
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
@@ -23,6 +25,7 @@ class DashboardStatsView(APIView):
         total_orders = Order.objects.count()
         total_customers = Customer.objects.count()
         total_reviews = Review.objects.count()
+        total_products = Product.objects.count()
 
         # 2. Percentage Changes (Last 30 days vs Previous 30 days)
         def get_change(model, date_field, current_start, prev_start, prev_end, sum_field=None, status_filter=None):
@@ -50,6 +53,7 @@ class DashboardStatsView(APIView):
         orders_change = get_change(Order, 'created_at', last_month, prev_last_month, last_month)
         customers_change = get_change(Customer, 'created_at', last_month, prev_last_month, last_month)
         reviews_change = get_change(Review, 'created_at', last_month, prev_last_month, last_month)
+        products_change = get_change(Product, 'created_at', last_month, prev_last_month, last_month)
 
         # 3. Orders Overview (Status Distribution)
         # We fetch ALL statuses to ensure the chart has components for each
@@ -87,7 +91,91 @@ class DashboardStatsView(APIView):
                 {"title": "Total Orders", "value": int(total_orders), "change": orders_change},
                 {"title": "Total Customers", "value": int(total_customers), "change": customers_change},
                 {"title": "Total Reviews", "value": int(total_reviews), "change": reviews_change},
+                {"title": "Total Products", "value": int(total_products), "change": products_change},
             ],
             "orders_overview": orders_by_status,
             "popular_clients": popular_clients
         })
+
+class AnalyticsDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+    def get(self, request):
+        now = timezone.now()
+        six_months_ago = now - timedelta(days=180)
+        thirty_days_ago = now - timedelta(days=30)
+
+        # 1. Monthly Revenue & Orders (Last 6 Months)
+        monthly_stats = Order.objects.filter(
+            created_at__gte=six_months_ago,
+            order_status__status_code='delivered'
+        ).annotate(
+            month=TruncMonth('created_at')
+        ).values('month').annotate(
+            sales=Sum('total_amount'),
+            orders=Count('id')
+        ).order_by('month')
+
+        formatted_monthly = []
+        for s in monthly_stats:
+            formatted_monthly.append({
+                "month": s['month'].strftime('%b'),
+                "sales": float(s['sales'] or 0),
+                "orders": s['orders'],
+                "profit": float((s['sales'] or 0) * Decimal('0.25')) # Faking profit at 25% margin for now as cost_price isn't tracked
+            })
+
+        # 2. Category Share (Top 5)
+        from products.models import Category
+        category_share = Category.objects.annotate(
+            product_count=Count('products'),
+            sales_count=Count('products__order_items')
+        ).filter(sales_count__gt=0).order_by('-sales_count')[:5]
+
+        total_sales_items = sum(c.sales_count for c in category_share)
+        formatted_categories = []
+        for c in category_share:
+            formatted_categories.append({
+                "name": c.name,
+                "value": round((c.sales_count / total_sales_items * 100)) if total_sales_items > 0 else 0,
+                "count": c.sales_count
+            })
+
+        # 3. Daily Sales Trend (Last 30 Days)
+        daily_stats = Order.objects.filter(
+            created_at__gte=thirty_days_ago,
+            order_status__status_code='delivered'
+        ).annotate(
+            day=TruncDay('created_at')
+        ).values('day').annotate(
+            sales=Sum('total_amount')
+        ).order_by('day')
+
+        formatted_daily = []
+        for s in daily_stats:
+            formatted_daily.append({
+                "date": s['day'].strftime('%d %b'),
+                "value": float(s['sales'] or 0)
+            })
+
+        # 4. Top Performing Products (by Revenue)
+        from products.models import Product
+        top_products_qs = Product.objects.annotate(
+            revenue=Sum('order_items__price') # Note: this assumes order_items.price is the price at time of purchase
+        ).filter(revenue__gt=0).order_by('-revenue')[:5]
+
+        top_products = []
+        for p in top_products_qs:
+            top_products.append({
+                "name": p.name,
+                "revenue": float(p.revenue or 0),
+                "image": p.image.url if p.image else None
+            })
+
+        return Response({
+            "monthly_stats": formatted_monthly,
+            "categories": formatted_categories,
+            "daily_trends": formatted_daily,
+            "top_products": top_products
+        })
+
