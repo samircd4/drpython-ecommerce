@@ -88,6 +88,7 @@ class RegisterView(generics.CreateAPIView):
                 EmailAddress.objects.get_or_create(user=user, email=email, defaults={'verified': False, 'primary': True})
 
                 # 3. Send Verification Email (Manual)
+                from utils.emails import send_template_email
                 token = default_token_generator.make_token(user)
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
                 
@@ -96,30 +97,18 @@ class RegisterView(generics.CreateAPIView):
                 
                 full_name = request.data.get('full_name', 'User')
                 
-                # Render HTML Template
-                from django.template.loader import render_to_string
-                from django.utils.html import strip_tags
-                from django.core.mail import EmailMultiAlternatives
-
-                html_content = render_to_string('emails/welcome_email.html', {
+                context = {
                     'full_name': full_name,
                     'verify_link': verify_link,
                     'logo_url': f"{settings.BACKEND_URL}/static/images/logo.png",
-                })
-                text_content = strip_tags(html_content)
-
-                email_message = EmailMultiAlternatives(
+                }
+                
+                send_template_email(
                     subject="Welcome to Sarker Shop!",
-                    body=text_content,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    to=[email]
+                    template_name='welcome_email.html',
+                    context=context,
+                    recipient_list=[email]
                 )
-                email_message.attach_alternative(html_content, "text/html")
-                try:
-                    email_message.send(fail_silently=False)
-                    print(f"Welcome email sent successfully to {email}")
-                except Exception as ex:
-                    print(f"SMTP Error sending welcome email to {email}: {ex}")
 
                 # 4. Check for order linking
                 link_order_id = request.data.get('link_order_id')
@@ -258,34 +247,23 @@ class ForgotPasswordView(generics.GenericAPIView):
             print(f"DEBUG_FORGOT_PASS|User:{user.email}|PK:{user.pk}|UID:{uid}|Token:{token}|LastLogin:{user.last_login}|PassHash:{user.password[:15]}")
             
             # Build reset link (Frontend URL)
+            from utils.emails import send_template_email
             frontend_url = settings.FRONTEND_URL.rstrip('/')
             # Use query params to match frontend current expectation
             reset_link = f"{frontend_url}/password-reset-confirm?uid={uid}&token={token}"
             
-            # Render HTML Template
-            from django.template.loader import render_to_string
-            from django.utils.html import strip_tags
-            from django.core.mail import EmailMultiAlternatives
-
-            html_content = render_to_string('emails/password_reset_email.html', {
+            context = {
                 'user': user,
                 'reset_link': reset_link,
                 'logo_url': f"{settings.BACKEND_URL}/static/images/logo.png",
-            })
-            text_content = strip_tags(html_content)
-
-            email_message = EmailMultiAlternatives(
+            }
+            
+            send_template_email(
                 subject="Password Reset Request",
-                body=text_content,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[email]
+                template_name='password_reset_email.html',
+                context=context,
+                recipient_list=[email]
             )
-            email_message.attach_alternative(html_content, "text/html")
-            try:
-                email_message.send(fail_silently=False)
-                print(f"Password reset email sent successfully to {email}")
-            except Exception as ex:
-                print(f"SMTP Error sending password reset email to {email}: {ex}")
             
         except User.DoesNotExist:
             return Response({"error": "Email is not associated with any account."}, status=status.HTTP_400_BAD_REQUEST)
@@ -403,32 +381,23 @@ class ResendVerificationEmailView(generics.GenericAPIView):
         frontend_url = settings.FRONTEND_URL
         verify_link = f"{frontend_url}/verify-email/?uid={uid}&token={token}"
 
-        # Render HTML Template
-        from django.template.loader import render_to_string
-        from django.utils.html import strip_tags
-        from django.core.mail import EmailMultiAlternatives
-
-        html_content = render_to_string('emails/verification_email.html', {
+        print(f"Sending verification email to {user.email}...")
+        from utils.emails import send_template_email
+        context = {
             'full_name': getattr(user, 'customer', None).name if hasattr(user, 'customer') else user.username,
             'verify_link': verify_link,
             'logo_url': f"{settings.BACKEND_URL}/static/images/logo.png",
-        })
-        text_content = strip_tags(html_content)
-
-        print(f"Sending verification email to {user.email}...")
-        try:
-            email_message = EmailMultiAlternatives(
-                subject="Verify Your Email Address",
-                body=text_content,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[user.email]
-            )
-            email_message.attach_alternative(html_content, "text/html")
-            email_message.send(fail_silently=False)
-            print(f"Verification email sent to {user.email}")
-        except Exception as e:
-            print(f"Failed to send verification email: {e}")
-            return Response({"error": f"Failed to send email: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        }
+        
+        success = send_template_email(
+            subject="Verify Your Email Address",
+            template_name='verification_email.html',
+            context=context,
+            recipient_list=[user.email]
+        )
+        
+        if not success:
+            return Response({"error": "Failed to send email. Please check server logs."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({"message": f"Verification email sent to {email}."}, status=status.HTTP_200_OK)
 

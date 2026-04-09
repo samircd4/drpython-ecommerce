@@ -1,8 +1,42 @@
+import logging
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
 import os
+
+logger = logging.getLogger(__name__)
+
+def send_template_email(subject, template_name, context, recipient_list, attachments=None):
+    """
+    Standard function to send template-based emails with logging.
+    """
+    try:
+        html_content = render_to_string(f'emails/{template_name}', context)
+        text_content = strip_tags(html_content)
+
+        email = EmailMultiAlternatives(
+            subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            recipient_list
+        )
+        email.attach_alternative(html_content, "text/html")
+
+        if attachments:
+            for filename, content, mimetype in attachments:
+                email.attach(filename, content, mimetype)
+
+        email.send(fail_silently=False)
+        logger.info(f"Email sent successfully to {recipient_list} with subject: {subject}")
+        print(f"✅ Email sent successfully to {recipient_list}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send email to {recipient_list}: {str(e)}")
+        print(f"❌ Failed to send email to {recipient_list}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return False
 
 def send_order_email(order, template_name, subject):
     """
@@ -30,31 +64,17 @@ def send_order_email(order, template_name, subject):
         'logo_url': logo_url
     }
 
-    html_content = render_to_string(f'emails/{template_name}', context)
-    text_content = strip_tags(html_content)
-
-    email = EmailMultiAlternatives(
-        subject,
-        text_content,
-        settings.DEFAULT_FROM_EMAIL,
-        [recipient_email]
-    )
-    email.attach_alternative(html_content, "text/html")
-
+    attachments = []
     # 🔥 Attach Invoice PDF
     try:
         from utils.pdf import generate_invoice_pdf
         pdf_content = generate_invoice_pdf(order)
         if pdf_content:
-            email.attach(f"invoice_{order.id}.pdf", pdf_content, "application/pdf")
+            attachments.append((f"invoice_{order.id}.pdf", pdf_content, "application/pdf"))
     except Exception as e:
-        print(f"Error attaching invoice PDF: {e}")
+        logger.warning(f"Error generating invoice PDF for order {order.id}: {e}")
 
-    try:
-        email.send()
-        print(f"Email sent successfully for order {order.id} with subject: {subject}")
-    except Exception as e:
-        print(f"Error sending email: {e}")
+    return send_template_email(subject, template_name, context, [recipient_email], attachments=attachments)
 
 def send_order_placed_email(order):
     subject = f"Order Placed Successfully - #{order.id} | Sarker Shop"
