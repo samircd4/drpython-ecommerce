@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
-import { useParams, Link, useSearchParams } from "react-router-dom";
+import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useCart } from "../context/CartContext.jsx";
@@ -19,6 +19,7 @@ import { Helmet } from "react-helmet-async";
 
 const ProductDetails = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { addToCart } = useCart();
     const containerRef = useRef(null);
 
@@ -299,16 +300,12 @@ const ProductDetails = () => {
     }
 
     // Rest of your logic (safe now)
-    const handleAddToCart = async () => {
+    const handleAddToCart = async (silent = false) => {
         if (stockStatus !== "in_stock") {
             toast.error("Sorry, this item is out of stock.");
             return;
         }
         try {
-            const body = selectedVariant
-                ? { product_id: product.id, variant_id: selectedVariant.id, quantity: qty }
-                : { product_id: product.id, quantity: qty };
-            await api.post('/cart-items/', body);
             const cartPrice = displayWholesalePrice ? Number(displayWholesalePrice) : Number(displayPrice);
             const payload = selectedVariant ? {
                 ...product,
@@ -324,10 +321,16 @@ const ProductDetails = () => {
                 ...product,
                 price: cartPrice
             };
-            for (let i = 0; i < qty; i++) addToCart(payload);
+            
+            await addToCart(payload, qty, silent);
         } catch {
-            toast.error("Failed to add to cart");
+            if (!silent) toast.error("Failed to add to cart");
         }
+    };
+
+    const handleBuyNow = async () => {
+        await handleAddToCart(true);
+        navigate('/checkout');
     };
 
 
@@ -424,6 +427,7 @@ const ProductDetails = () => {
                     qty={qty}
                     setQty={setQty}
                     handleAddToCart={handleAddToCart}
+                    handleBuyNow={handleBuyNow}
                     product={product}
                     handleImageError={handleImageError}
                 />

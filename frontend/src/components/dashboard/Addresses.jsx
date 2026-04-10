@@ -234,20 +234,21 @@ const Addresses = ({
                                 type="checkbox"
                                 checked={addrDefault}
                                 onChange={(e) => setAddrDefault(e.target.checked)}
+                                className="cursor-pointer"
                             />
-                            <label htmlFor="addrDefault" className="text-sm text-gray-700">Set as default address</label>
+                            <label htmlFor="addrDefault" className="text-sm cursor-pointer text-gray-700">Set as default address</label>
                         </div>
                         <div className="flex items-center gap-3 pt-2">
                             <button
                                 type="submit"
-                                className="px-4 py-2 rounded-md bg-purple-600 hover:bg-purple-700 text-white"
+                                className="px-4 py-2 rounded-md bg-purple-600 hover:bg-purple-700 text-white cursor-pointer"
                             >
                                 {editingAddressId ? 'Update' : 'Add'}
                             </button>
                             <button
                                 type="button"
                                 onClick={resetAddressForm}
-                                className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+                                className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 cursor-pointer"
                             >
                                 Reset
                             </button>

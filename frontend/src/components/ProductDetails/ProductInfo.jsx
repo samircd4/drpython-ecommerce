@@ -28,6 +28,7 @@ const ProductInfo = ({
     qty,
     setQty,
     handleAddToCart,
+    handleBuyNow,
     product,
     handleImageError
 }) => {
@@ -182,10 +183,17 @@ const ProductInfo = ({
                 </div>
                 <button
                     onClick={handleAddToCart}
-                    className="px-5 py-3 rounded-md bg-purple-700 hover:bg-purple-800 text-white focus-visible:outline-none focus-visible:ring-2 ring-purple-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-5 py-3 rounded-md border-2 border-purple-700 text-purple-700 hover:bg-purple-50 font-bold transition-all focus-visible:outline-none focus-visible:ring-2 ring-purple-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={stockStatus !== "in_stock"}
                 >
                     Add to cart
+                </button>
+                <button
+                    onClick={handleBuyNow}
+                    className="px-8 py-3 rounded-md bg-purple-700 hover:bg-purple-800 text-white font-bold transition-all focus-visible:outline-none focus-visible:ring-2 ring-purple-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={stockStatus !== "in_stock"}
+                >
+                    Buy Now
                 </button>
             </div>
 

@@ -7,11 +7,18 @@ export const ModalProvider = ({ children }) => {
         brand: { isOpen: false, data: null },
         category: { isOpen: false, data: null },
         product: { isOpen: false, data: null },
+        coupon: { isOpen: false, data: null },
     });
 
     const [orderModal, setOrderModal] = useState({
         isOpen: false,
         order: null,
+        mode: 'view'
+    });
+
+    const [addressModal, setAddressModal] = useState({
+        isOpen: false,
+        address: null,
         mode: 'view'
     });
 
@@ -37,6 +44,14 @@ export const ModalProvider = ({ children }) => {
         setOrderModal(prev => ({ ...prev, isOpen: false }));
     };
 
+    const openAddressModal = (address, mode = 'view') => {
+        setAddressModal({ isOpen: true, address, mode });
+    };
+
+    const closeAddressModal = () => {
+        setAddressModal(prev => ({ ...prev, isOpen: false }));
+    };
+
     const setOrderModalMode = (mode) => {
         setOrderModal(prev => ({ ...prev, mode }));
     };
@@ -49,6 +64,9 @@ export const ModalProvider = ({ children }) => {
             orderModal, 
             openOrderModal, 
             closeOrderModal,
+            addressModal,
+            openAddressModal,
+            closeAddressModal,
             setOrderModalMode
         }}>
             {children}

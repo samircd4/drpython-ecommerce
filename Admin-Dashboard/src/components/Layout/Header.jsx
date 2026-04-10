@@ -310,10 +310,19 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                             }}
                             onMarkAllRead={async () => {
                                 try {
-                                    await api.post('/notifications/read-all/');
+                                    await api.post('/notifications/mark_all_read/');
                                     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
                                 } catch (e) {
                                     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+                                }
+                            }}
+                            onClearAll={async () => {
+                                if (notifications.length === 0) return;
+                                try {
+                                    await api.delete('/notifications/clear_all/');
+                                    setNotifications([]);
+                                } catch (e) {
+                                    setNotifications([]);
                                 }
                             }}
                         />

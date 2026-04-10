@@ -90,6 +90,14 @@ const Orders = () => {
         }
     }, [searchParams]);
 
+    // Auto-open modal when searching for a specific ID
+    React.useEffect(() => {
+        const query = searchParams.get('search');
+        if (query && orders.length === 1 && String(orders[0].id) === query) {
+            openOrderModal(orders[0], 'view');
+        }
+    }, [orders, searchParams, openOrderModal]);
+
     const handleDownloadInvoice = async (orderId) => {
         try {
             setDownloadingOrderId(orderId);

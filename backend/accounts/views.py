@@ -447,7 +447,9 @@ class AddressViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
             return Address.objects.none()
-        return Address.objects.filter(customer__user=self.request.user)
+        if self.request.user.is_staff:
+            return Address.objects.all().order_by('-id')
+        return Address.objects.filter(customer__user=self.request.user).order_by('-id')
 
     @extend_schema(
         summary="Set Default Address",

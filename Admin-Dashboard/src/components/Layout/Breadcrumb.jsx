@@ -39,21 +39,21 @@ const Breadcrumb = ({ title = "", paths = [] }) => {
     const getLabel = (p) => typeof p === 'object' ? p.label : p;
 
     return (
-        <div className="sticky top-0 z-30 pt-4 pb-2 -mx-4 px-4 sm:-mx-8 sm:px-8 bg-[#071229]/80 backdrop-blur-md border-b border-slate-800/10 mb-6">
-            <div className="rounded-[1.5rem] bg-[#112960]/40 p-3 sm:p-5 border border-slate-700/30 shadow-2xl shadow-black/20 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all hover:bg-[#112960]/60">
-                <div className="flex items-center gap-4 w-full sm:w-auto">
+        <div className="sticky top-0 z-30 pt-3 pb-2 -mx-4 px-4 sm:-mx-8 sm:px-8 bg-[#071229]/80 backdrop-blur-md border-b border-slate-800/20 mb-6">
+            <div className="rounded-[1.25rem] sm:rounded-[1.5rem] bg-[#112960]/40 p-3 sm:p-5 border border-slate-700/30 shadow-2xl shadow-black/20 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 transition-all hover:bg-[#112960]/60">
+                <div className="flex items-center gap-3 sm:gap-4 w-full md:w-auto">
                     <div className="hidden sm:flex p-2 bg-indigo-500/20 rounded-xl">
                         <Home className="w-5 h-5 text-indigo-400" />
                     </div>
-                    <div>
-                        <h2 className="text-xl sm:text-2xl font-black text-white truncate tracking-tight uppercase">{title}</h2>
-                        <div className="sm:hidden h-1 w-12 bg-indigo-500 rounded-full mt-1" />
+                    <div className="min-w-0">
+                        <h2 className="text-lg sm:text-2xl font-black text-white truncate tracking-tight uppercase leading-tight">{title}</h2>
+                        <div className="md:hidden h-0.5 w-8 bg-indigo-500 rounded-full mt-0.5" />
                     </div>
                 </div>
 
-                <div className="w-full sm:w-auto overflow-x-auto whitespace-nowrap scrollbar-hide">
+                <div className="w-full md:w-auto overflow-x-auto whitespace-nowrap scrollbar-hide py-0.5">
                     {paths && paths.length > 0 && (
-                        <nav className="flex items-center gap-1.5 py-1">
+                        <nav className="flex items-center gap-1.5">
                             {paths.map((p, idx) => {
                                 const path = resolvePath(p, idx);
                                 const label = getLabel(p);
@@ -64,17 +64,17 @@ const Breadcrumb = ({ title = "", paths = [] }) => {
                                         {path && !isLast ? (
                                             <Link 
                                                 to={path}
-                                                className="text-[10px] font-black uppercase tracking-widest text-sky-400 hover:text-white transition-all hover:scale-105 active:scale-95"
+                                                className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-sky-400 hover:text-white transition-all"
                                             >
                                                 {label}
                                             </Link>
                                         ) : (
-                                            <span className={`text-[10px] font-black uppercase tracking-widest ${isLast ? "text-slate-100" : "text-slate-500"}`}>
+                                            <span className={`text-[9px] sm:text-[10px] font-black uppercase tracking-widest ${isLast ? "text-slate-100" : "text-slate-500"}`}>
                                                 {label}
                                             </span>
                                         )}
                                         {!isLast && (
-                                            <ChevronRight className="w-3 h-3 text-slate-700" />
+                                            <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-700" />
                                         )}
                                     </React.Fragment>
                                 );

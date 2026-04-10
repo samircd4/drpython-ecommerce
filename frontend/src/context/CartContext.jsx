@@ -58,13 +58,9 @@ export const CartProvider = ({ children }) => {
         localStorage.setItem("cartItems", JSON.stringify(cartItem));
     }, [cartItem]);
 
-    const addToCart = async (product) => {
+    const addToCart = async (product, quantity = 1, silent = false) => {
         const token = localStorage.getItem("access_token");
 
-        // Determine effective price: 
-        // If variant is present, we assume the calling component (like ProductDetails) 
-        // has already provided the correct variant price in product.price.
-        // Otherwise, for simple products, we prioritize: wholesale_price > discount_price > price
         const effectivePrice = product.variant 
             ? product.price 
             : (product.wholesale_price || product.discount_price || product.price);
@@ -82,12 +78,12 @@ export const CartProvider = ({ children }) => {
         if (itemInCart) {
             updatedCart = cartItem.map((item) => {
                 const same = item.id === productWithCorrectPrice.id && (item.variant?.id ?? null) === (productWithCorrectPrice.variant?.id ?? null);
-                return same ? { ...item, quantity: item.quantity + 1 } : item;
+                return same ? { ...item, quantity: item.quantity + (Number(quantity) || 1) } : item;
             });
-            toast.success("Product quantity increased!")
+            if (!silent) toast.success("Product quantity increased!");
         } else {
-            updatedCart = [...cartItem, { ...productWithCorrectPrice, quantity: 1, image: fixImage(productWithCorrectPrice.image) }];
-            toast.success("Product is added to cart!")
+            updatedCart = [...cartItem, { ...productWithCorrectPrice, quantity: (Number(quantity) || 1), image: fixImage(productWithCorrectPrice.image) }];
+            if (!silent) toast.success("Product is added to cart!");
         }
         setCartItem(updatedCart);
 
@@ -97,7 +93,7 @@ export const CartProvider = ({ children }) => {
                 const response = await api.post('/cart-items/', {
                     product_id: productWithCorrectPrice.id,
                     variant_id: productWithCorrectPrice.variant?.id,
-                    quantity: 1
+                    quantity: (Number(quantity) || 1)
                 });
 
                 // If new item, update with cart_item_id
@@ -111,7 +107,6 @@ export const CartProvider = ({ children }) => {
                 }
             } catch (error) {
                 console.error("Error adding to cart:", error);
-                // Optionally revert changes or show error toast
             }
         }
     }

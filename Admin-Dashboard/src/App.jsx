@@ -32,6 +32,7 @@ import DataManagement from "./pages/DataManagement"
 // Customers & Users Detailed Pages
 import CustomerView from "./pages/CustomerView"
 import CustomerEdit from "./pages/CustomerEdit"
+import CustomerAddresses from "./pages/CustomerAddresses"
 import UserView from "./pages/UserView"
 import UserEdit from "./pages/UserEdit"
 import UserAdd from "./pages/UserAdd"
@@ -50,11 +51,13 @@ import BrandModal from "./components/Product/BrandModal"
 import BrandViewModal from "./components/Product/BrandViewModal"
 import CategoryModal from "./components/Product/CategoryModal"
 import CategoryViewModal from "./components/Product/CategoryViewModal"
+import CouponModal from "./components/Coupon/CouponModal"
 import GlobalOrderModal from "./components/Layout/GlobalOrderModal"
+import AddressModal from "./components/Customers/AddressModal"
 import MobileFAB from "./components/Layout/MobileFAB"
 
 const GlobalModals = () => {
-    const { modals, closeModal } = useModals();
+    const { modals, closeModal, addressModal, closeAddressModal } = useModals();
 
     const handleSave = () => {
         // Dispatch a global event to refresh data on the current page
@@ -85,6 +88,20 @@ const GlobalModals = () => {
                 isOpen={modals.categoryView?.isOpen} 
                 onClose={() => closeModal('categoryView')} 
                 category={modals.categoryView?.data} 
+            />
+            <CouponModal
+                isOpen={modals.coupon.isOpen}
+                onClose={() => closeModal('coupon')}
+                coupon={modals.coupon.data?.coupon}
+                mode={modals.coupon.data?.mode || 'create'}
+                onSave={handleSave}
+            />
+            <AddressModal
+                isOpen={addressModal.isOpen}
+                onClose={closeAddressModal}
+                address={addressModal.address}
+                mode={addressModal.mode}
+                onSave={handleSave}
             />
             <GlobalOrderModal />
         </>
@@ -189,6 +206,8 @@ function AppContent() {
                                 <Route path="/orders" element={<ProtectedRoute requiredPermission="orders.view_order"><Orders /></ProtectedRoute>} />
                                 <Route path="/orders/add" element={<ProtectedRoute requiredPermission="orders.add_order"><AddOrder /></ProtectedRoute>} />
                                 <Route path="/customers" element={<ProtectedRoute requiredPermission="accounts.view_customer"><Customers /></ProtectedRoute>} />
+                                <Route path="/all-customers" element={<ProtectedRoute requiredPermission="accounts.view_customer"><Customers /></ProtectedRoute>} />
+                                <Route path="/addresses" element={<ProtectedRoute requiredPermission="accounts.view_customer"><CustomerAddresses /></ProtectedRoute>} />
                                 <Route path="/customers/new" element={<ProtectedRoute requiredPermission="accounts.add_customer"><CustomerAdd /></ProtectedRoute>} />
                                 <Route path="/inventory" element={<ProtectedRoute requiredPermission="products.view_product"><Inventory /></ProtectedRoute>} />
                                 <Route path="/payments" element={<ProtectedRoute requiredPermission="orders.view_payment"><Payments /></ProtectedRoute>} />

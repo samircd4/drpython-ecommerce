@@ -216,14 +216,18 @@ const CustomerView = () => {
                                     {customer.recent_orders?.length > 0 ? (
                                         <div className="space-y-3">
                                             {customer.recent_orders.map((order) => (
-                                                <div key={order.id} className="group p-4 bg-slate-800/10 hover:bg-slate-800/40 border border-slate-800/50 rounded-2xl transition-all cursor-pointer">
+                                                <div 
+                                                    key={order.id} 
+                                                    onClick={() => navigate(`/orders?search=${order.id}`)}
+                                                    className="group p-4 bg-slate-800/10 hover:bg-slate-800/40 border border-slate-800/50 rounded-2xl transition-all cursor-pointer flex flex-col"
+                                                >
                                                     <div className="flex justify-between items-start mb-2">
                                                         <span className="text-xs font-mono font-bold text-blue-400">#{order.id}</span>
-                                                        <span className={`text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full ${order.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-500/10 text-blue-400'}`}>{order.status}</span>
+                                                        <span className={`text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full ${order.status === 'Completed' || order.status === 'Delivered' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-500/10 text-blue-400'}`}>{order.status}</span>
                                                     </div>
                                                     <div className="flex justify-between items-end">
                                                         <span className="text-[10px] text-slate-500 font-bold">{new Date(order.created_at).toLocaleDateString()}</span>
-                                                        <span className="text-sm font-black text-slate-200 group-hover:text-white transition-colors">৳{order.total_amount}</span>
+                                                        <span className="text-sm font-black text-slate-200 group-hover:text-white transition-colors">৳{order.total_amount || order.grand_total}</span>
                                                     </div>
                                                 </div>
                                             ))}
@@ -242,7 +246,7 @@ const CustomerView = () => {
                                 <div className="px-6 py-5 border-b border-slate-800/60 flex items-center justify-between">
                                     <div className="flex items-center gap-3 font-black uppercase text-xs tracking-widest text-slate-200">
                                         <MapPin className="w-4 h-4 text-emerald-400" />
-                                        Logistics Info
+                                        Registered Addresses
                                     </div>
                                 </div>
                                 <div className="p-6">

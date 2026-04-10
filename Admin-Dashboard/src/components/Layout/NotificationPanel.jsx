@@ -89,50 +89,59 @@ const NotificationPanel = ({ open, onClose, notifications = [], onMarkRead, onMa
                         <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
                             {notifications.length > 0 ? (
                                 <div className="divide-y divide-slate-800/50">
-                                    {notifications.map((notif) => (
-                                        <div
-                                            key={notif.id}
-                                            onClick={async () => {
-                                                if (!notif.is_read && onMarkRead) {
-                                                    await onMarkRead(notif.id);
-                                                }
-                                                if (notif.link) {
-                                                    navigate(notif.link);
-                                                    onClose();
-                                                }
-                                            }}
-                                            className={`p-4 transition-colors relative group cursor-pointer hover:bg-white/5 ${
-                                                !notif.is_read ? 'bg-purple-600/5' : ''
-                                            }`}
-                                        >
-                                            {!notif.is_read && (
-                                                <div className="absolute top-0 right-0 w-1 h-full bg-purple-600" />
-                                            )}
+                                    <AnimatePresence initial={false}>
+                                        {notifications.map((notif) => (
+                                            <motion.div
+                                                key={notif.id}
+                                                initial={{ opacity: 0, x: 20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, x: -20, height: 0 }}
+                                                onClick={async () => {
+                                                    if (!notif.is_read && onMarkRead) {
+                                                        await onMarkRead(notif.id);
+                                                    }
+                                                    // Redirection logic
+                                                    if (notif.link) {
+                                                        navigate(notif.link);
+                                                        onClose();
+                                                    } else if (notif.type === 'order_update' && notif.order_id) {
+                                                        navigate(`/orders?search=${notif.order_id}`);
+                                                        onClose();
+                                                    }
+                                                }}
+                                                className={`p-4 transition-colors relative group cursor-pointer hover:bg-white/5 ${
+                                                    !notif.is_read ? 'bg-purple-600/5' : ''
+                                                }`}
+                                            >
+                                                {!notif.is_read && (
+                                                    <div className="absolute top-0 right-0 w-1 h-full bg-purple-600" />
+                                                )}
 
-                                            <div className="flex gap-3 sm:gap-4">
-                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-slate-700/50 ${
-                                                    notif.is_read ? 'bg-slate-800/50' : 'bg-purple-600/10 border-purple-500/20'
-                                                }`}>
-                                                    {getIcon(notif.type)}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex justify-between items-start mb-0.5">
-                                                        <h3 className={`text-sm font-bold truncate pr-4 sm:pr-6 ${
-                                                            notif.is_read ? 'text-slate-400' : 'text-slate-100'
-                                                        }`}>
-                                                            {notif.title}
-                                                        </h3>
-                                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap pt-1">
-                                                            {formatTime(notif.time || notif.created_at)}
-                                                        </span>
+                                                <div className="flex gap-3 sm:gap-4">
+                                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-slate-700/50 ${
+                                                        notif.is_read ? 'bg-slate-800/50' : 'bg-purple-600/10 border-purple-500/20'
+                                                    }`}>
+                                                        {getIcon(notif.type)}
                                                     </div>
-                                                    <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
-                                                        {notif.message}
-                                                    </p>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex justify-between items-start mb-0.5">
+                                                            <h3 className={`text-sm font-bold truncate pr-4 sm:pr-6 ${
+                                                                notif.is_read ? 'text-slate-400' : 'text-slate-100'
+                                                            }`}>
+                                                                {notif.title}
+                                                            </h3>
+                                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap pt-1">
+                                                                {formatTime(notif.time || notif.created_at)}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
+                                                            {notif.message}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    ))}
+                                            </motion.div>
+                                        ))}
+                                    </AnimatePresence>
                                 </div>
                             ) : (
                                 <div className="py-20 flex flex-col items-center justify-center text-center px-8 opacity-50">

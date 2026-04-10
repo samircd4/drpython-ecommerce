@@ -10,7 +10,8 @@ import {
     ShoppingBag,
     CreditCard,
     Users,
-    Ticket
+    Ticket,
+    MapPin
 } from "lucide-react";
 import { useModals } from "../../Context/ModalContext";
 
@@ -21,13 +22,14 @@ const fabItems = [
     { id: 'order', label: 'Order', icon: ShoppingBag, color: 'text-amber-400', path: '/orders/add' },
     { id: 'payment', label: 'Payment', icon: CreditCard, color: 'text-green-400', path: '/payments/new' },
     { id: 'customer', label: 'Customer', icon: Users, color: 'text-pink-400', path: '/customers/new' },
-    { id: 'coupon', label: 'Coupon', icon: Ticket, color: 'text-yellow-400', path: '/coupons' },
+    { id: 'address', label: 'Address', icon: MapPin, color: 'text-orange-400', action: 'address' },
+    { id: 'coupon', label: 'Coupon', icon: Ticket, color: 'text-yellow-400', modal: 'coupon' },
 ];
 
 const MobileFAB = () => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
-    const { openModal } = useModals();
+    const { openModal, openAddressModal } = useModals();
     const fabRef = useRef(null);
 
     useEffect(() => {
@@ -42,7 +44,9 @@ const MobileFAB = () => {
 
     const handleItemClick = (item) => {
         setOpen(false);
-        if (item.modal) {
+        if (item.action === 'address') {
+            openAddressModal(null, 'create');
+        } else if (item.modal) {
             openModal(item.modal);
         } else if (item.path) {
             navigate(item.path);

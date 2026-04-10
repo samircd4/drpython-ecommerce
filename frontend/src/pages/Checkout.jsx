@@ -92,7 +92,7 @@ const Checkout = () => {
     };
 
     // Terms
-    const [accepted, setAccepted] = useState(false);
+    const [accepted, setAccepted] = useState(true);
     const [loading, setLoading] = useState(false);
 
     const { user } = useUser();

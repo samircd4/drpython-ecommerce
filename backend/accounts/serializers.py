@@ -190,10 +190,14 @@ class AddressSerializer(serializers.ModelSerializer):
     district = serializers.SlugRelatedField(slug_field='name', queryset=District.objects.all())
     sub_district = serializers.SlugRelatedField(slug_field='name', queryset=SubDistrict.objects.all())
 
+    customer = serializers.PrimaryKeyRelatedField(queryset=Customer.objects.all(), required=False)
+    customer_name = serializers.CharField(source='customer.name', read_only=True)
+    customer_email = serializers.EmailField(source='customer.email', read_only=True)
+
     class Meta:
         model = Address
         fields = [
-            'id',
+            'id', 'customer', 'customer_name', 'customer_email',
             'full_name', 'phone',           # Contact
             'address',                      # House/Road
             'division', 'district', 'sub_district',  # Location
@@ -201,9 +205,16 @@ class AddressSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        # Automatically assign the logged-in user's customer profile
+        # Admin Dashboard creates addresses for other customers
         user = self.context['request'].user
-        validated_data['customer'] = user.customer
+        
+        # If 'customer' is provided in the payload, DRF's PrimaryKeyRelatedField 
+        # should have already converted it to a Customer instance in validated_data.
+        if 'customer' not in validated_data or validated_data['customer'] is None:
+            # Fallback for regular users only
+            if not user.is_staff:
+                validated_data['customer'] = getattr(user, 'customer', None)
+        
         return super().create(validated_data)
 
 

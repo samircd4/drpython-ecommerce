@@ -65,7 +65,16 @@ const menuItems = [
     },
     { id: "orders", icon: ShoppingBag, label: "Orders", permission: "orders.view_order" },
     { id: "coupons", icon: Ticket, label: "Coupons", permission: "orders.view_coupon" },
-    { id: "customers", icon: Users, label: "Customers", permission: "accounts.view_customer" },
+    { 
+        id: "customers", 
+        icon: Users, 
+        label: "Customers", 
+        permission: "accounts.view_customer",
+        submenu: [
+            { id: "all-customers", label: "All Customers", icon: Users },
+            { id: "addresses", label: "Addresses", icon: ShoppingBag }
+        ]
+    },
     { id: "reviews", icon: Star, label: "Reviews", permission: "reviews.view_review" },
     { id: "inventory", icon: Package, label: "Inventory", permission: "products.view_product" },
     { id: "payments", icon: CreditCard, label: "Payments", permission: "orders.view_payment" },
@@ -173,6 +182,7 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
                                     else if (item.id === 'products') navigate('/all-products');
                                     else if (item.id === 'analytics') navigate('/overview');
                                     else if (item.id === 'users') navigate('/all-users');
+                                    else if (item.id === 'customers') navigate('/all-customers');
                                 } else {
                                     navigate(`/${item.id}`);
                                 }
