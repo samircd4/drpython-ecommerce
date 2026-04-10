@@ -410,7 +410,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     filter_backends = [SearchFilter, DjangoFilterBackend]
-    search_fields = ['name', 'email', 'phone_number']
+    search_fields = ['id', 'name', 'email', 'phone_number', 'user__username', 'user__first_name', 'user__last_name']
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -443,6 +443,8 @@ class CustomerViewSet(viewsets.ModelViewSet):
 class AddressViewSet(viewsets.ModelViewSet):
     serializer_class = AddressSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    search_fields = ['full_name', 'phone', 'address', 'district__name', 'sub_district__name', 'customer__name', 'customer__email']
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):

@@ -1,28 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Pencil, Trash2, Plus, MapPin, Search } from 'lucide-react';
+import { Pencil, Trash2, Plus, MapPin, Search, X } from 'lucide-react';
 import Breadcrumb from '../components/Layout/Breadcrumb';
 import Pagination from '../components/Layout/Pagination';
 import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 import { useModals } from '../Context/ModalContext';
 
+import { useLocation } from 'react-router-dom';
+
 const CustomerAddresses = () => {
     const { openAddressModal } = useModals();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    
     const [addresses, setAddresses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [totalCount, setTotalCount] = useState(0);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState(queryParams.get('search') || '');
+    const [debouncedSearch, setDebouncedSearch] = useState(queryParams.get('search') || '');
     const [page, setPage] = useState(1);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [addressIdToDelete, setAddressIdToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
+    // Debounce search query
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+            setPage(1);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     const fetchAddresses = async () => {
         setLoading(true);
         try {
             const response = await api.get(`/addresses/`, {
-                params: { page: page, search: searchQuery }
+                params: { 
+                    page: page, 
+                    search: debouncedSearch 
+                }
             });
             
             if (response.data && response.data.results) {
@@ -42,7 +60,7 @@ const CustomerAddresses = () => {
 
     useEffect(() => {
         fetchAddresses();
-    }, [page, searchQuery]);
+    }, [page, debouncedSearch]);
 
     useEffect(() => {
         const handleRefresh = () => fetchAddresses();
@@ -100,10 +118,18 @@ const CustomerAddresses = () => {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                     <input
                         value={searchQuery}
-                        onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
-                        placeholder="Search addresses by city, area, or customer..."
-                        className="w-full bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-blue-500 transition-colors text-sm"
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search addresses by name, city, area, or phone..."
+                        className="w-full bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-lg pl-10 pr-10 py-2.5 focus:outline-none focus:border-blue-500 transition-colors text-sm"
                     />
+                    {searchQuery && (
+                        <button 
+                            onClick={() => setSearchQuery('')}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white cursor-pointer"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                    )}
                 </div>
             </div>
 

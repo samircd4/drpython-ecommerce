@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import FilterBar from '../components/FilterBar/FilterBar';
-import { Eye, Pencil, Trash2, Plus } from 'lucide-react';
+import { Eye, Pencil, Trash2, Plus, Search, X } from 'lucide-react';
 import Breadcrumb from '../components/Layout/Breadcrumb';
 import Pagination from '../components/Layout/Pagination';
 import ConfirmModal from '../components/Layout/ConfirmModal';
@@ -24,6 +24,7 @@ const Customers = () => {
     const [loading, setLoading] = useState(true);
     const [totalCount, setTotalCount] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
     const [page, setPage] = useState(1);
     const [sortColumn, setSortColumn] = useState('name');
     const [sortDirection, setSortDirection] = useState('asc');
@@ -31,30 +32,44 @@ const Customers = () => {
     const [customerIdToDelete, setCustomerIdToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
+    // Debounce search query
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+            setPage(1); // Reset to page 1 on new search
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     React.useEffect(() => {
         const fetchCustomers = async () => {
             setLoading(true);
             try {
                 const response = await api.get(`/customers/`, {
-                    params: { page: page, search: searchQuery }
+                    params: { 
+                        page: page, 
+                        search: debouncedSearch 
+                    }
                 });
                 
                 if (response.data && response.data.results) {
                     setCustomers(response.data.results);
-                    setTotalCount(response.data.count);
+                    setTotalCount(response.data.count || 0);
                 } else {
                     setCustomers(Array.isArray(response.data) ? response.data : []);
                     setTotalCount(Array.isArray(response.data) ? response.data.length : 0);
                 }
             } catch (error) {
                 console.error("Failed to fetch customers:", error);
+                setCustomers([]);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchCustomers();
-    }, [page, searchQuery]);
+    }, [page, debouncedSearch]);
 
     const handleDeleteCustomer = (customerId) => {
         setCustomerIdToDelete(customerId);
@@ -119,13 +134,24 @@ const Customers = () => {
 
             <div className="bg-[#071229] p-4 rounded-xl border border-slate-800 shadow-sm">
                 <div className="flex items-center gap-4">
-                    <div className="flex-1">
+                    <div className="flex-1 relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                            <Search className="w-4 h-4" />
+                        </div>
                         <input
                             value={searchQuery}
-                            onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
-                            placeholder="Search customers..."
-                            className="w-full bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 transition-colors text-sm"
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search by name, email, or phone (e.g. John, 017...)"
+                            className="w-full bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-lg pl-10 pr-10 py-2.5 focus:outline-none focus:border-blue-500 transition-colors text-sm"
                         />
+                        {searchQuery && (
+                            <button 
+                                onClick={() => setSearchQuery('')}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white cursor-pointer"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

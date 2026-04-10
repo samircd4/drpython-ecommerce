@@ -1,23 +1,40 @@
 import React from "react";
 import { MessageSquare, Eye, MoreHorizontal } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const PopularClients = ({ clients = [] }) => {
+    const navigate = useNavigate();
     const defaultClients = [
         { id: 1, name: "Miron Mahmud", orders: 648, amount: "৳5500", avatar: "https://i.pravatar.cc/150?u=miron" },
         { id: 2, name: "Tahmina Bonny", orders: 590, amount: "৳4400", avatar: "https://i.pravatar.cc/150?u=tahmina" },
-        { id: 3, name: "Labonno Khan", orders: 408, amount: "৳3300", avatar: "https://i.pravatar.cc/150?u=labonno" },
-        { id: 4, name: "Sheikh Adabali", orders: 357, amount: "৳2200", avatar: "https://i.pravatar.cc/150?u=sheikh" },
-        { id: 5, name: "Johara Khatun", orders: 289, amount: "৳1100", avatar: "https://i.pravatar.cc/150?u=johara" },
-        { id: 6, name: "Kurulus Osman", orders: 194, amount: "৳789", avatar: "https://i.pravatar.cc/150?u=osman" },
     ];
 
     const displayClients = clients.length > 0 ? clients : defaultClients;
+
+    // Helper to fix backend image paths (adding baseUrl if relative)
+    const fixImage = (path, name = "User") => {
+        if (!path) return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
+        if (path.startsWith('http')) return path;
+        
+        const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+        let baseUrl = API_BASE.replace(/\/api\/?$/, '');
+        
+        // If baseUrl is relative, make it absolute
+        if (baseUrl.startsWith('/')) {
+            baseUrl = window.location.origin + baseUrl;
+        } else if (!baseUrl.startsWith('http')) {
+            baseUrl = 'http://localhost:8000';
+        }
+        
+        const cleanPath = path.startsWith('/') ? path : `/${path}`;
+        return `${baseUrl}${cleanPath}`;
+    };
 
     return (
         <div className="bg-[#071229] border border-slate-800 rounded-xl p-6 text-white shadow-lg h-full">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-bold">Popular Clients</h2>
-                <button className="text-slate-400 hover:text-white transition-colors">
+                <button className="text-slate-400 hover:text-white transition-colors cursor-pointer">
                     <MoreHorizontal className="w-5 h-5" />
                 </button>
             </div>
@@ -37,7 +54,14 @@ const PopularClients = ({ clients = [] }) => {
                             <tr key={client.id} className="group hover:bg-slate-800/20 transition-colors">
                                 <td className="py-4">
                                     <div className="flex items-center gap-3">
-                                        <img src={client.avatar} alt={client.name} className="w-10 h-10 rounded-lg object-cover" />
+                                        <img 
+                                            src={fixImage(client.avatar, client.name)} 
+                                            alt={client.name} 
+                                            className="w-10 h-10 rounded-lg object-cover" 
+                                            onError={(e) => {
+                                                e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(client.name)}&background=random`;
+                                            }}
+                                        />
                                         <span className="text-sm font-semibold group-hover:text-blue-400 transition-colors uppercase">{client.name.toLowerCase()}</span>
                                     </div>
                                 </td>
@@ -49,10 +73,18 @@ const PopularClients = ({ clients = [] }) => {
                                 </td>
                                 <td className="py-4">
                                     <div className="flex items-center gap-2">
-                                        <button className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all">
+                                        <button 
+                                            onClick={() => navigate('/chats', { state: { userId: client.user_id } })}
+                                            className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all cursor-pointer"
+                                            title="Chat with Customer"
+                                        >
                                             <MessageSquare className="w-4 h-4" />
                                         </button>
-                                        <button className="p-2 rounded-lg bg-purple-500/10 text-purple-500 hover:bg-purple-500 hover:text-white transition-all">
+                                        <button 
+                                            onClick={() => navigate(`/customers/view/${client.id}`)}
+                                            className="p-2 rounded-lg bg-purple-500/10 text-purple-500 hover:bg-purple-500 hover:text-white transition-all cursor-pointer"
+                                            title="View Profile"
+                                        >
                                             <Eye className="w-4 h-4" />
                                         </button>
                                     </div>

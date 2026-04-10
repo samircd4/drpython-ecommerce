@@ -312,9 +312,9 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                             onClick={() => setShowUserDropdown(!showUserDropdown)}
                             className="flex items-center space-x-3 pl-3 border-l border-slate-700 cursor-pointer group"
                         >
-                            <div className="w-8 h-8 rounded-full bg-slate-700 ring-2 ring-[#184a6a] flex items-center justify-center text-slate-200 overflow-hidden group-hover:ring-blue-500 transition-all">
-                                {user?.profile_picture ? (
-                                    <img src={getFullUrl(user.profile_picture)} alt="Profile" className="w-full h-full object-cover" />
+                            <div className="w-8 h-8 rounded-full bg-slate-700 ring-2 ring-[#184a6a] flex items-center justify-center text-slate-200 overflow-hidden group-hover:ring-blue-500 transition-all cursor-pointer">
+                                {user?.avatar ? (
+                                    <img src={getFullUrl(user.avatar)} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
                                     <User className="w-4 h-4" />
                                 )}

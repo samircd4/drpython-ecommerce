@@ -4,6 +4,8 @@ import { useAuth } from "../Context/AuthContext";
 import useChatSocket from "../hooks/useChatSocket";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "react-router-dom";
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 const BACKEND_URL = API_BASE.replace(/\/api\/?$/, '');
 
@@ -16,6 +18,7 @@ const getFullUrl = (path) => {
 const Messages = () => {
     const { user } = useAuth();
     const token = localStorage.getItem('access_token');
+    const location = useLocation();
 
     const [chats, setChats] = useState([]);
     const [selectedChatId, setSelectedChatId] = useState(null);
@@ -101,7 +104,25 @@ const Messages = () => {
             }
         };
         fetchConversations();
-    }, []);
+    }, [location.state?.userId]);
+
+    // Effect to handle redirection from other pages (Dashboard/Notifications)
+    useEffect(() => {
+        if (!isLoadingChats && chats.length > 0 && location.state?.userId) {
+            const targetId = Number(location.state.userId);
+            const targetChat = chats.find(c => {
+                const cust = c.customer || {};
+                const otherParticipant = c.participants?.find(p => Number(p.id) !== Number(user?.id)) || c.target_user || {};
+                // Match by customer user ID or participant ID
+                return Number(cust.id) === targetId || Number(otherParticipant.id) === targetId;
+            });
+
+            if (targetChat && Number(selectedChatId) !== Number(targetChat.id)) {
+                handleSelectChat(targetChat);
+            }
+        }
+    }, [isLoadingChats, chats, location.state?.userId, selectedChatId, handleSelectChat]);
+
 
     // Auto-scroll to bottom of chat
     const scrollToBottom = () => {
@@ -383,7 +404,7 @@ const Messages = () => {
                                     >
                                         <div className="relative">
                                             <img 
-                                                src={displayAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff`} 
+                                                src={getFullUrl(displayAvatar) || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D8ABC&color=fff`} 
                                                 alt={displayName} 
                                                 className="w-12 h-12 rounded-xl object-cover border border-slate-700 cursor-pointer" 
                                             />
@@ -442,7 +463,7 @@ const Messages = () => {
                                             <>
                                                 {displayAvatar ? (
                                                     <img 
-                                                        src={displayAvatar} 
+                                                        src={getFullUrl(displayAvatar)} 
                                                         alt={displayName} 
                                                         className="w-10 h-10 rounded-xl object-cover border border-slate-700 cursor-pointer" 
                                                     />
@@ -582,16 +603,16 @@ const Messages = () => {
                                                             {msg.image ? (
                                                                 <div className="space-y-2">
                                                                     <img 
-                                                                        src={msg.image.startsWith('http') ? msg.image : `${api.defaults.baseURL.replace(/\/api\/?$/, '')}/media/${msg.image.replace(/^\/media\//, '')}`} 
+                                                                        src={getFullUrl(msg.image)} 
                                                                         alt="uploaded" 
-                                                                        className="max-w-[300px] rounded-lg cursor://pointer hover:scale-[1.01] transition-transform" 
-                                                                        onClick={() => window.open(msg.image.startsWith('http') ? msg.image : `${api.defaults.baseURL.replace(/\/api\/?$/, '')}/media/${msg.image.replace(/^\/media\//, '')}`, '_blank')} 
+                                                                        className="max-w-[300px] rounded-lg cursor-pointer hover:scale-[1.01] transition-transform" 
+                                                                        onClick={() => window.open(getFullUrl(msg.image), '_blank')} 
                                                                     />
                                                                     {msg.text && <p className="text-sm leading-relaxed">{msg.text}</p>}
                                                                 </div>
                                                             ) : msg.video ? (
                                                                 <div className="space-y-2">
-                                                                    <video src={msg.video.startsWith('http') ? msg.video : `${api.defaults.baseURL.replace(/\/api\/?$/, '')}/media/${msg.video.replace(/^\/media\//, '')}`} controls className="max-w-[300px] rounded-lg" />
+                                                                    <video src={getFullUrl(msg.video)} controls className="max-w-[300px] rounded-lg" />
                                                                     {msg.text && <p className="text-sm leading-relaxed">{msg.text}</p>}
                                                                 </div>
                                                             ) : (

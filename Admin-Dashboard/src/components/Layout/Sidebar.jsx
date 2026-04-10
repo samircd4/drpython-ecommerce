@@ -167,6 +167,15 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
 
     const showLabels = !collapsed || mobileOpen;
 
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+    const BACKEND_URL = API_BASE.replace(/\/api\/?$/, '');
+
+    const getFullUrl = (path) => {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        return `${BACKEND_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+    };
+
     return (
         <div
             className={`${mobileTransform} ${baseWidth} ${smWidth} fixed sm:relative left-0 top-12 sm:top-0 bottom-0 sm:inset-y-0 z-40 transform transition-all duration-500 ease-in-out backdrop-blur-xl flex flex-col`}
@@ -257,10 +266,13 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
 
             {/* User Profile */}
             <div className="p-4 border-t border-slate-800">
-                <div className="flex items-center space-x-3 p-3 rounded-xl bg-transparent cursor-pointer">
-                    <div className="w-8 h-8 rounded-full bg-slate-700 ring-2 ring-[#184a6a] flex items-center justify-center text-slate-200 overflow-hidden">
-                        {user?.avatar || user?.profile_picture ? (
-                            <img src={user.avatar || user.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+                <div 
+                    onClick={() => navigate('/settings')}
+                    className="flex items-center space-x-3 p-3 rounded-xl bg-transparent cursor-pointer hover:bg-slate-800/50 transition-colors"
+                >
+                    <div className="w-8 h-8 rounded-full bg-slate-700 ring-2 ring-[#184a6a] flex items-center justify-center text-slate-200 overflow-hidden shrink-0">
+                        {user?.avatar ? (
+                            <img src={getFullUrl(user.avatar)} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
                             <User className="w-5 h-5" />
                         )}

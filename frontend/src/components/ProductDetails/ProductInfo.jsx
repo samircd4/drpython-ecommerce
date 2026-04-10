@@ -158,7 +158,7 @@ const ProductInfo = ({
             </div>
 
             <div className="mt-4 flex flex-col gap-4">
-                <div className="flex items-center gap-3">
+                {/* <div className="flex items-center gap-3">
                     <div className="inline-flex items-center border rounded-md shrink-0">
                         <button
                             aria-label="Decrease quantity"
@@ -182,7 +182,7 @@ const ProductInfo = ({
                             +
                         </button>
                     </div>
-                </div>
+                </div> */}
                 
                 <div className="flex items-center gap-2">
                     <button

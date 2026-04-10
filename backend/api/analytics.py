@@ -77,12 +77,22 @@ class DashboardStatsView(APIView):
 
         popular_clients = []
         for c in popular_clients_qs:
+            avatar_url = f"https://ui-avatars.com/api/?name={c.name or c.user.username}&background=random"
+            if c.avatar:
+                try: 
+                    avatar_url = request.build_absolute_uri(c.avatar.url)
+                except:
+                    avatar_url = c.avatar.url
+            elif c.social_avatar_url:
+                avatar_url = c.social_avatar_url
+                
             popular_clients.append({
                 "id": c.id,
+                "user_id": c.user.id, # Needed for chat
                 "name": c.name or c.user.username,
                 "orders": c.order_count,
                 "amount": float(c.total_spent or 0),
-                "avatar": f"https://ui-avatars.com/api/?name={c.name or c.user.username}&background=random"
+                "avatar": avatar_url
             })
 
         return Response({

@@ -160,7 +160,7 @@ const CustomerView = () => {
                                 <div className="mt-8 space-y-4 text-left">
                                     <DetailRow icon={Mail} label="Email Address" value={customer.email} color="blue" />
                                     <DetailRow icon={Phone} label="Mobile" value={customer.phone_number || 'Not provided'} color="purple" />
-                                    <DetailRow icon={Calendar} label="Member Since" value={new Date(customer.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} color="amber" />
+                                    <DetailRow icon={Calendar} label="Customer Since" value={new Date(customer.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} color="amber" />
                                 </div>
                             </div>
                         </motion.div>
@@ -253,7 +253,11 @@ const CustomerView = () => {
                                     {customer.addresses?.length > 0 ? (
                                         <div className="space-y-4">
                                             {customer.addresses.map((addr) => (
-                                                <div key={addr.id} className="relative p-5 bg-gradient-to-br from-slate-800/20 to-transparent border border-slate-800/50 rounded-[1.5rem] group hover:border-emerald-500/30 transition-all">
+                                                <div 
+                                                    key={addr.id} 
+                                                    onClick={() => navigate(`/addresses?search=${encodeURIComponent(addr.full_name)}`)}
+                                                    className="relative p-5 bg-gradient-to-br from-slate-800/20 to-transparent border border-slate-800/50 rounded-[1.5rem] group hover:border-emerald-500/30 transition-all cursor-pointer select-none active:scale-[0.98]"
+                                                >
                                                     <div className="flex items-center justify-between mb-3">
                                                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 bg-emerald-500/5 px-3 py-1 rounded-full">{addr.address_type}</span>
                                                         {addr.is_default && (
