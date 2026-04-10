@@ -18,7 +18,7 @@ const fabItems = [
     { id: 'product', label: 'Product', icon: Box, color: 'text-blue-400', path: '/products/new' },
     { id: 'brand', label: 'Brand', icon: Tag, color: 'text-purple-400', modal: 'brand' },
     { id: 'category', label: 'Category', icon: Layers, color: 'text-emerald-400', modal: 'category' },
-    { id: 'order', label: 'Order', icon: ShoppingBag, color: 'text-amber-400', path: '/orders/new' },
+    { id: 'order', label: 'Order', icon: ShoppingBag, color: 'text-amber-400', path: '/orders/add' },
     { id: 'payment', label: 'Payment', icon: CreditCard, color: 'text-green-400', path: '/payments/new' },
     { id: 'customer', label: 'Customer', icon: Users, color: 'text-pink-400', path: '/customers/new' },
     { id: 'coupon', label: 'Coupon', icon: Ticket, color: 'text-yellow-400', path: '/coupons' },

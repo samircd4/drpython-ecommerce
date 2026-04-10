@@ -238,12 +238,15 @@ function AppContent() {
 }
 
 import { ChatProvider } from "./Context/ChatContext"
+import { StatsProvider } from "./Context/StatsContext"
 
 function App() {
     return (
         <ModalProvider>
             <ChatProvider>
-                <AppContent />
+                <StatsProvider>
+                    <AppContent />
+                </StatsProvider>
             </ChatProvider>
         </ModalProvider>
     )

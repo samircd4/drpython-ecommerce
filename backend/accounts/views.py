@@ -100,7 +100,7 @@ class RegisterView(generics.CreateAPIView):
                 context = {
                     'full_name': full_name,
                     'verify_link': verify_link,
-                    'logo_url': f"{settings.BACKEND_URL}/static/images/logo.png",
+                    'logo_url': "https://sarker.shop/static/images/logo.png",
                 }
                 
                 send_template_email(
@@ -255,7 +255,7 @@ class ForgotPasswordView(generics.GenericAPIView):
             context = {
                 'user': user,
                 'reset_link': reset_link,
-                'logo_url': f"{settings.BACKEND_URL}/static/images/logo.png",
+                'logo_url': "https://sarker.shop/static/images/logo.png",
             }
             
             send_template_email(
@@ -386,7 +386,7 @@ class ResendVerificationEmailView(generics.GenericAPIView):
         context = {
             'full_name': getattr(user, 'customer', None).name if hasattr(user, 'customer') else user.username,
             'verify_link': verify_link,
-            'logo_url': f"{settings.BACKEND_URL}/static/images/logo.png",
+            'logo_url': "https://sarker.shop/static/images/logo.png",
         }
         
         success = send_template_email(

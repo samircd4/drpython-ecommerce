@@ -1220,7 +1220,7 @@ requires-dist = [
     { name = "dj-rest-auth", specifier = ">=7.0.2" },
     { name = "django", specifier = ">=5.2.8" },
     { name = "django-allauth", specifier = ">=65.14.0" },
-    { name = "django-anymail", specifier = ">=14.0" },
+    { name = "django-anymail", extras = ["brevo"], specifier = ">=10.0" },
     { name = "django-celery-results", specifier = ">=2.5" },
     { name = "django-cors-headers", specifier = ">=4.9.0" },
     { name = "django-filter", specifier = ">=25.2" },

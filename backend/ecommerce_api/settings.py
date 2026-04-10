@@ -353,25 +353,10 @@ ANYMAIL = {
     "BREVO_API_KEY": os.getenv("BREVO_API_KEY"),
 }
 
-EMAIL_HOST = 'smtp-relay.brevo.com'      # Brevo SMTP server
-EMAIL_PORT = 587                          # TLS port
-EMAIL_USE_TLS = True                      # TLS is recommended
-EMAIL_USE_SSL = False                     # Do NOT use SSL on port 587
-
-
 DEFAULT_FROM_EMAIL = 'Sarker Shop <info@sarker.shop>'
 
 SERVER_EMAIL = "info@sarker.shop" 
 
-
-# Security settings - mutually exclusive
-# Use SSL for port 465, TLS for 587
-if EMAIL_PORT == 465:
-    EMAIL_USE_SSL = _bool(os.getenv('EMAIL_USE_SSL'), True)
-    EMAIL_USE_TLS = False
-else:
-    EMAIL_USE_SSL = False
-    EMAIL_USE_TLS = _bool(os.getenv('EMAIL_USE_TLS'), True)
 
 # Allauth / Social Account Settings
 ACCOUNT_EMAIL_VERIFICATION = 'optional'  # Changed from 'none' to 'optional'
@@ -391,6 +376,7 @@ ACCOUNT_MAX_EMAIL_ADDRESSES = 1
 
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_QUERY_EMAIL = True
+ACCOUNT_ADAPTER = 'accounts.adapters.MyAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'accounts.adapters.MySocialAccountAdapter'
 
 SOCIALACCOUNT_PROVIDERS = {

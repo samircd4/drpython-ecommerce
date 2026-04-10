@@ -20,6 +20,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: sarker_backend_api_local
+    env_file:
+      - ./backend/.env
     volumes:
       - ./backend:/app
       - /app/.venv
@@ -34,11 +36,6 @@ services:
       - FRONTEND_URL=http://localhost:5173
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - GOOGLE_SECRET=${GOOGLE_SECRET:-}
-      - EMAIL_HOST=${EMAIL_HOST:-smtp.gmail.com}
-      - EMAIL_PORT=${EMAIL_PORT:-587}
-      - EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
-      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
-      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL:-}
       - UV_COMPILE_BYTECODE=0
     command: uv run daphne -b 0.0.0.0 -p 8000 ecommerce_api.asgi:application
     ports:
@@ -52,6 +49,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: sarker_backend_ws_local
+    env_file:
+      - ./backend/.env
     volumes:
       - ./backend:/app
       - /app/.venv
@@ -66,11 +65,6 @@ services:
       - FRONTEND_URL=http://localhost:5173
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - GOOGLE_SECRET=${GOOGLE_SECRET:-}
-      - EMAIL_HOST=${EMAIL_HOST:-smtp.gmail.com}
-      - EMAIL_PORT=${EMAIL_PORT:-587}
-      - EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
-      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
-      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL:-}
       - UV_COMPILE_BYTECODE=0
     command: uv run daphne -b 0.0.0.0 -p 8001 ecommerce_api.asgi:application
     ports:
@@ -85,6 +79,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: sarker_celery_local
+    env_file:
+      - ./backend/.env
     volumes:
       - ./backend:/app
       - /app/.venv
@@ -95,11 +91,6 @@ services:
       - DEBUG=True
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - GOOGLE_SECRET=${GOOGLE_SECRET:-}
-      - EMAIL_HOST=${EMAIL_HOST:-smtp.gmail.com}
-      - EMAIL_PORT=${EMAIL_PORT:-587}
-      - EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
-      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
-      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL:-}
     depends_on:
       - redis
       - db

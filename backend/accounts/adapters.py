@@ -78,6 +78,35 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
         """
         user = super().save_user(request, sociallogin, form)
         self._sync_customer_data(user, sociallogin)
+        
+        # Send Welcome Email for new social users (matches manual registration flow)
+        try:
+            from utils.emails import send_template_email
+            from django.conf import settings
+            
+            frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
+            
+            # Since social login auto-verifies, just send them to their dashboard
+            verify_link = f"{frontend_url}/dashboard"
+            logo_url = "https://sarker.shop/static/images/logo.png"
+            
+            full_name = getattr(user, 'customer', None).name if hasattr(user, 'customer') else user.username
+            
+            context = {
+                'full_name': full_name,
+                'verify_link': verify_link,
+                'logo_url': logo_url,
+                'is_social': True,
+            }
+            send_template_email(
+                subject="Welcome to Sarker Shop!", 
+                template_name='welcome_email.html', 
+                context=context, 
+                recipient_list=[user.email]
+            )
+        except Exception as e:
+            print(f"DEBUG_SOCIAL_EMAIL|Failed to send welcome email: {e}")
+            
         return user
 
     def _sync_customer_data(self, user, sociallogin):
@@ -113,3 +142,70 @@ class MySocialAccountAdapter(DefaultSocialAccountAdapter):
                 customer.social_avatar_url = avatar_url
 
         customer.save()
+
+from allauth.account.adapter import DefaultAccountAdapter
+from django.conf import settings
+from utils.emails import send_template_email
+
+class MyAccountAdapter(DefaultAccountAdapter):
+    def send_mail(self, template_prefix, email, context):
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:5173')
+        logo_url = "https://sarker.shop/static/images/logo.png"
+
+        # Email Verification / Welcome
+        if template_prefix in ['account/email/email_confirmation', 'account/email/email_confirmation_signup']:
+            template_name = 'welcome_email.html' if 'signup' in template_prefix else 'verification_email.html'
+            subject = "Welcome to Sarker Shop!" if 'signup' in template_prefix else "Verify Your Email - Sarker Shop"
+            
+            key = context['key']
+            verify_link = f"{frontend_url}/verify-email/{key}"
+            
+            user = context.get('user')
+            full_name = 'Valued Customer'
+            if user:
+                full_name = f"{user.first_name} {user.last_name}".strip() or user.username
+                
+            custom_context = {
+                'full_name': full_name,
+                'verify_link': verify_link,
+                'logo_url': logo_url,
+            }
+            send_template_email(
+                subject=subject, 
+                template_name=template_name, 
+                context=custom_context, 
+                recipient_list=[email], 
+                tags=['verification']
+            )
+
+        # Password Reset
+        elif template_prefix == 'account/email/password_reset_key':
+            subject = "Reset Your Password - Sarker Shop"
+            
+            uid = context.get('uid')
+            token = context.get('token')
+            
+            if not uid and hasattr(context.get('user'), 'pk'):
+                from django.utils.http import urlsafe_base64_encode
+                from django.utils.encoding import force_bytes
+                uid = urlsafe_base64_encode(force_bytes(context.get('user').pk))
+            
+            reset_link = context.get('password_reset_url')
+            if not reset_link:
+                reset_link = f"{frontend_url}/auth/reset-password/{uid}/{token}" # Adjusted frontend URL format assuming standard auth
+
+            custom_context = {
+                'reset_link': reset_link,
+                'logo_url': logo_url,
+            }
+            send_template_email(
+                subject=subject, 
+                template_name='password_reset_email.html', 
+                context=custom_context, 
+                recipient_list=[email], 
+                tags=['password_reset']
+            )
+        else:
+            # Fallback to default
+            super().send_mail(template_prefix, email, context)
+

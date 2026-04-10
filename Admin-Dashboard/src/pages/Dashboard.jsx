@@ -7,10 +7,11 @@ import OrdersOverview from "../components/Dashboard/OrdersOverview";
 import FilterBar from "../components/FilterBar/FilterBar";
 import Pagination from "../components/Layout/Pagination";
 import api from "../api/axiosConfig";
+import { useStats } from "../Context/StatsContext";
 
 const Dashboard = () => {
+    const { stats, loading: statsLoading } = useStats();
     const [products, setProducts] = useState([]);
-    const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [allCategories, setAllCategories] = useState([]);
     const [allBrands, setAllBrands] = useState([]);
@@ -27,18 +28,17 @@ const Dashboard = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // Fetch Products, Brands, Categories, and Dashboard Stats in parallel
-                const [productsRes, brandsRes, categoriesRes, statsRes] = await Promise.all([
+                // Fetch Products, Brands, and Categories in parallel
+                // Dashboard stats are now handled by StatsContext
+                const [productsRes, brandsRes, categoriesRes] = await Promise.all([
                     api.get('/products/?ordering=-sold_count'),
                     api.get('/brands/'),
-                    api.get('/categories/'),
-                    api.get('/dashboard/stats/')
+                    api.get('/categories/')
                 ]);
 
                 setProducts(productsRes.data.results || []);
                 setAllBrands(brandsRes.data.results || []);
                 setAllCategories(categoriesRes.data.results || []);
-                setStats(statsRes.data);
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
             } finally {

@@ -118,8 +118,21 @@ const Account = () => {
                 setIsLogin(true);
             }
         } catch (error) {
-            const msg = getErrorMessage(error, "Authentication failed. check your credentials.");
-            toast.error(msg);
+            try {
+                let msg = getErrorMessage(error, "Authentication failed. check your credentials.");
+                msg = String(msg || "Authentication failed. check your credentials.");
+                
+                if (isLogin && error.response && (error.response.status === 401 || error.response.status === 400 || error.response.status === 404)) {
+                    const lowerMsg = msg.toLowerCase();
+                    if (lowerMsg.includes("no active account") || lowerMsg.includes("credentials") || lowerMsg.includes("not found")) {
+                        msg = "No active account found with the provided email. Please check your information or sign up.";
+                    }
+                }
+                
+                toast.error(msg);
+            } catch (err) {
+                toast.error("No active account found with the provided email. Please check your information or sign up.");
+            }
         } finally {
             setLoading(false);
         }

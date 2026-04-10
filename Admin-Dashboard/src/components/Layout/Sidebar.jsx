@@ -22,6 +22,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext";
 import api from "../../api/axiosConfig";
+import { useChat } from "../../Context/ChatContext";
+import { useStats } from "../../Context/StatsContext";
 
 const menuItems = [
     { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", active: true},
@@ -82,12 +84,17 @@ const menuItems = [
     { id: "settings", icon: Settings, label: "Settings" },
 ];
 
-
-import { useChat } from "../../Context/ChatContext";
-
 const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageChange }) => {
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { stats } = useStats();
+    const summary = stats?.summary || [];
+
+    const counts = {
+        products: summary.find(s => s.title === "Total Products")?.value || 0,
+        customers: summary.find(s => s.title === "Total Customers")?.value || 0,
+        orders: summary.find(s => s.title === "Total Orders")?.value || 0
+    };
     
     // Helper to check permissions
     const hasPermission = (permission) => {
@@ -96,8 +103,13 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
         return user?.permissions?.includes(permission);
     };
 
-    // Filter menu items based on permissions
-    const filteredMenuItems = menuItems.filter(item => {
+    // Filter menu items based on permissions and update dynamic counts
+    const filteredMenuItems = menuItems.map(item => {
+        if (item.id === 'products') return { ...item, count: counts.products };
+        if (item.id === 'customers') return { ...item, count: counts.customers };
+        if (item.id === 'orders') return { ...item, count: counts.orders };
+        return item;
+    }).filter(item => {
         const canViewParent = hasPermission(item.permission);
         if (!canViewParent) return false;
 

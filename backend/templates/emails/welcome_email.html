@@ -28,7 +28,11 @@
                                 We're absolutely thrilled to have you here! Welcome to <strong>Sarker Shop</strong>—your new destination for the latest premium gadgets and tech.
                             </p>
                             <p style="color: #475569; font-size: 17px; line-height: 1.7; margin: 0 0 35px 0;">
+                                {% if is_social %}
+                                Because you signed up with your social account, your email is already verified! You can dive straight in and start exploring.
+                                {% else %}
                                 Please confirm your email address to unlock full access to your account and start shopping.
+                                {% endif %}
                             </p>
 
                             <!-- CTA Button -->
@@ -36,7 +40,7 @@
                                 <tr>
                                     <td align="center">
                                         <a href="{{ verify_link }}" style="display: inline-block; padding: 18px 40px; background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); background-color: #7c3aed; color: #ffffff; text-decoration: none; border-radius: 16px; font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);">
-                                            Verify My Account
+                                            {% if is_social %}Go To My Account{% else %}Verify My Account{% endif %}
                                         </a>
                                     </td>
                                 </tr>
