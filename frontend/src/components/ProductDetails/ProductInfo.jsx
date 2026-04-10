@@ -157,44 +157,49 @@ const ProductInfo = ({
                     : "Currently unavailable"}
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-                <div className="inline-flex items-center border rounded-md">
+            <div className="mt-4 flex flex-col gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="inline-flex items-center border rounded-md shrink-0">
+                        <button
+                            aria-label="Decrease quantity"
+                            onClick={() => setQty(Math.max(1, qty - 1))}
+                            className="px-3 py-2 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 ring-purple-700 cursor-pointer"
+                        >
+                            −
+                        </button>
+                        <input
+                            className="w-10 text-center outline-none py-2 text-sm"
+                            type="text"
+                            min="1"
+                            value={qty}
+                            onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
+                        />
+                        <button
+                            aria-label="Increase quantity"
+                            onClick={() => setQty(qty + 1)}
+                            className="px-3 py-2 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 ring-purple-700 cursor-pointer"
+                        >
+                            +
+                        </button>
+                    </div>
+                </div>
+                
+                <div className="flex items-center gap-2">
                     <button
-                        aria-label="Decrease quantity"
-                        onClick={() => setQty(Math.max(1, qty - 1))}
-                        className="px-3 py-2 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 ring-purple-700 cursor-pointer"
+                        onClick={handleAddToCart}
+                        className="flex-1 px-3 py-3 rounded-md border-2 border-purple-700 text-purple-700 hover:bg-purple-50 font-bold text-sm transition-all focus-visible:outline-none focus-visible:ring-2 ring-purple-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                        disabled={stockStatus !== "in_stock"}
                     >
-                        −
+                        Add to cart
                     </button>
-                    <input
-                        className="w-12 text-center outline-none py-2"
-                        type="text"
-                        min="1"
-                        value={qty}
-                        onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
-                    />
                     <button
-                        aria-label="Increase quantity"
-                        onClick={() => setQty(qty + 1)}
-                        className="px-3 py-2 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 ring-purple-700 cursor-pointer"
+                        onClick={handleBuyNow}
+                        className="flex-1 px-3 py-3 rounded-md bg-purple-700 hover:bg-purple-800 text-white font-bold text-sm transition-all focus-visible:outline-none focus-visible:ring-2 ring-purple-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                        disabled={stockStatus !== "in_stock"}
                     >
-                        +
+                        Buy Now
                     </button>
                 </div>
-                <button
-                    onClick={handleAddToCart}
-                    className="px-5 py-3 rounded-md border-2 border-purple-700 text-purple-700 hover:bg-purple-50 font-bold transition-all focus-visible:outline-none focus-visible:ring-2 ring-purple-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={stockStatus !== "in_stock"}
-                >
-                    Add to cart
-                </button>
-                <button
-                    onClick={handleBuyNow}
-                    className="px-8 py-3 rounded-md bg-purple-700 hover:bg-purple-800 text-white font-bold transition-all focus-visible:outline-none focus-visible:ring-2 ring-purple-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={stockStatus !== "in_stock"}
-                >
-                    Buy Now
-                </button>
             </div>
 
             <div className="mt-6">

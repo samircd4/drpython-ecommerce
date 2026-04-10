@@ -23,6 +23,7 @@ import ProductQnA from "./pages/ProductQnA"
 import ContactMessages from "./pages/ContactMessages"
 import ReportsPage from "./pages/Reports"
 import Reviews from "./pages/Reviews"
+import Notifications from "./pages/Notifications"
 import Brands from "./pages/Brands"
 import Categories from "./pages/Categories"
 import Settings from "./pages/Settings"
@@ -222,6 +223,7 @@ function AppContent() {
                                 <Route path="/reviews" element={<ProtectedRoute requiredPermission="reviews.view_review"><Reviews /></ProtectedRoute>} />
                                 <Route path="/coupons" element={<ProtectedRoute requiredPermission="orders.view_coupon"><Coupons /></ProtectedRoute>} />
                                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                                <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
 
                                 {/* Customer Detailed Views */}
                                 <Route path="/customers/view/:id" element={<ProtectedRoute requiredPermission="accounts.view_customer"><CustomerView /></ProtectedRoute>} />
@@ -258,14 +260,17 @@ function AppContent() {
 
 import { ChatProvider } from "./Context/ChatContext"
 import { StatsProvider } from "./Context/StatsContext"
+import { NotificationProvider } from "./Context/NotificationContext"
 
 function App() {
     return (
         <ModalProvider>
             <ChatProvider>
-                <StatsProvider>
-                    <AppContent />
-                </StatsProvider>
+                <NotificationProvider>
+                    <StatsProvider>
+                        <AppContent />
+                    </StatsProvider>
+                </NotificationProvider>
             </ChatProvider>
         </ModalProvider>
     )

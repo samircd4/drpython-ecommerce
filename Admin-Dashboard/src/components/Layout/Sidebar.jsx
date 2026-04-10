@@ -1,5 +1,5 @@
 import {
-    BarChart3,
+    Bell, BarChart3,
     ChevronDown,
     CreditCard,
     FileText,
@@ -24,6 +24,7 @@ import { useAuth } from "../../Context/AuthContext";
 import api from "../../api/axiosConfig";
 import { useChat } from "../../Context/ChatContext";
 import { useStats } from "../../Context/StatsContext";
+import { useNotification } from "../../Context/NotificationContext";
 
 const menuItems = [
     { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", active: true},
@@ -89,6 +90,7 @@ const menuItems = [
             { id: "contact-messages", label: "Contact Messages", icon: Mail }
         ]
     },
+    { id: "notifications", icon: Bell, label: "Notifications"},
     { id: "export-import", icon: FileText, label: "Export/Import", badge: "New" },
     { id: "settings", icon: Settings, label: "Settings" },
 ];
@@ -97,8 +99,9 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
     const navigate = useNavigate();
     const { user } = useAuth();
     const { stats } = useStats();
+    const { unreadCount: notificationsCount } = useNotification();
     const summary = stats?.summary || [];
-
+    
     const counts = {
         products: summary.find(s => s.title === "Total Products")?.value || 0,
         customers: summary.find(s => s.title === "Total Customers")?.value || 0,
@@ -190,24 +193,38 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
                             className={`w-full flex items-center cursor-pointer justify-between p-3 rounded-xl transition-all duration-200 ${isParentActive(item) || item.active ? 'text-slate-100 shadow-lg shadow-black/30' : 'text-slate-300 hover:bg-slate-800'}`}
                             style={isParentActive(item) || item.active ? { backgroundImage: 'linear-gradient(90deg,var(--accent-1),var(--accent-2))' } : undefined}
                         >
-                            <div className="flex items-center space-x-3">
-                                <item.icon className="w-5 h-5 text-slate-300" />
+                            <div className="flex items-center flex-1 min-w-0">
+                                <item.icon className="w-5 h-5 text-slate-300 shrink-0" />
                                 {showLabels && (
                                     <>
-                                        <span className="font-medium ml-2">{item.label}</span>
-                                        {item.id === 'messages' && unreadTotal > 0 && (
-                                            <span className="px-2 py-1 text-xs bg-red-600 text-slate-100 rounded-full">{unreadTotal}</span>
-                                        )}
-                                        {item.id === 'dashboard' && item.badge && <span className="px-2 py-1 text-xs bg-slate-600 text-slate-100 rounded-sm">{item.badge}</span>}
-                                        {item.id === 'analytics' && item.badge && <span className="px-2 py-1 text-xs bg-slate-600 text-slate-100 rounded-sm">{item.badge}</span>}
-                                        {item.id === 'export-import' && item.badge && <span className="px-2 py-1 text-xs bg-slate-600 text-slate-100 rounded-sm">{item.badge}</span>}
-                                        {item.count && <span className="px-2 py-1 text-xs bg-slate-700 text-slate-200 rounded-full">{item.count}</span>}
+                                        <span className="font-medium ml-3 truncate">{item.label}</span>
+                                        <div className="flex items-center gap-2 ml-auto mr-2">
+                                            {item.id === 'notifications' && notificationsCount > 0 && (
+                                                <span className="px-2 py-0.5 text-[10px] font-black bg-blue-600 text-white rounded-full">
+                                                    {notificationsCount}
+                                                </span>
+                                            )}
+                                            {item.id === 'messages' && unreadTotal > 0 && (
+                                                <span className="px-2 py-0.5 text-[10px] font-black bg-red-600 text-slate-100 rounded-full">
+                                                    {unreadTotal}
+                                                </span>
+                                            )}
+                                        </div>
                                     </>
                                 )}
                             </div>
 
-                            {showLabels && item.submenu && (
-                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedItems.has(item.id) ? 'rotate-180' : 'rotate-0'}`} />
+                            {showLabels && (
+                                <div className="flex items-center gap-2">
+                                    {item.id === 'dashboard' && item.badge && <span className="px-2 py-1 text-xs bg-slate-600 text-slate-100 rounded-sm">{item.badge}</span>}
+                                    {item.id === 'analytics' && item.badge && <span className="px-2 py-1 text-xs bg-slate-600 text-slate-100 rounded-sm">{item.badge}</span>}
+                                    {item.id === 'export-import' && item.badge && <span className="px-2 py-1 text-xs bg-slate-600 text-slate-100 rounded-sm">{item.badge}</span>}
+                                    {item.count ? <span className="px-2 py-1 text-xs bg-slate-700 text-slate-200 rounded-full">{item.count}</span> : null}
+                                    
+                                    {item.submenu && (
+                                        <ChevronDown className={`w-4 h-4 transition-transform ${expandedItems.has(item.id) ? 'rotate-180' : 'rotate-0'}`} />
+                                    )}
+                                </div>
                             )}
                         </button>
 

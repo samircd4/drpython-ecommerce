@@ -100,13 +100,25 @@ const NotificationPanel = ({ open, onClose, notifications = [], onMarkRead, onMa
                                                     if (!notif.is_read && onMarkRead) {
                                                         await onMarkRead(notif.id);
                                                     }
-                                                    // Redirection logic
-                                                    if (notif.link) {
+                                                    onClose();
+                                                    
+                                                    // Comprehensive Redirection Logic
+                                                    const trackMatch = notif.link?.match(/\/order-tracking\/(\d+)/);
+                                                    if (trackMatch) {
+                                                        navigate(`/orders?search=${trackMatch[1]}`);
+                                                    } else if (notif.link) {
                                                         navigate(notif.link);
-                                                        onClose();
-                                                    } else if (notif.type === 'order_update' && notif.order_id) {
-                                                        navigate(`/orders?search=${notif.order_id}`);
-                                                        onClose();
+                                                    } else if (notif.type === 'order_update') {
+                                                        const orderIdMatch = notif.message.match(/#(\d+)/);
+                                                        if (orderIdMatch) {
+                                                            navigate(`/orders?search=${orderIdMatch[1]}`);
+                                                        } else {
+                                                            navigate('/orders');
+                                                        }
+                                                    } else if (notif.type === 'promotion') {
+                                                        navigate('/coupons');
+                                                    } else {
+                                                        navigate('/notifications');
                                                     }
                                                 }}
                                                 className={`p-4 transition-colors relative group cursor-pointer hover:bg-white/5 ${
@@ -163,6 +175,16 @@ const NotificationPanel = ({ open, onClose, notifications = [], onMarkRead, onMa
                             >
                                 <Trash2 className="w-4 h-4" />
                                 Clear All
+                            </button>
+                            <button
+                                onClick={() => {
+                                    navigate('/notifications');
+                                    onClose();
+                                }}
+                                className="flex-1 py-3 bg-blue-600/10 hover:bg-blue-600/20 text-blue-500 text-xs font-black rounded-xl transition-all cursor-pointer uppercase tracking-widest flex items-center justify-center gap-2"
+                            >
+                                <Bell className="w-4 h-4" />
+                                View All
                             </button>
                             <button
                                 onClick={onClose}

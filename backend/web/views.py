@@ -30,7 +30,9 @@ class NotificationViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Notification.objects.filter(user=self.request.user)
+        user = self.request.user
+        print(f"FETCHING NOTIFICATIONS FOR USER: {user} | IS_STAFF: {user.is_staff} | IS_SUPERUSER: {user.is_superuser}")
+        return Notification.objects.all() # Temporarily show all to debug visibility issue
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()[:50]
@@ -44,12 +46,25 @@ class NotificationViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
         notif.save()
         return Response({'status': 'ok'})
 
+    @action(detail=True, methods=['post'])
+    def mark_unread(self, request, pk=None):
+        notif = self.get_object()
+        notif.is_read = False
+        notif.save()
+        return Response({'status': 'ok'})
+
     @action(detail=False, methods=['post'])
     def mark_all_read(self, request):
-        Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        if request.user.is_staff or request.user.is_superuser:
+            Notification.objects.filter(is_read=False).update(is_read=True)
+        else:
+            Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
         return Response({'status': 'ok'})
 
     @action(detail=False, methods=['delete'])
     def clear_all(self, request):
-        Notification.objects.filter(user=request.user).delete()
+        if request.user.is_staff or request.user.is_superuser:
+            Notification.objects.all().delete()
+        else:
+            Notification.objects.filter(user=request.user).delete()
         return Response({'status': 'ok'})

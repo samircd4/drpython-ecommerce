@@ -27,6 +27,7 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import OrderPanel from "./OrderPanel";
 import NotificationPanel from "./NotificationPanel";
+import { useNotification } from "../../Context/NotificationContext";
 import useNotificationSocket from "../../hooks/useNotificationSocket";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
@@ -70,7 +71,13 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
     const [showNotificationPanel, setShowNotificationPanel] = useState(false);
     
     const [recentOrders, setRecentOrders] = useState([]);
-    const [notifications, setNotifications] = useState([]);
+    const { 
+        notifications, 
+        unreadCount: notificationUnreadCount,
+        markAsRead,
+        markAllAsRead,
+        clearAll
+    } = useNotification();
     const [newOrdersCount, setNewOrdersCount] = useState(0);
     const [lastKnownOrderId, setLastKnownOrderId] = useState(() => {
         return parseInt(localStorage.getItem('lastKnownOrderId')) || null;
@@ -124,14 +131,7 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                 }
             }
 
-            // Fetch notifications
-            try {
-                const notifRes = await api.get('/notifications/');
-                const notifData = Array.isArray(notifRes.data) ? notifRes.data : (notifRes.data?.results || []);
-                setNotifications(notifData);
-            } catch (e) {
-                setNotifications([]);
-            }
+            // Note: Notifications are now handled by NotificationContext
         } catch (error) {
             console.error("Header: Failed to fetch data", error);
         }
@@ -290,9 +290,9 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                             }`}
                         >
                             <Bell className="w-5 h-5" />
-                            {notifications.filter(n => !n.is_read).length > 0 && (
+                            {notificationUnreadCount > 0 && (
                                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#071229]">
-                                    {notifications.filter(n => !n.is_read).length}
+                                    {notificationUnreadCount}
                                 </span>
                             )}
                         </button>
@@ -300,31 +300,9 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                             open={showNotificationPanel}
                             onClose={() => setShowNotificationPanel(false)}
                             notifications={notifications}
-                            onMarkRead={async (id) => {
-                                try {
-                                    await api.patch(`/notifications/${id}/read/`);
-                                    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
-                                } catch (e) {
-                                    setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
-                                }
-                            }}
-                            onMarkAllRead={async () => {
-                                try {
-                                    await api.post('/notifications/mark_all_read/');
-                                    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
-                                } catch (e) {
-                                    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
-                                }
-                            }}
-                            onClearAll={async () => {
-                                if (notifications.length === 0) return;
-                                try {
-                                    await api.delete('/notifications/clear_all/');
-                                    setNotifications([]);
-                                } catch (e) {
-                                    setNotifications([]);
-                                }
-                            }}
+                            onMarkRead={markAsRead}
+                            onMarkAllRead={markAllAsRead}
+                            onClearAll={clearAll}
                         />
                     </div>
 
