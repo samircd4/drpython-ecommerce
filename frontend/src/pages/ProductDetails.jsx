@@ -195,7 +195,12 @@ const ProductDetails = () => {
 
     useEffect(() => {
         const list = filteredVariants;
-        setSelectedVariant(list[0] || null);
+        if (list.length > 0) {
+            const inStockVariant = list.find(v => Number(v.stock_quantity || 0) > 0);
+            setSelectedVariant(inStockVariant || list[0]);
+        } else {
+            setSelectedVariant(null);
+        }
     }, [filteredVariants]);
 
     const displayPrice = useMemo(() => {

@@ -136,7 +136,7 @@ const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleS
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex space-x-2">
                                         <button 
-                                            onClick={() => navigate(`/products/view/${product.id}`)}
+                                            onClick={() => window.open(`${import.meta.env.VITE_FRONTEND_URL || 'https://sarker.shop'}/products/${product.slug}`, '_blank')}
                                             className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all cursor-pointer"
                                         >
                                             <Eye className="h-4 w-4" />

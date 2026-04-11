@@ -282,13 +282,38 @@ class ProductSerializer(serializers.ModelSerializer):
 
         # Update Variants
         if variants_input is not None:
-            instance.variants.all().delete()
+            from django.db.models import ProtectedError
+            incoming_ids = [v.get('id') for v in variants_input if v.get('id')]
+            
+            # Delete or deactivate missing variants
+            for existing_variant in instance.variants.all():
+                if existing_variant.id not in incoming_ids:
+                    try:
+                        existing_variant.delete()
+                    except ProtectedError:
+                        existing_variant.is_active = False
+                        existing_variant.save()
+
             for variant_data in variants_input:
-                # Clean data: Replace empty strings with None for nullable fields
+                variant_id = variant_data.get('id')
                 for field in ['wholesale_price', 'discount_price', 'ram', 'storage']:
                     if variant_data.get(field) == '':
                         variant_data[field] = None
-                ProductVariant.objects.create(product=instance, **variant_data)
+                        
+                if variant_id:
+                    existing = ProductVariant.objects.filter(id=variant_id, product=instance).first()
+                    if existing:
+                        for key, value in variant_data.items():
+                            if key != 'id':
+                                setattr(existing, key, value)
+                        existing.is_active = True
+                        existing.save()
+                    else:
+                        variant_data.pop('id', None)
+                        ProductVariant.objects.create(product=instance, **variant_data)
+                else:
+                    variant_data.pop('id', None)
+                    ProductVariant.objects.create(product=instance, **variant_data)
 
         return instance
 

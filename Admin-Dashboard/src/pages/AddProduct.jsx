@@ -94,6 +94,7 @@ const AddProduct = () => {
         is_active: true,
         category_id: '',
         brand_id: '',
+        product_type: 'simple',
     });
 
     const [specifications, setSpecifications] = useState([{ key: '', value: '' }]);
@@ -134,6 +135,7 @@ const AddProduct = () => {
                         is_active: productData.is_active !== false,
                         category_id: productData.category?.id || '',
                         brand_id: productData.brand?.id || '',
+                        product_type: productData.product_type || 'simple',
                     });
 
                     if (productData.specifications) {
@@ -450,6 +452,7 @@ const AddProduct = () => {
                             </div>
 
                             {/* Pricing & Inventory */}
+                            {formData.product_type === 'simple' && (
                             <div className="bg-[#0b1a2a]/50 backdrop-blur-xl rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
                                 <div className="px-6 py-4 border-b border-slate-800">
                                     <h3 className="text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
@@ -527,6 +530,7 @@ const AddProduct = () => {
                                     </div>
                                 </div>
                             </div>
+                            )}
 
                             {/* Specifications */}
                             <div className="bg-[#0b1a2a]/50 backdrop-blur-xl rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
@@ -583,6 +587,7 @@ const AddProduct = () => {
                             </div>
 
                             {/* Variants */}
+                            {formData.product_type === 'variant' && (
                             <div className="bg-[#0b1a2a]/50 backdrop-blur-xl rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
                                 <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
                                     <h3 className="text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
@@ -698,6 +703,7 @@ const AddProduct = () => {
                                     </div>
                                 </div>
                             </div>
+                            )}
                         </div>
 
                         {/* Sidebar Column */}
@@ -712,6 +718,18 @@ const AddProduct = () => {
                                     </h3>
                                 </div>
                                 <div className="p-6 space-y-6">
+                                    <CustomSelect
+                                        label="Product Type"
+                                        placeholder="Select Type"
+                                        options={[
+                                            { id: 'simple', name: 'Simple Product' },
+                                            { id: 'variant', name: 'Variant Product' }
+                                        ]}
+                                        value={formData.product_type}
+                                        onChange={(val) => setFormData(prev => ({ ...prev, product_type: val }))}
+                                        disabled={isView}
+                                    />
+                                    
                                     <CustomSelect 
                                         label="Category"
                                         placeholder="Select Category"

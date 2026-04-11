@@ -6,7 +6,8 @@ const useProductLink = () => {
             toast.error('Product link not available (no slug found)');
             return;
         }
-        const url = `https://sarker.shop/products/${slug}`;
+        const baseUrl = import.meta.env.VITE_FRONTEND_URL || 'https://sarker.shop';
+        const url = `${baseUrl}/products/${slug}`;
         navigator.clipboard.writeText(url)
             .then(() => {
                 toast.success(`Link for "${name || 'Product'}" copied to clipboard!`, {

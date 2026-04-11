@@ -332,7 +332,7 @@ class ProductSpecification(models.Model):
     )
 
     key = models.CharField(
-        max_length=50,
+        max_length=100,
         help_text="e.g. RAM, Storage, Color, Battery"
     )
     value = models.CharField(
@@ -342,7 +342,7 @@ class ProductSpecification(models.Model):
 
     class Meta:
         unique_together = ('product', 'key')
-        ordering = ['key']
+        ordering = ['id']
 
     def __str__(self):
         return f"{self.product.name} | {self.key}: {self.value}"

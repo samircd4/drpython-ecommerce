@@ -88,7 +88,11 @@ const Product = ({ product }) => {
                             </span>
                         )}
                     </div>
-                    {product.product_type === 'variant' ? (
+                    {Number(product.stock_quantity || 0) <= 0 ? (
+                        <button disabled className="w-full bg-gray-400 text-white p-2 rounded-lg flex items-center justify-center cursor-not-allowed">
+                            Out of Stock
+                        </button>
+                    ) : product.product_type === 'variant' ? (
                         <Link to={`/products/${product.slug}`} className="w-full bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-lg flex items-center justify-center transition-colors cursor-pointer">
                             Select Variant
                         </Link>
