@@ -355,6 +355,9 @@ class ProductSerializer(serializers.ModelSerializer):
             for field in ['wholesale_price', 'discount_price', 'ram', 'storage']:
                 if variant_data.get(field) == '':
                     variant_data[field] = None
+            
+            # CRITICAL: Remove id for new variants created via POST
+            variant_data.pop('id', None)
             ProductVariant.objects.create(product=product, **variant_data)
 
         return product
