@@ -29,6 +29,7 @@ import OrderPanel from "./OrderPanel";
 import NotificationPanel from "./NotificationPanel";
 import { useNotification } from "../../Context/NotificationContext";
 import useNotificationSocket from "../../hooks/useNotificationSocket";
+import { useStoreConfig } from "../../hooks/useStoreConfig";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 const BACKEND_URL = API_BASE.replace(/\/api\/?$/, '');
@@ -82,6 +83,8 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
     const [lastKnownOrderId, setLastKnownOrderId] = useState(() => {
         return parseInt(localStorage.getItem('lastKnownOrderId')) || null;
     });
+
+    const { config: storeConfig } = useStoreConfig();
 
     const dropdownRef = useRef(null);
     const addDropdownRef = useRef(null);
@@ -193,10 +196,10 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                 <div className="flex items-center space-x-4">
                         <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
                             <div className="w-10 h-10 rounded-lg bg-transparent flex items-center justify-center">
-                                <img src="/logo-DaOXiO9r.png" alt="logo" className="w-9 h-9 object-contain" />
+                                <img src={storeConfig.dashboard_logo || storeConfig.logo || "/logo-DaOXiO9r.png"} alt="logo" className="w-9 h-9 object-contain" />
                             </div>
                             <div className="hidden sm:block">
-                                <h1 className="text-lg font-bold text-slate-100 uppercase">Sarker Shop</h1>
+                                <h1 className="text-lg font-bold text-slate-100 uppercase">{storeConfig.website_name}</h1>
                             </div>
                         </Link>
 

@@ -2,9 +2,28 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/src/assets/favicon.png" />
+    <link rel="icon" type="image/png" href="/src/assets/favicon.png" id="dynamic-favicon" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sarker Shop | Admin Dashboard</title>
+    <title>Admin Dashboard</title>
+    <script>
+      (function() {
+        try {
+          var stored = sessionStorage.getItem('storeConfig');
+          if (stored) {
+            var config = JSON.parse(stored);
+            if (config.website_name) {
+              document.title = config.website_name + ' - Admin Dashboard';
+            }
+            if (config.favicon) {
+              var link = document.getElementById('dynamic-favicon');
+              if (link) {
+                  link.href = config.favicon;
+              }
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -4,6 +4,7 @@ import { FaHeadset, FaPaperPlane, FaTimes, FaUser, FaCircle, FaPaperclip, FaSmil
 import { useUser } from "../context/UserContext";
 import { useChat } from "../hooks/useChat";
 import { Link } from "react-router-dom";
+import { useConfig } from "../context/ConfigContext";
 import axios from "axios";
 import api, { BASE_URL } from "../api/client";
 
@@ -17,7 +18,9 @@ const getFullUrl = (path) => {
 
 const SupportChat = ({ onClose }) => {
     const { user } = useUser();
+    const { config } = useConfig();
     const { messages, sendMessage, isConnected, loading, guest_id } = useChat();
+    const siteName = config?.website_name || "Sarker Shop";
     const [input, setInput] = useState("");
     const [replyTo, setReplyTo] = useState(null);
     
@@ -103,7 +106,7 @@ const SupportChat = ({ onClose }) => {
     // Welcome message if no history
     const welcomeMessage = {
         from: "support",
-        text: "👋 Hi there! Welcome to Sarker Shop. How can we help you today?",
+        text: `👋 Hi there! Welcome to ${siteName}. How can we help you today?`,
         time: "Now"
     };
 
@@ -121,7 +124,7 @@ const SupportChat = ({ onClose }) => {
                 <div className="flex items-center gap-4">
                     <div className="relative">
                         <div className="w-12 h-12 rounded-2xl bg-white p-2 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-inner">
-                            <img src="/favicon.png" alt="Sarker Shop" className="w-full h-full object-contain" />
+                            <img src={config?.favicon || "/favicon.png"} alt={siteName} className="w-full h-full object-contain" />
                         </div>
                         <div className={`absolute -bottom-1 -right-1 w-4 h-4 border-2 border-purple-600 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
                     </div>
@@ -419,7 +422,7 @@ const SupportChat = ({ onClose }) => {
                     </button>
                 </form>
                 <p className="text-[10px] text-center text-gray-400 mt-3 font-semibold uppercase tracking-widest">
-                    Sarker Shop Secure Support
+                    {siteName} Secure Support
                 </p>
             </div>
         </motion.div>

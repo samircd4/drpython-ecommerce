@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "../api/client";
 import { toast } from "react-toastify";
+import { useConfig } from "../context/ConfigContext";
 import {
     FaEnvelope,
     FaPhoneAlt,
@@ -13,6 +14,7 @@ import {
 } from "react-icons/fa";
 
 const Contact = () => {
+    const { config } = useConfig();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -46,21 +48,21 @@ const Contact = () => {
         {
             icon: <FaEnvelope />,
             title: "Email Us",
-            value: "support@sarkershop.com",
+            value: config?.contact_email || "support@sarkershop.com",
             color: "bg-blue-100 text-blue-600",
-            link: "mailto:support@sarkershop.com"
+            link: `mailto:${config?.contact_email || "support@sarkershop.com"}`
         },
         {
             icon: <FaPhoneAlt />,
             title: "Call Us",
-            value: "+880 1708 601 002",
+            value: config?.support_phone || "+880 1708 601 002",
             color: "bg-green-100 text-green-600",
-            link: "tel:+8801708601002"
+            link: `tel:${config?.support_phone?.replace(/\s+/g, '') || "+8801708601002"}`
         },
         {
             icon: <FaMapMarkerAlt />,
             title: "Visit Us",
-            value: "Islami Super Market, Kishoreganj, Bangladesh",
+            value: config?.location || "Islami Super Market, Kishoreganj, Bangladesh",
             color: "bg-purple-100 text-purple-600",
             link: "#"
         },
@@ -112,9 +114,9 @@ const Contact = () => {
                         {/* Social Links */}
                         <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                             <h3 className="text-xl font-bold text-gray-800 mb-6">Connect With Us</h3>
-                            <div className="flex justify-between gap-2">
+                             <div className="flex justify-between gap-2">
                                 <a
-                                    href="https://www.facebook.com/shopsarker"
+                                    href={config?.facebook_url || "https://www.facebook.com/shopsarker"}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="flex-1 flex flex-col items-center justify-center p-4 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300 gap-2"
@@ -122,8 +124,8 @@ const Contact = () => {
                                     <FaFacebookF size={20} />
                                     <span className="text-xs font-medium">Facebook</span>
                                 </a>
-                                <a
-                                    href="https://m.me/shopsarker"
+                                 <a
+                                    href={config?.messenger_url || "https://m.me/shopsarker"}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="flex-1 flex flex-col items-center justify-center p-4 rounded-xl bg-blue-50 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-300 gap-2"
@@ -131,15 +133,26 @@ const Contact = () => {
                                     <FaFacebookMessenger size={20} />
                                     <span className="text-xs font-medium">Messenger</span>
                                 </a>
-                                <a
-                                    href="https://wa.me/+8801781355377"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="flex-1 flex flex-col items-center justify-center p-4 rounded-xl bg-green-50 text-green-500 hover:bg-green-500 hover:text-white transition-all duration-300 gap-2"
-                                >
-                                    <FaWhatsapp size={20} />
-                                    <span className="text-xs font-medium">WhatsApp</span>
-                                </a>
+                                {(() => {
+                                    const waVal = config?.whatsapp_url;
+                                    const waLink = !waVal 
+                                        ? "https://wa.me/+8801781355377" 
+                                        : waVal.startsWith('http') 
+                                            ? waVal 
+                                            : `https://wa.me/${waVal.replace(/\s+/g, '')}`;
+                                    
+                                    return (
+                                        <a
+                                            href={waLink}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="flex-1 flex flex-col items-center justify-center p-4 rounded-xl bg-green-50 text-green-500 hover:bg-green-500 hover:text-white transition-all duration-300 gap-2"
+                                        >
+                                            <FaWhatsapp size={20} />
+                                            <span className="text-xs font-medium">WhatsApp</span>
+                                        </a>
+                                    );
+                                })()}
                             </div>
                         </div>
                     </div>
@@ -219,7 +232,7 @@ const Contact = () => {
 
                         <iframe
                             title="Office Location"
-                            src="https://maps.google.com/maps?q=Islami+Super+Market,+Kishoreganj,&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                            src={`https://maps.google.com/maps?q=${encodeURIComponent(config?.location || "Islami Super Market, Kishoreganj")}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
                             width="100%"
                             height="450"
                             style={{ border: 0, borderRadius: '1rem' }}

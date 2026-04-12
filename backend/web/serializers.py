@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from django.utils.timesince import timesince
-from .models import ContactMessage, NewsletterSubscription, Notification
+from .models import ContactMessage, NewsletterSubscription, Notification, StoreConfiguration
+
+class StoreConfigurationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoreConfiguration
+        fields = '__all__'
 
 class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:

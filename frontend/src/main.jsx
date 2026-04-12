@@ -7,17 +7,20 @@ import './styles/toastify-overrides.css'
 import App from './App.jsx'
 import { CartProvider } from './context/CartContext.jsx'
 import { UserProvider } from './context/UserContext.jsx'
+import { ConfigProvider } from './context/ConfigContext.jsx'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const Root = () => {
     const content = (
-        <UserProvider>
-            <CartProvider>
-                <App />
-            </CartProvider>
-        </UserProvider>
+        <ConfigProvider>
+            <UserProvider>
+                <CartProvider>
+                    <App />
+                </CartProvider>
+            </UserProvider>
+        </ConfigProvider>
     );
 
     if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID.includes('.apps.googleusercontent.com')) {

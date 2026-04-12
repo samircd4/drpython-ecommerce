@@ -1,6 +1,9 @@
 import React from "react";
+import { useConfig } from "../context/ConfigContext";
 
 const Terms = () => {
+    const { config } = useConfig();
+    const siteName = config?.website_name || "Sarker Shop";
     return (
         <div className="max-w-4xl mx-auto px-4 py-8">
             {/* Page Title */}
@@ -10,7 +13,7 @@ const Terms = () => {
 
             {/* Intro */}
             <p className="text-gray-700 text-lg mb-8 text-center">
-                By placing an order on <span className="font-semibold text-purple-600">Sarker Shop</span>, 
+                By placing an order on <span className="font-semibold text-purple-600">{siteName}</span>, 
                 you agree to our purchase, shipping, and return policies. Please review the following terms carefully.
             </p>
 

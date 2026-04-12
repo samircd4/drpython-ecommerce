@@ -3,16 +3,18 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     FaFacebookF, FaTiktok, FaInstagram, FaLinkedinIn, FaYoutube,
-    FaHeadset, FaPhoneAlt, FaMapMarkerAlt
+    FaTwitter, FaHeadset, FaPhoneAlt, FaMapMarkerAlt
 } from "react-icons/fa";
 import api from "../api/client";
 import { toast } from "react-toastify";
 import SupportChat from "./SupportChat";
 import { useCart } from "../context/CartContext";
 
-import logo from "../assets/logo_footer.png";
+import { useConfig } from "../context/ConfigContext";
+import defaultLogo from "../assets/logo_footer.png";
 
 const Footer = () => {
+    const { config } = useConfig();
     const [chatOpen, setChatOpen] = useState(false);
     const { isCartOpen, isFilterOpen, isCategoryOpen, isDrawerOpen } = useCart();
 
@@ -62,7 +64,7 @@ const Footer = () => {
                         >
                             <div className="inline-block md:block">
                                 <Link to="/">
-                                    <img src={logo} alt="Sarker Shop" className="h-12 w-auto mx-auto md:mx-0 object-contain mb-4" />
+                                    <img src={config?.logo_light || defaultLogo} alt={config?.website_name || "Sarker Shop"} className="h-12 w-auto mx-auto md:mx-0 object-contain mb-4" />
                                 </Link>
                                 <p className="text-gray-400 leading-relaxed max-w-sm mx-auto md:mx-0 font-medium italic">
                                     "Elevating your digital lifestyle with premium tech and unparalleled service."
@@ -76,7 +78,7 @@ const Footer = () => {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Location</p>
-                                        <p className="text-sm font-semibold">Islami Super Market, Kishoreganj</p>
+                                        <p className="text-sm font-semibold">{config?.location || "Islami Super Market, Kishoreganj"}</p>
                                     </div>
                                 </div>
                                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-4 group hover:bg-white/10 transition-all duration-300">
@@ -85,7 +87,7 @@ const Footer = () => {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Hotline</p>
-                                        <a href="tel:+8801781355377" className="text-sm font-semibold">+880 1708 601002</a>
+                                        <a href={`tel:${config?.support_phone || "+8801708601002"}`} className="text-sm font-semibold">{config?.support_phone || "+880 1708 601002"}</a>
                                     </div>
                                 </div>
                             </div>
@@ -214,30 +216,35 @@ const Footer = () => {
                                 {[
                                     {
                                         icon: <FaFacebookF />,
-                                        color: '#1877F2',
-                                        link: "https://facebook.com/shopsarker"
-                                    },
-                                    {
-                                        icon: <FaTiktok />,
-                                        color: '#FF0000',
-                                        link: "https://www.tiktok.com/@sarkershop"
+                                        link: config?.facebook_url || "https://facebook.com/shopsarker",
+                                        show: !!(config?.facebook_url || !config) // show default if config not yet loaded
                                     },
                                     {
                                         icon: <FaInstagram />,
-                                        color: 'gradient',
-                                        link: "https://www.instagram.com/sarkershop"
+                                        link: config?.instagram_url || "https://www.instagram.com/sarkershop",
+                                        show: !!(config?.instagram_url || !config)
+                                    },
+                                    {
+                                        icon: <FaTiktok />,
+                                        link: config?.tiktok_url || "https://www.tiktok.com/@sarkershop",
+                                        show: !!config?.tiktok_url
+                                    },
+                                    {
+                                        icon: <FaTwitter />,
+                                        link: config?.twitter_url,
+                                        show: !!config?.twitter_url
                                     },
                                     {
                                         icon: <FaLinkedinIn />,
-                                        color: '#0A66C2',
-                                        link: "https://www.linkedin.com/company/sarkershop/"
+                                        link: config?.linkedin_url,
+                                        show: !!config?.linkedin_url
                                     },
                                     {
                                         icon: <FaYoutube />,
-                                        color: '#FF0000',
-                                        link: "https://www.youtube.com/@sarkershop"
+                                        link: config?.youtube_url,
+                                        show: !!config?.youtube_url
                                     }
-                                ].map((social, idx) => (
+                                ].filter(s => s.show).map((social, idx) => (
                                     <motion.a
                                         key={idx}
                                         href={social.link}

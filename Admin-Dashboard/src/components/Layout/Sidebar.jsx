@@ -280,7 +280,7 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
                     {!collapsed && (
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-slate-100 truncate">
-                                {user?.first_name ? `${user.first_name} ${user.last_name}` : (user?.username || 'Sarker Shop')}
+                                {user?.first_name ? `${user.first_name} ${user.last_name}` : (user?.username || 'Admin')}
                             </p>
                             <p className="text-xs text-slate-300">
                                 {user?.is_superuser ? 'Owner' : 'Staff'}

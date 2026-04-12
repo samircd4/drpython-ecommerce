@@ -13,8 +13,8 @@ import NotificationPanel from './NotificationPanel'
 import useWebSocket from '../hooks/useWebSocket'
 import api from '../api/client'
 import { motion, AnimatePresence } from 'framer-motion';
-
-import logo from '../assets/logo.png';
+import { useConfig } from '../context/ConfigContext';
+import defaultLogo from '../assets/logo.png';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -72,6 +72,7 @@ const Navbar = () => {
     const { user } = useUser();
     const navigate = useNavigate();
     const location = useLocation();
+    const { config } = useConfig();
     const totalCount = cartItem.reduce((sum, item) => sum + (item.quantity || 0), 0);
 
     // ─── Real-time Notifications ──────────────────────────
@@ -221,9 +222,18 @@ const Navbar = () => {
                         >
                             <Link
                                 to={'/'}
-                                className="flex items-center"
+                                className="flex items-center gap-3 group"
                             >
-                                <img src={logo} alt="Sarker Shop" className="h-10 sm:h-12 w-auto object-contain" />
+                                <img 
+                                    src={config?.logo_dark || defaultLogo} 
+                                    alt={config?.website_name || "Sarker Shop"} 
+                                    className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105" 
+                                />
+                                {config?.show_website_name && (
+                                    <span className="text-lg sm:text-2xl font-black text-gray-900 tracking-tighter hidden sm:block">
+                                        {config.website_name}
+                                    </span>
+                                )}
                             </Link>
                         </div>
                     </div>

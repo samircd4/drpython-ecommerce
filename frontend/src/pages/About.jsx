@@ -1,8 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaShippingFast, FaHeadset, FaMobileAlt, FaUsers } from "react-icons/fa";
+import { useConfig } from "../context/ConfigContext";
 
 const About = () => {
+  const { config } = useConfig();
+  const siteName = config?.website_name || "Sarker Shop";
   // Variants for scroll-triggered animation
   const fadeUp = {
     hidden: { opacity: 0, y: 50 },
@@ -24,7 +27,7 @@ const About = () => {
         whileInView="visible"
         viewport={{ once: true }}
       >
-        About Sarker Shop
+        About {siteName}
       </motion.h1>
 
       {/* Introduction */}
@@ -35,7 +38,7 @@ const About = () => {
         whileInView="visible"
         viewport={{ once: true }}
       >
-        Sarker Shop is your trusted e-commerce store in Bangladesh. We specialize in high-quality gadgets, mobile accessories, and
+        {siteName} is your trusted e-commerce store in Bangladesh. We specialize in high-quality gadgets, mobile accessories, and
         <span className="font-semibold text-purple-600"> smartphones</span>. We combine quality products with excellent customer service, fast delivery, and secure payments.
       </motion.p>
 
@@ -97,7 +100,7 @@ const About = () => {
           <FaUsers className="text-purple-600 text-4xl mb-4" />
           <h3 className="font-bold text-purple-700 text-xl mb-2">Trusted by Customers</h3>
           <p className="text-gray-700 text-center">
-            Thousands of happy customers trust Sarker Shop for smartphones, gadgets, and excellent service.
+            Thousands of happy customers trust {siteName} for smartphones, gadgets, and excellent service.
           </p>
         </motion.div>
       </div>
@@ -112,7 +115,7 @@ const About = () => {
       >
         <h2 className="text-3xl font-bold text-purple-700">Our Mission</h2>
         <p className="text-gray-700 max-w-2xl mx-auto">
-          Our mission is to bring the best smartphones and gadgets to your hands with a seamless shopping experience. Sarker Shop stands for quality, trust, and customer happiness.
+          Our mission is to bring the best smartphones and gadgets to your hands with a seamless shopping experience. {siteName} stands for quality, trust, and customer happiness.
         </p>
       </motion.div>
     </div>

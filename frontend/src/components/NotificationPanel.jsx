@@ -3,9 +3,12 @@ import ReactDOM from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Bell, Package, Tag, Info, CheckCircle2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useConfig } from '../context/ConfigContext';
 
 const NotificationPanel = ({ open, onClose, notifications, onMarkAllRead, onMarkRead, onClearAll, onDelete }) => {
     const navigate = useNavigate();
+    const { config } = useConfig();
+    const siteName = config?.website_name || "Sarker Shop";
     const getIcon = (type) => {
         switch (type) {
             case 'order_update': return <Package className="w-5 h-5 text-blue-500" />;
@@ -70,7 +73,7 @@ const NotificationPanel = ({ open, onClose, notifications, onMarkAllRead, onMark
                                         )}
                                     </AnimatePresence>
                                 </h2>
-                                <p className="text-sm text-gray-400 font-medium">Stay updated with Sarker Shop</p>
+                                <p className="text-sm text-gray-400 font-medium">Stay updated with {siteName}</p>
                             </div>
                             <button
                                 onClick={onClose}

@@ -64,7 +64,10 @@ const DescriptionTab = ({ product, onUpdate }) => {
 
                 <div className="relative z-10">
                     {product.description ? (
-                        <p className="whitespace-pre-line leading-relaxed">{product.description}</p>
+                        <div 
+                            className="whitespace-pre-line leading-relaxed description-content prose max-w-none" 
+                            dangerouslySetInnerHTML={{ __html: product.description }} 
+                        />
                     ) : (
                         <p className="text-gray-400 italic">No description available for this product.</p>
                     )}

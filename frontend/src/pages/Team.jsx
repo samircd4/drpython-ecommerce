@@ -5,6 +5,8 @@ import { FaBriefcase, FaArrowRight, FaLinkedinIn, FaGithub, FaTwitter, FaEnvelop
 import SEO from '../components/SEO';
 import { teamMembers } from '../data/teamData';
 
+import { useConfig } from '../context/ConfigContext';
+
 // --- Components ---
 
 /**
@@ -74,6 +76,9 @@ const BackgroundBlobs = () => (
 // --- Main Page ---
 
 const Team = () => {
+    const { config } = useConfig();
+    const siteName = config?.website_name || "Sarker Shop";
+
     return (
         <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
             <SEO
@@ -231,7 +236,7 @@ const Team = () => {
                 >
                     <div className="w-px h-24 bg-gradient-to-b from-gray-200 to-transparent mx-auto mb-8" />
                     <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.5em]">
-                        Sarker Shop Internal Directory • 2026 Edition
+                        {siteName} Internal Directory • 2026 Edition
                     </p>
                 </motion.div>
             </div>

@@ -1,12 +1,14 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useConfig } from '../context/ConfigContext';
 
 const SEO = ({ title, description, image, url }) => {
-    const siteName = "Sarker Shop";
+    const { config } = useConfig();
+    const siteName = config?.website_name || "Sarker Shop";
     const fullTitle = title ? `${title} | ${siteName}` : siteName;
-    const defaultDesc = "Your ultimate destination for premium products. Shop the best deals at Sarker Shop.";
+    const defaultDesc = `Your ultimate destination for premium products. Shop the best deals at ${siteName}.`;
     const metaDesc = description || defaultDesc;
-    const metaImage = image || "https://sarker.shop/static/images/logo.png"; // Fallback to a default logo or cover image
+    const metaImage = image || config?.logo_dark || config?.logo_light || "https://sarker.shop/static/images/logo.png"; // Fallback to theme logos or hardcoded default
 
     return (
         <Helmet>
