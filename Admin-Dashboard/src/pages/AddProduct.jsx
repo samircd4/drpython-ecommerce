@@ -5,10 +5,12 @@ import toast from 'react-hot-toast';
 import Breadcrumb from '../components/Layout/Breadcrumb';
 import api from '../api/axiosConfig';
 import { useStoreConfig } from '../hooks/useStoreConfig';
+import CategoryModal from '../components/Product/CategoryModal';
+import BrandModal from '../components/Product/BrandModal';
 
 
 
-const CustomSelect = ({ label, options, value, onChange, placeholder, disabled }) => {
+const CustomSelect = ({ label, options, value, onChange, placeholder, disabled, onAdd }) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = React.useRef(null);
     const selectedOption = options.find(opt => String(opt.id) === String(value));
@@ -24,23 +26,37 @@ const CustomSelect = ({ label, options, value, onChange, placeholder, disabled }
     return (
         <div className="relative" ref={containerRef}>
             <label className="block text-sm font-medium text-slate-300 mb-1">{label}</label>
-            <div 
-                onClick={() => !disabled && setIsOpen(!isOpen)}
-                className={`w-full bg-[#071229] border border-slate-700 rounded-lg px-4 py-2.5 text-slate-200 flex items-center justify-between transition-colors ${disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:border-slate-600'}`}
-            >
-                <div className="flex items-center space-x-3 truncate">
-                    {selectedOption ? (
-                        <>
-                            {(selectedOption.image || selectedOption.logo) && (
-                                <img src={selectedOption.image || selectedOption.logo} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
-                            )}
-                            <span className="truncate">{selectedOption.name}</span>
-                        </>
-                    ) : (
-                        <span className="text-slate-500">{placeholder}</span>
-                    )}
+            <div className="flex items-center gap-2">
+                <div 
+                    onClick={() => !disabled && setIsOpen(!isOpen)}
+                    className={`flex-1 bg-[#071229] border border-slate-700 rounded-lg px-4 py-2.5 text-slate-200 flex items-center justify-between transition-colors ${disabled ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:border-slate-600'}`}
+                >
+                    <div className="flex items-center space-x-3 truncate">
+                        {selectedOption ? (
+                            <>
+                                {(selectedOption.image || selectedOption.logo) && (
+                                    <img src={selectedOption.image || selectedOption.logo} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
+                                )}
+                                <span className="truncate">{selectedOption.name}</span>
+                            </>
+                        ) : (
+                            <span className="text-slate-500">{placeholder}</span>
+                        )}
+                    </div>
+                    {!disabled && <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />}
                 </div>
-                {!disabled && <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />}
+
+                {onAdd && !disabled && (
+                    <button 
+                        type="button"
+                        onClick={onAdd}
+                        title={`Add new ${label}`}
+                        className="p-2.5 bg-blue-600/10 text-blue-400 border border-blue-500/20 rounded-lg hover:bg-blue-600/20 transition-all cursor-pointer hover:scale-105 active:scale-95 flex-shrink-0 shadow-lg shadow-blue-500/5 h-[42px] w-[42px] flex items-center justify-center"
+                    >
+                        <Plus className="w-5 h-5" />
+                        
+                    </button>
+                )}
             </div>
 
             {isOpen && !disabled && (
@@ -111,6 +127,27 @@ const AddProduct = () => {
     
     const [categories, setCategories] = useState([]);
     const [brands, setBrands] = useState([]);
+    
+    // Quick Add Modals
+    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+    const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
+
+    // Sync Variant -> Base Product Logic
+    useEffect(() => {
+        if (formData.product_type === 'variant' && variants.length > 0) {
+            const first = variants[0];
+            // Only sync if there's actual data to avoid blanking out
+            if (first.price || first.stock_quantity || first.discount_price || first.wholesale_price) {
+                setFormData(prev => ({
+                    ...prev,
+                    price: first.price || prev.price,
+                    discount_price: first.discount_price || prev.discount_price,
+                    wholesale_price: first.wholesale_price || prev.wholesale_price,
+                    stock_quantity: first.stock_quantity || prev.stock_quantity
+                }));
+            }
+        }
+    }, [variants, formData.product_type]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -193,6 +230,28 @@ const AddProduct = () => {
         if (isView) return;
         setDeletedImages(prev => [...prev, imageId]);
         setExistingImages(prev => prev.filter(img => img.id !== imageId));
+    };
+
+    const handleCategorySave = async (newCategory) => {
+        try {
+            const catsRes = await api.get('/categories/');
+            setCategories(catsRes.data?.results || catsRes.data || []);
+            setFormData(prev => ({ ...prev, category_id: newCategory.id }));
+            setIsCategoryModalOpen(false);
+        } catch (err) {
+            console.error("Failed to refresh categories", err);
+        }
+    };
+
+    const handleBrandSave = async (newBrand) => {
+        try {
+            const brandsRes = await api.get('/brands/');
+            setBrands(brandsRes.data?.results || brandsRes.data || []);
+            setFormData(prev => ({ ...prev, brand_id: newBrand.id }));
+            setIsBrandModalOpen(false);
+        } catch (err) {
+            console.error("Failed to refresh brands", err);
+        }
     };
 
     const togglePrimaryExisting = (imageId) => {
@@ -320,18 +379,40 @@ const AddProduct = () => {
             if (deletedImages.length > 0) {
                 formPayload.append('deleted_images', JSON.stringify(deletedImages));
             }
+            
+            // Auto-select primary if none selected
+            const hasPrimaryNew = images.some(img => img.is_primary);
+            const hasPrimaryExisting = existingImages.some(img => img.is_primary);
+            
+            let finalPrimaryNewIndex = -1;
+            let finalPrimaryExistingId = null;
 
-            images.forEach((imgObj, idx) => {
-                formPayload.append('uploaded_images', imgObj.file);
-                if (imgObj.is_primary) {
-                    formPayload.append('primary_new_image_index', idx);
+            if (!hasPrimaryNew && !hasPrimaryExisting) {
+                // Fallback to first available
+                if (existingImages.length > 0) {
+                    finalPrimaryExistingId = existingImages[0].id;
+                } else if (images.length > 0) {
+                    finalPrimaryNewIndex = 0;
                 }
-            });
-
-            const primaryExisting = existingImages.find(img => img.is_primary);
-            if (primaryExisting) {
-                formPayload.append('primary_image_id', primaryExisting.id);
+            } else {
+                // Use selected ones
+                const selectedExisting = existingImages.find(img => img.is_primary);
+                if (selectedExisting) finalPrimaryExistingId = selectedExisting.id;
+                
+                const selectedNewIdx = images.findIndex(img => img.is_primary);
+                if (selectedNewIdx !== -1) finalPrimaryNewIndex = selectedNewIdx;
             }
+
+            if (finalPrimaryExistingId) {
+                formPayload.append('primary_image_id', finalPrimaryExistingId);
+            }
+            if (finalPrimaryNewIndex !== -1) {
+                formPayload.append('primary_new_image_index', finalPrimaryNewIndex);
+            }
+
+            images.forEach((imgObj) => {
+                formPayload.append('uploaded_images', imgObj.file);
+            });
 
             if (isEdit) {
                 await api.patch(`/products/${id}/`, formPayload, {
@@ -742,6 +823,7 @@ const AddProduct = () => {
                                         value={formData.category_id}
                                         onChange={(val) => setFormData(prev => ({ ...prev, category_id: val }))}
                                         disabled={isView}
+                                        onAdd={() => setIsCategoryModalOpen(true)}
                                     />
                                     
                                     <CustomSelect 
@@ -751,6 +833,7 @@ const AddProduct = () => {
                                         value={formData.brand_id}
                                         onChange={(val) => setFormData(prev => ({ ...prev, brand_id: val }))}
                                         disabled={isView}
+                                        onAdd={() => setIsBrandModalOpen(true)}
                                     />
                                 </div>
                             </div>
@@ -765,17 +848,17 @@ const AddProduct = () => {
                                 </div>
                                 <div className="p-6 space-y-4">
                                     {!isView && (
-                                        <div className="border-2 border-dashed border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-slate-800/50 transition-colors cursor-pointer relative group">
+                                        <div className="border-2 border-dashed border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-slate-800/50 transition-colors cursor-pointer relative group overflow-hidden">
+                                            <ImageIcon className="w-8 h-8 text-slate-500 mb-2 group-hover:text-blue-400 group-hover:scale-110 transition-all pointer-events-none" />
+                                            <p className="text-sm font-medium text-slate-300 pointer-events-none">Click to upload images</p>
+                                            <p className="text-xs text-slate-500 mt-1 pointer-events-none">PNG, JPG up to 10MB</p>
                                             <input 
                                                 type="file" 
                                                 multiple 
                                                 accept="image/*"
                                                 onChange={handleImageChange}
-                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                             />
-                                            <ImageIcon className="w-8 h-8 text-slate-500 mb-2 group-hover:text-blue-400 group-hover:scale-110 transition-all" />
-                                            <p className="text-sm font-medium text-slate-300">Click to upload images</p>
-                                            <p className="text-xs text-slate-500 mt-1">PNG, JPG up to 10MB</p>
                                         </div>
                                     )}
 
@@ -909,6 +992,18 @@ const AddProduct = () => {
                     </div>
                 </form>
             )}
+
+            {/* Quick Add Modals */}
+            <CategoryModal 
+                isOpen={isCategoryModalOpen}
+                onClose={() => setIsCategoryModalOpen(false)}
+                onSave={handleCategorySave}
+            />
+            <BrandModal 
+                isOpen={isBrandModalOpen}
+                onClose={() => setIsBrandModalOpen(false)}
+                onSave={handleBrandSave}
+            />
         </div>
     );
 };
