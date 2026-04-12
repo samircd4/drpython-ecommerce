@@ -1,5 +1,6 @@
 import React from 'react';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { useStoreConfig } from '../../hooks/useStoreConfig';
 
 const SortArrow = ({ column, sortColumn, sortDirection }) => {
     if (sortColumn !== column) return <span className="opacity-20 ml-1 inline-flex flex-col leading-[0] align-middle"><span className="text-[8px]">▲</span><span className="text-[8px]">▼</span></span>;
@@ -7,6 +8,8 @@ const SortArrow = ({ column, sortColumn, sortDirection }) => {
 };
 
 const TransactionTable = ({ transactions = [], sortColumn, sortDirection, onSort, onView, onEdit, onDelete }) => {
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
     const getMethodIcon = (method) => {
         // Simple text fallback for now, could be icons later
         return <span className="uppercase text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">{method}</span>;
@@ -43,7 +46,7 @@ const TransactionTable = ({ transactions = [], sortColumn, sortDirection, onSort
                             <td className="px-6 py-4 whitespace-nowrap text-slate-300 font-medium">{txn.customer_name || 'Anonymous'}</td>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <span className={`text-sm font-bold text-green-400`}>
-                                    Tk {txn.amount}
+                                    {symbol} {Number(txn.amount).toLocaleString()}
                                 </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-slate-400 font-mono text-xs uppercase">{txn.transaction_id}</td>

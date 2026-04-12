@@ -6,6 +6,7 @@ import Badge from "../Badge";
 import BKashIcon from "../../assets/BKash.svg";
 import NagadIcon from "../../assets/Nagad.svg";
 import RocketIcon from "../../assets/Rocket.svg";
+import { useConfig } from "../../context/ConfigContext";
 
 const PaymentMethod = ({
     paymentMethod,
@@ -16,6 +17,9 @@ const PaymentMethod = ({
     deliveryCharge,
     errors = {}
 }) => {
+    const { config } = useConfig();
+    const symbol = config?.currency_symbol || "৳";
+
     const handleDetailChange = (e) => {
         onDetailsChange({
             ...paymentDetails,
@@ -152,7 +156,7 @@ const PaymentMethod = ({
                         </label>
                         <div className="relative">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-700 text-lg">
-                                ৳
+                                {symbol}
                             </span>
                             <input
                                 type="number"

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRocket, FaGift, FaTrophy, FaStar, FaMobileAlt } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const offers = [
     {
         icon: <FaMobileAlt className="text-yellow-400" />,
-        text: "৳500–৳1000 OFF on Smartphones | Use Coupon Code: SAVE500 / SAVE700 / SAVE1000"
+        text: "৳500–৳1,000 OFF on Smartphones | Use Coupon Code: SAVE500 / SAVE700 / SAVE1000"
     },
     {
         icon: <FaGift className="text-yellow-400" />,
@@ -59,14 +60,38 @@ const AnnouncementBar = () => {
                             {offers[currentIndex].icon}
                         </motion.div>
 
-                        <p className="flex items-center gap-2 text-center break-words leading-tight max-w-[85vw] sm:max-w-none">
+                        <div className="flex items-center gap-2 text-center break-words leading-tight max-w-[85vw] sm:max-w-none">
                             {offers[currentIndex].badge && (
                                 <span className="px-1.5 py-0.5 bg-yellow-400 text-purple-900 text-[10px] rounded font-black animate-pulse whitespace-nowrap">
                                     {offers[currentIndex].badge}
                                 </span>
                             )}
-                            {offers[currentIndex].text}
-                        </p>
+                            <div className="flex flex-wrap justify-center items-center gap-x-1">
+                                {offers[currentIndex].text.split(/(\bSAVE\d+\b|\bWELCOME\d+\b)/g).map((part, index) => {
+                                    if (part.match(/^(SAVE\d+|WELCOME\d+)$/)) {
+                                        return (
+                                            <button
+                                                key={index}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigator.clipboard.writeText(part);
+                                                    toast.success(`Coupon "${part}" copied!`, {
+                                                        position: "top-center",
+                                                        autoClose: 1500,
+                                                        className: "text-xs font-bold"
+                                                    });
+                                                }}
+                                                className="cursor-pointer bg-white/20 hover:bg-white/40 px-1.5 py-0.5 rounded border border-white/30 transition-all active:scale-95 flex items-center gap-1 font-black text-yellow-300 mx-0.5"
+                                                title="Click to copy"
+                                            >
+                                                {part}
+                                            </button>
+                                        );
+                                    }
+                                    return <span key={index}>{part}</span>;
+                                })}
+                            </div>
+                        </div>
 
                         <motion.div
                             animate={{ x: [0, 5, 0] }}

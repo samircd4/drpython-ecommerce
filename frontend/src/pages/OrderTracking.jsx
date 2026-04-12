@@ -363,7 +363,7 @@ const OrderTracking = () => {
                                             </div>
                                             <div className="text-sm font-bold text-gray-900 flex items-center gap-1 whitespace-nowrap">
                                                 <TakaIcon size={14} />
-                                                {parseFloat(item.price || 0).toFixed(2)}
+                                                {parseFloat(item.price || 0).toLocaleString()}
                                             </div>
                                         </div>
 
@@ -394,7 +394,7 @@ const OrderTracking = () => {
 
                                 <div className="flex items-center gap-1 text-xl font-bold text-purple-600 whitespace-nowrap">
                                     <TakaIcon size={20} />
-                                    {parseFloat(trackingResult.totalAmount).toFixed(2)}
+                                    {parseFloat(trackingResult.totalAmount).toLocaleString()}
                                 </div>
                             </div>
 

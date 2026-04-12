@@ -1,12 +1,16 @@
 import React from "react";
 import { MessageSquare, Eye, MoreHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useStoreConfig } from "../../hooks/useStoreConfig";
 
 const PopularClients = ({ clients = [] }) => {
     const navigate = useNavigate();
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
+
     const defaultClients = [
-        { id: 1, name: "Miron Mahmud", orders: 648, amount: "৳5500", avatar: "https://i.pravatar.cc/150?u=miron" },
-        { id: 2, name: "Tahmina Bonny", orders: 590, amount: "৳4400", avatar: "https://i.pravatar.cc/150?u=tahmina" },
+        { id: 1, name: "Miron Mahmud", orders: 648, amount: 5500, avatar: "https://i.pravatar.cc/150?u=miron" },
+        { id: 2, name: "Tahmina Bonny", orders: 590, amount: 4400, avatar: "https://i.pravatar.cc/150?u=tahmina" },
     ];
 
     const displayClients = clients.length > 0 ? clients : defaultClients;
@@ -68,7 +72,7 @@ const PopularClients = ({ clients = [] }) => {
                                 <td className="py-4 text-sm text-slate-300 font-medium">{client.orders}</td>
                                 <td className="py-4 text-sm text-slate-300 font-medium">
                                     {typeof client.amount === 'number' 
-                                        ? `৳${client.amount.toLocaleString()}` 
+                                        ? `${symbol}${client.amount.toLocaleString()}` 
                                         : client.amount}
                                 </td>
                                 <td className="py-4">

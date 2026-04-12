@@ -3,37 +3,39 @@ import { FaMoneyBillWave } from "react-icons/fa";
 import BKashIcon from "../../assets/BKash.svg";
 import NagadIcon from "../../assets/Nagad.svg";
 import RocketIcon from "../../assets/Rocket.svg";
-
-const PAYMENT_INFO = {
-    bkash: {
-        title: "Bkash Payment",
-        description: "Send your payment to our personal Bkash number: 01926108816",
-        icon: <img src={BKashIcon} alt="Bkash" className="h-8 w-auto object-contain" />,
-    },
-    rocket: {
-        title: "Rocket Payment",
-        description: "Send your payment to our personal Rocket number: 01781355377",
-        icon: <img src={RocketIcon} alt="Rocket" className="h-8 w-auto object-contain" />,
-    },
-    nagad: {
-        title: "Nagad Payment",
-        description: "Send your payment to our personal Nagad number: 01926108816",
-        icon: <img src={NagadIcon} alt="Nagad" className="h-8 w-auto object-contain" />,
-    },
-    card_mfs: {
-        title: "Card / MFS Payment",
-        description: "Use your preferred card or mobile financial service to pay.",
-        icon: <FaMoneyBillWave className="text-purple-600" />,
-    },
-    cod: {
-        title: "Cash on Delivery",
-        description: "Send the delivery fee ৳120 to our personal Bkash/Nagad/Upay number: 01926108816",
-        icon: <FaMoneyBillWave className="text-purple-600" />,
-    },
-};
+import { useConfig } from "../../context/ConfigContext";
 
 const PaymentInfoBox = ({ method }) => {
-    // if (!method || method === "cod") return null; // no box for card_mfs
+    const { config } = useConfig();
+    const symbol = config?.currency_symbol || "৳";
+
+    const PAYMENT_INFO = {
+        bkash: {
+            title: "Bkash Payment",
+            description: "Send your payment to our personal Bkash number: 01926108816",
+            icon: <img src={BKashIcon} alt="Bkash" className="h-8 w-auto object-contain" />,
+        },
+        rocket: {
+            title: "Rocket Payment",
+            description: "Send your payment to our personal Rocket number: 01781355377",
+            icon: <img src={RocketIcon} alt="Rocket" className="h-8 w-auto object-contain" />,
+        },
+        nagad: {
+            title: "Nagad Payment",
+            description: "Send your payment to our personal Nagad number: 01926108816",
+            icon: <img src={NagadIcon} alt="Nagad" className="h-8 w-auto object-contain" />,
+        },
+        card_mfs: {
+            title: "Card / MFS Payment",
+            description: "Use your preferred card or mobile financial service to pay.",
+            icon: <FaMoneyBillWave className="text-purple-600" />,
+        },
+        cod: {
+            title: "Cash on Delivery",
+            description: `Send the delivery fee ${symbol}120 to our personal Bkash/Nagad/Upay number: 01926108816`,
+            icon: <FaMoneyBillWave className="text-purple-600" />,
+        },
+    };
 
     const info = PAYMENT_INFO[method];
 

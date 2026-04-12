@@ -1,6 +1,7 @@
 import { FaBoxOpen, FaTruck } from 'react-icons/fa';
 import DownloadInvoice from './DownloadInvoice';
 import { Link } from 'react-router-dom';
+import TakaIcon from '../TakaIcon';
 
 const RecentOrder = ({
     orders,
@@ -54,9 +55,10 @@ const RecentOrder = ({
                                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${statusChipClass(lastOrder.status)}`}>
                                     {lastOrder.status || 'Pending'}
                                 </span>
-                                <span className="px-2 py-1 text-xs font-semibold rounded bg-green-100 text-green-800">
-                                    ৳ {lastOrder.total_amount ?? lastOrder.total}
-                                </span>
+                                    <span className="flex items-center gap-1">
+                                        <TakaIcon className="text-green-800" />
+                                        {Number(lastOrder.total_amount ?? lastOrder.total).toLocaleString()}
+                                    </span>
                             </div>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
@@ -88,7 +90,7 @@ const RecentOrder = ({
                                                 </Link>
                                             </td>
                                             <td className="py-2 pr-3">{it.quantity}</td>
-                                            <td className="py-2">৳ {it.unit_price ?? it.price}</td>
+                                             <td className="py-2 flex items-center gap-1 font-medium"><TakaIcon /> {Number(it.unit_price ?? it.price).toLocaleString()}</td>
                                         </tr>
                                     ))}
                                 </tbody>

@@ -4,6 +4,7 @@ import { Save, Edit, ArrowLeft, Image as ImageIcon, Plus, X, Check, AlertCircle,
 import toast from 'react-hot-toast';
 import Breadcrumb from '../components/Layout/Breadcrumb';
 import api from '../api/axiosConfig';
+import { useStoreConfig } from '../hooks/useStoreConfig';
 
 
 
@@ -67,9 +68,11 @@ const CustomSelect = ({ label, options, value, onChange, placeholder, disabled }
     );
 };
 
-const TakaIcon = ({ className = "w-3.5 h-3.5" }) => (
-    <img src="/currency-taka.svg" alt="৳" className={`${className} opacity-60 invert-[0.3]`} />
-);
+const TakaIcon = ({ className = "text-[14px]" }) => {
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
+    return <span className={`${className} opacity-60 text-slate-500 font-bold`}>{symbol}</span>;
+};
 
 const AddProduct = () => {
     const { id } = useParams();
@@ -79,6 +82,8 @@ const AddProduct = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [fetchingProduct, setFetchingProduct] = useState(false);
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
 
     
     const [formData, setFormData] = useState({

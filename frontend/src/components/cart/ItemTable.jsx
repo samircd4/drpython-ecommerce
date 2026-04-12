@@ -44,7 +44,7 @@ const ItemTable = ({
                         </div>
                         <div className="col-span-2 text-center text-gray-800 pr-2 flex items-center justify-center gap-1 whitespace-nowrap">
   <TakaIcon size={14} />
-  {item.price || 0}
+   {Number(item.price || 0).toLocaleString()}
 </div>
                         <div className="col-span-2">
                             <div className="flex items-center justify-center gap-1">
@@ -73,7 +73,7 @@ const ItemTable = ({
                         </div>
                         <div className="col-span-2 text-right font-medium flex items-center justify-end gap-1 whitespace-nowrap">
   <TakaIcon size={14} />
-  {(((item.price || 0) * (item.quantity || 0))).toFixed(0)}
+   {(Number(item.price || 0) * Number(item.quantity || 0)).toLocaleString()}
 </div>
                         <div className="col-span-1 text-center">
                             <button

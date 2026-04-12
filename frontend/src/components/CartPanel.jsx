@@ -112,7 +112,7 @@ const CartPanel = ({ open, onClose }) => {
                                                     <div className="flex items-center justify-between mt-2">
                                                         <span className="text-sm font-black text-gray-900 flex items-center">
                                                             <TakaIcon size={12} />
-                                                            {item.price}
+                                                            {Number(item.price).toLocaleString()}
                                                         </span>
                                                         <div className="flex items-center bg-gray-100 rounded-lg p-1">
                                                             <button 
@@ -153,7 +153,7 @@ const CartPanel = ({ open, onClose }) => {
                                     <span className="text-gray-500 font-bold uppercase tracking-widest text-xs">Total Amount</span>
                                     <span className="text-2xl font-black text-gray-900 flex items-center gap-1">
                                         <TakaIcon size={20} />
-                                        {subtotal.toFixed(0)}
+                                        {Number(subtotal).toLocaleString()}
                                     </span>
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">

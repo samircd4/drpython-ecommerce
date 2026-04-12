@@ -1,4 +1,5 @@
 import React from "react";
+import { useConfig } from "../../context/ConfigContext";
 
 const CheckoutSummary = ({
     subtotal,
@@ -16,6 +17,9 @@ const CheckoutSummary = ({
     onNavigateTerms,
     isPaymentValid = true
 }) => {
+    const { config } = useConfig();
+    const symbol = config?.currency_symbol || "৳";
+
     const totalPayable = Math.max(
         0,
         (subtotal || 0) + (deliveryCharge || 0) - (discount || 0)
@@ -29,15 +33,15 @@ const CheckoutSummary = ({
             <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium">৳ {Number(subtotal || 0).toFixed(0)}</span>
+                    <span className="font-medium">{symbol} {Number(subtotal || 0).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-600">Delivery Charge</span>
-                    <span className="font-medium">৳ {deliveryCharge}</span>
+                    <span className="font-medium">{symbol} {Number(deliveryCharge || 0).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-600">Discount</span>
-                    <span className="font-medium">৳ {discount}</span>
+                    <span className="font-medium">{symbol} {Number(discount || 0).toLocaleString()}</span>
                 </div>
             </div>
 
@@ -83,7 +87,7 @@ const CheckoutSummary = ({
                         Total Payable
                     </span>
                     <span className="text-gray-900 font-bold">
-                        ৳ {totalPayable.toFixed(0)}
+                        {symbol} {Number(totalPayable).toLocaleString()}
                     </span>
                 </div>
             </div>

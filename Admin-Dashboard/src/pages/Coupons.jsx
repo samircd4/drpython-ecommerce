@@ -20,6 +20,7 @@ import api from "../api/axiosConfig";
 import toast from "react-hot-toast";
 import CouponModal from "../components/Coupon/CouponModal";
 import ConfirmModal from "../components/Layout/ConfirmModal";
+import { useStoreConfig } from "../hooks/useStoreConfig";
 
 const formatDate = (dateString) => {
     if (!dateString) return "—";
@@ -49,6 +50,8 @@ const Coupons = () => {
     const [modalMode, setModalMode] = useState("create"); // create | edit | view
     const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [copiedId, setCopiedId] = useState(null);
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
 
     // Delete Modal State
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -251,13 +254,13 @@ const Coupons = () => {
                                             <span className="text-lg font-bold text-slate-200">
                                                 {coupon.discount_type === "percentage"
                                                     ? `${coupon.discount_value}%`
-                                                    : `৳${coupon.discount_value}`}
+                                                    : `${symbol}${Number(coupon.discount_value).toLocaleString()}`}
                                             </span>
                                             <span className="text-xs text-slate-500">OFF</span>
                                         </div>
                                         {coupon.min_purchase > 0 && (
                                             <span className="text-xs text-slate-500">
-                                                Min: ৳{coupon.min_purchase}
+                                                Min: {symbol}{Number(coupon.min_purchase).toLocaleString()}
                                             </span>
                                         )}
                                     </div>

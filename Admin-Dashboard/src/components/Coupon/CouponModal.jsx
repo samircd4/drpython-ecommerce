@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import api from "../../api/axiosConfig";
 import toast from "react-hot-toast";
+import { useStoreConfig } from "../../hooks/useStoreConfig";
 
 const formatDate = (dateString) => {
     if (!dateString) return "—";
@@ -42,6 +43,8 @@ const CouponModal = ({ isOpen, onClose, coupon, mode = "create", onSave }) => {
     const [active, setActive] = useState(true);
     const [usageLimit, setUsageLimit] = useState("");
     const [loading, setLoading] = useState(false);
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
 
     useEffect(() => {
         if (coupon && (isEdit || isView)) {
@@ -168,7 +171,7 @@ const CouponModal = ({ isOpen, onClose, coupon, mode = "create", onSave }) => {
                                             disabled={isView}
                                             className="w-full px-4 py-3 bg-[#071229] border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-600/50 disabled:opacity-60 disabled:cursor-not-allowed"
                                         >
-                                            <option value="fixed">Fixed Amount (৳)</option>
+                                            <option value="fixed">Fixed Amount ({symbol})</option>
                                             <option value="percentage">Percentage (%)</option>
                                         </select>
                                     </div>
@@ -191,7 +194,7 @@ const CouponModal = ({ isOpen, onClose, coupon, mode = "create", onSave }) => {
                                 {/* Min Purchase */}
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                                        Minimum Purchase (৳)
+                                        Minimum Purchase ({symbol})
                                     </label>
                                     <input
                                         type="number"

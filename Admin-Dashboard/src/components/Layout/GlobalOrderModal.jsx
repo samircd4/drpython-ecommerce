@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import api from '../../api/axiosConfig';
 import useProductLink from '../../hooks/useProductLink';
 import { useModals } from '../../Context/ModalContext';
+import { useStoreConfig } from '../../hooks/useStoreConfig';
 
 const StatusBadge = ({ status }) => {
     const map = {
@@ -124,6 +125,8 @@ export const PaymentModal = ({ payment, isOpen, onClose, onUpdatePayment }) => {
 const GlobalOrderModal = () => {
     const { orderModal, closeOrderModal, setOrderModalMode } = useModals();
     const { isOpen, order, mode } = orderModal;
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
     const [status, setStatus] = useState(order?.status || 'Pending');
     const [copied, setCopied] = useState(false);
     const [isSavingStatus, setIsSavingStatus] = useState(false);
@@ -305,7 +308,7 @@ const GlobalOrderModal = () => {
                                         </div>
                                         <div className="flex justify-between text-sm">
                                             <span className="text-slate-500 text-[10px] font-bold uppercase">Amount Paid</span>
-                                            <span className="text-white font-black">৳{order.payment?.amount || 0}</span>
+                                            <span className="text-white font-black">{symbol}{Number(order.payment?.amount || 0).toLocaleString()}</span>
                                         </div>
                                     </div>
                                 </section>
@@ -349,19 +352,19 @@ const GlobalOrderModal = () => {
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-3 text-center text-slate-400 font-medium">{item.quantity}</td>
-                                                <td className="px-4 py-3 text-right text-slate-300">৳{item.price}</td>
-                                                <td className="px-4 py-3 text-right text-white font-bold">৳{item.total}</td>
+                                                <td className="px-4 py-3 text-right text-slate-300">{symbol}{Number(item.price).toLocaleString()}</td>
+                                                <td className="px-4 py-3 text-right text-white font-bold">{symbol}{Number(item.total).toLocaleString()}</td>
                                             </tr>
                                         ))}
                                     </tbody>
                                     <tfoot className="bg-[#071229]/50 border-t border-slate-800 divide-y divide-slate-800/30">
                                         <tr>
                                             <td colSpan="3" className="px-4 py-2 text-right text-slate-500 text-[10px] font-bold uppercase tracking-widest">Subtotal</td>
-                                            <td className="px-4 py-2 text-right text-slate-300 font-medium">৳{order.subtotal}</td>
+                                            <td className="px-4 py-2 text-right text-slate-300 font-medium">{symbol}{Number(order.subtotal).toLocaleString()}</td>
                                         </tr>
                                         <tr>
                                             <td colSpan="3" className="px-4 py-2 text-right text-slate-500 text-[10px] font-bold uppercase tracking-widest">Grand Total</td>
-                                            <td className="px-4 py-2 text-right text-white font-black text-base">৳{order.grand_total}</td>
+                                            <td className="px-4 py-2 text-right text-white font-black text-base">{symbol}{Number(order.grand_total).toLocaleString()}</td>
                                         </tr>
                                     </tfoot>
                                 </table>

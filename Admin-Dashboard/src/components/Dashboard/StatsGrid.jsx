@@ -1,5 +1,6 @@
 import React from "react";
 import { CircleDollarSign, ShoppingCart, CircleUserRound, Star, ShoppingBag } from "lucide-react";
+import { useStoreConfig } from "../../hooks/useStoreConfig";
 
 const StatCard = ({ title, value, change, icon: Icon, gradient, iconBg, iconColor, badgeBg }) => (
     <div className={`p-4 rounded-lg text-slate-100 ${gradient}`}>
@@ -21,10 +22,13 @@ const StatCard = ({ title, value, change, icon: Icon, gradient, iconBg, iconColo
 );
 
 const StatsGrid = ({ stats }) => {
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
+
     const defaultStats = [
         {
             title: "Total Revenue",
-            value: "৳0",
+            value: `${symbol}0`,
             change: "0%",
             icon: CircleDollarSign,
             gradient: "bg-gradient-to-r from-[#13b58b] to-[#0ea5a8]",
@@ -83,7 +87,7 @@ const StatsGrid = ({ stats }) => {
                 minimumFractionDigits: s.title === "Total Revenue" ? 0 : 0,
                 maximumFractionDigits: 2
             });
-            if (s.title === "Total Revenue") val = "৳" + val;
+            if (s.title === "Total Revenue") val = symbol + val;
         }
         
         return {

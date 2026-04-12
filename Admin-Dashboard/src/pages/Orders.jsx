@@ -10,6 +10,7 @@ import { useModals } from '../Context/ModalContext';
 import useProductLink from '../hooks/useProductLink';
 import useNotificationSocket from '../hooks/useNotificationSocket';
 import { useAuth } from '../Context/AuthContext';
+import { useStoreConfig } from '../hooks/useStoreConfig';
 
 const SortArrow = ({ column, sortColumn, sortDirection }) => {
     if (sortColumn !== column) return <span className="opacity-20 ml-1 inline-flex flex-col leading-[0] align-middle"><ChevronUp className="w-2.5 h-2.5" /><ChevronDown className="w-2.5 h-2.5 -mt-1" /></span>;
@@ -69,6 +70,8 @@ const Orders = () => {
     
     const { openOrderModal } = useModals();
     const { user } = useAuth();
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
     
     // Real-Time Table Refresh
     const accessToken = localStorage.getItem('access_token');
@@ -285,7 +288,7 @@ const Orders = () => {
                                         </span>
                                     )) || 'No Items'}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-slate-100 font-bold text-sm">৳{o.grand_total}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-slate-100 font-bold text-sm">{symbol}{Number(o.grand_total).toLocaleString()}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-400 uppercase text-[10px] font-bold">{o.payment?.payment_method || 'N/A'}</td>
                                 <td className="px-6 py-4 whitespace-nowrap"><PaymentBadge ps={o.payment?.is_paid ? 'Paid' : 'Unpaid'} /></td>
                                 <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={o.status || 'Pending'} /></td>

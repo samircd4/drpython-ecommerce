@@ -2,6 +2,7 @@ import React from 'react';
 import { Eye, Pencil, Trash2, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useProductLink from '../../hooks/useProductLink';
+import { useStoreConfig } from '../../hooks/useStoreConfig';
 
 
 const SortArrow = ({ column, sortColumn, sortDirection }) => {
@@ -9,9 +10,11 @@ const SortArrow = ({ column, sortColumn, sortDirection }) => {
     return <span className="ml-1 inline-flex flex-col leading-[0] align-middle font-bold text-blue-400"><span className={`text-[8px] ${sortDirection === 'asc' ? 'opacity-100' : 'opacity-20'}`}>▲</span><span className={`text-[8px] ${sortDirection === 'desc' ? 'opacity-100' : 'opacity-20'}`}>▼</span></span>;
 };
 
-const TakaIcon = ({ className = "w-3 h-3" }) => (
-    <img src="/currency-taka.svg" alt="৳" className={`${className} opacity-70 brightness-125`} />
-);
+const TakaIcon = ({ className = "w-3 h-3" }) => {
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
+    return <span className={`font-semibold shrink-0 select-none ${className}`}>{symbol}</span>;
+};
 
 const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleSort, handleDelete }) => {
     const navigate = useNavigate();

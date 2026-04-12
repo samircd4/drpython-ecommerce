@@ -9,10 +9,13 @@ import toast from 'react-hot-toast';
 import api from '../api/axiosConfig';
 import Breadcrumb from '../components/Layout/Breadcrumb';
 import SearchableSelect from '../components/AddOrder/SearchableSelect';
+import { useStoreConfig } from '../hooks/useStoreConfig';
 
 const AddOrder = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
     
     // Data for selectors
     const [customers, setCustomers] = useState([]);
@@ -357,7 +360,7 @@ const AddOrder = () => {
                                                             </span>
                                                         </div>
                                                         <div className="flex items-center gap-4 mt-1">
-                                                            <p className="text-xs text-blue-400 font-black tracking-tight">৳{product.price}</p>
+                                                            <p className="text-xs text-blue-400 font-black tracking-tight">{symbol}{Number(product.price).toLocaleString()}</p>
                                                             <p className="text-[10px] text-slate-500 font-mono italic">SKU: {product.sku}</p>
                                                         </div>
                                                     </div>
@@ -376,7 +379,7 @@ const AddOrder = () => {
                                                                 {variant.color && `• ${variant.color}`}
                                                             </p>
                                                             <div className="flex items-center gap-3 mt-0.5">
-                                                                <p className="text-[10px] text-blue-400 font-black">৳{variant.price}</p>
+                                                                <p className="text-[10px] text-blue-400 font-black">{symbol}{Number(variant.price).toLocaleString()}</p>
                                                                 <p className="text-[9px] text-slate-500 font-mono">{variant.sku}</p>
                                                             </div>
                                                         </div>
@@ -406,7 +409,7 @@ const AddOrder = () => {
                                                 {item.variantLabel && (
                                                     <p className="text-xs text-slate-500 mt-0.5">{item.variantLabel}</p>
                                                 )}
-                                                <p className="text-sm text-blue-400 font-bold mt-1">৳{item.price}</p>
+                                                <p className="text-sm text-blue-400 font-bold mt-1">{symbol}{Number(item.price).toLocaleString()}</p>
                                             </div>
                                             <div className="flex items-center gap-3 bg-slate-800/50 rounded-xl p-1.5 border border-slate-700">
                                                 <button 
@@ -426,7 +429,7 @@ const AddOrder = () => {
                                                 </button>
                                             </div>
                                             <div className="text-right min-w-[100px]">
-                                                <p className="text-sm font-bold text-white">৳{item.price * item.quantity}</p>
+                                                <p className="text-sm font-bold text-white">{symbol}{(item.price * item.quantity).toLocaleString()}</p>
                                                 <button 
                                                     type="button"
                                                     onClick={() => handleRemoveItem(item.itemId)}
@@ -672,7 +675,7 @@ const AddOrder = () => {
                         <div className="p-6 space-y-4">
                             <div className="flex justify-between text-slate-400 text-sm">
                                 <span>Subtotal</span>
-                                <span className="text-slate-200 font-medium">৳{subtotal}</span>
+                                <span className="text-slate-200 font-medium">{symbol}{Number(subtotal).toLocaleString()}</span>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
@@ -710,7 +713,7 @@ const AddOrder = () => {
                             
                             <div className="pt-4 border-t border-slate-800 flex justify-between items-center mt-4">
                                 <span className="text-lg font-bold text-white">Grand Total</span>
-                                <span className="text-2xl font-black text-blue-400">৳{grandTotal}</span>
+                                <span className="text-2xl font-black text-blue-400">{symbol}{Number(grandTotal).toLocaleString()}</span>
                             </div>
 
                             <button

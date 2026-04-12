@@ -7,12 +7,15 @@ import {
 import api from "../api/axiosConfig";
 import Breadcrumb from "../components/Layout/Breadcrumb";
 import Loader from "../components/Layout/Loader";
+import { useStoreConfig } from "../hooks/useStoreConfig";
 
 const Reports = () => {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState(null);
     const [analytics, setAnalytics] = useState(null);
     const [hoveredData, setHoveredData] = useState(null);
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
 
     useEffect(() => {
         const fetchData = async () => {
@@ -42,7 +45,7 @@ const Reports = () => {
     const reportStats = [
         { 
             label: "Total Revenue", 
-            value: `৳${summary[0]?.value.toLocaleString()}`, 
+            value: `${symbol}${summary[0]?.value.toLocaleString()}`, 
             trend: summary[0]?.change, 
             isUp: summary[0]?.change.startsWith('+'), 
             icon: DollarSign, 
@@ -278,7 +281,7 @@ const Reports = () => {
                                     <div className="space-y-2.5">
                                         <div className="flex justify-between items-center text-[10px]">
                                             <span className="text-slate-500 font-bold uppercase tracking-widest">Revenue</span>
-                                            <span className="text-white font-black font-mono">৳{hoveredData.sales.toLocaleString()}</span>
+                                            <span className="text-white font-black font-mono">{symbol}{hoveredData.sales.toLocaleString()}</span>
                                         </div>
                                         <div className="flex justify-between items-center text-[10px]">
                                             <span className="text-slate-500 font-bold uppercase tracking-widest">Orders</span>
@@ -286,7 +289,7 @@ const Reports = () => {
                                         </div>
                                         <div className="flex justify-between items-center text-[10px]">
                                             <span className="text-slate-500 font-bold uppercase tracking-widest">Profit (Est)</span>
-                                            <span className="text-emerald-400 font-black font-mono">৳{hoveredData.profit.toLocaleString()}</span>
+                                            <span className="text-emerald-400 font-black font-mono">{symbol}{hoveredData.profit.toLocaleString()}</span>
                                         </div>
                                     </div>
                                     
@@ -340,7 +343,7 @@ const Reports = () => {
                         <div className="flex items-center justify-between p-4 bg-[#0b1a2a] rounded-2xl border border-dashed border-slate-700">
                             <div className="flex flex-col">
                                 <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Annual Yield</span>
-                                <span className="text-md font-black text-emerald-500 uppercase">+৳{((summary[0]?.value || 0) * 1.2).toLocaleString()} EST.</span>
+                                <span className="text-md font-black text-emerald-500 uppercase">+{symbol}{((summary[0]?.value || 0) * 1.2).toLocaleString()} EST.</span>
                             </div>
                             <TrendingUp className="w-6 h-6 text-emerald-500" />
                         </div>

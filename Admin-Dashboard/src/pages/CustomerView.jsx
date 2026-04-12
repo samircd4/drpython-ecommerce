@@ -21,6 +21,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from "../api/axiosConfig";
 import Breadcrumb from "../components/Layout/Breadcrumb";
 import toast from "react-hot-toast";
+import { useStoreConfig } from "../hooks/useStoreConfig";
 
 const CustomerView = () => {
     const { id } = useParams();
@@ -28,6 +29,8 @@ const CustomerView = () => {
     const [customer, setCustomer] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
 
     useEffect(() => {
         const fetchCustomer = async () => {
@@ -188,7 +191,7 @@ const CustomerView = () => {
                             <StatCard 
                                 icon={CreditCard} 
                                 label="Revenue Contribution" 
-                                value={`৳${(Number(customer.total_spent) || 0).toLocaleString()}`} 
+                                value={`${symbol}${(Number(customer.total_spent) || 0).toLocaleString()}`} 
                                 trend="High Value Tier" 
                                 color="emerald" 
                             />
@@ -227,7 +230,7 @@ const CustomerView = () => {
                                                     </div>
                                                     <div className="flex justify-between items-end">
                                                         <span className="text-[10px] text-slate-500 font-bold">{new Date(order.created_at).toLocaleDateString()}</span>
-                                                        <span className="text-sm font-black text-slate-200 group-hover:text-white transition-colors">৳{order.total_amount || order.grand_total}</span>
+                                                        <span className="text-sm font-black text-slate-200 group-hover:text-white transition-colors">{symbol}{Number(order.total_amount || order.grand_total).toLocaleString()}</span>
                                                     </div>
                                                 </div>
                                             ))}

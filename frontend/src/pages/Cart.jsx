@@ -64,16 +64,16 @@ const Cart = () => {
                                 <span className="text-gray-600">Subtotal</span>
                                 <span className="font-medium flex items-center gap-1 whitespace-nowrap">
                                     <TakaIcon size={14} />
-                                    {subtotal?.toFixed(2)}
+                                    {Number(subtotal).toLocaleString()}
                                 </span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Tax ({(taxRate * 100).toFixed(0)}%)</span>
-                                <span className="font-medium flex items-center gap-1 whitespace-nowrap"><TakaIcon size={14} /> {tax.toFixed(2)}</span>
+                                <span className="font-medium flex items-center gap-1 whitespace-nowrap"><TakaIcon size={14} /> {Number(tax).toLocaleString()}</span>
                             </div>
                             <div className="border-t pt-2 flex justify-between">
                                 <span className="text-gray-800 font-semibold">Total</span>
-                                <span className="text-gray-900 font-bold flex items-center gap-1 whitespace-nowrap"><TakaIcon size={16} /> {total.toFixed(2)}</span>
+                                <span className="text-gray-900 font-bold flex items-center gap-1 whitespace-nowrap"><TakaIcon size={16} /> {Number(total).toLocaleString()}</span>
                             </div>
                         </div>
                         <button

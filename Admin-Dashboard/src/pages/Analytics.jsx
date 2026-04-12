@@ -7,10 +7,13 @@ import {
 import api from "../api/axiosConfig";
 import Breadcrumb from "../components/Layout/Breadcrumb";
 import Loader from "../components/Layout/Loader";
+import { useStoreConfig } from "../hooks/useStoreConfig";
 
 const Analytics = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,7 +64,7 @@ const Analytics = () => {
                             <p className="text-slate-400 text-xs uppercase tracking-widest font-medium">Daily performance last 30 days</p>
                         </div>
                         <div className="text-right">
-                             <p className="text-2xl font-black text-white">৳{daily_trends.reduce((a,b) => a + b.value, 0).toLocaleString()}</p>
+                             <p className="text-2xl font-black text-white">{symbol}{daily_trends.reduce((a,b) => a + b.value, 0).toLocaleString()}</p>
                              <p className="text-[10px] text-emerald-400 font-bold uppercase">Total period revenue</p>
                         </div>
                     </div>
@@ -171,7 +174,7 @@ const Analytics = () => {
                                     <p className="text-xs text-slate-500 font-bold uppercase tracking-tighter">Inventory Level: Healthy</p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-sm font-black text-blue-400 tracking-tight">৳{product.revenue.toLocaleString()}</p>
+                                    <p className="text-sm font-black text-blue-400 tracking-tight">{symbol}{product.revenue.toLocaleString()}</p>
                                     <div className="flex items-center justify-end text-[10px] text-emerald-400 font-bold">
                                         <ArrowUpRight className="w-3 h-3" />
                                         <span>+12.5%</span>
@@ -197,7 +200,7 @@ const Analytics = () => {
                                     />
                                     <div className="absolute inset-0 flex items-center justify-between px-3">
                                         <span className="text-[10px] text-white font-bold uppercase">{month.orders} Orders</span>
-                                        <span className="text-xs font-black text-white">৳{month.sales.toLocaleString()}</span>
+                                        <span className="text-xs font-black text-white">{symbol}{month.sales.toLocaleString()}</span>
                                     </div>
                                 </div>
                             </div>
@@ -208,7 +211,7 @@ const Analytics = () => {
                         <div className="p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/10">
                             <p className="text-[10px] text-emerald-500 font-black uppercase tracking-widest mb-1">Avg. Cart Value</p>
                             <div className="flex items-baseline gap-2">
-                                <span className="text-lg font-black text-white">৳4,250</span>
+                                <span className="text-lg font-black text-white">{symbol}4,250</span>
                                 <span className="text-[10px] text-emerald-500 font-bold">+8%</span>
                             </div>
                         </div>

@@ -2,9 +2,12 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, X, ChevronRight, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useStoreConfig } from '../../hooks/useStoreConfig';
 
 const OrderPanel = ({ open, onClose, orders, onOrderClick }) => {
     const navigate = useNavigate();
+    const { config } = useStoreConfig();
+    const symbol = config?.currency_symbol || "৳";
 
     const formatTime = (dateString) => {
         const date = new Date(dateString);
@@ -122,7 +125,7 @@ const OrderPanel = ({ open, onClose, orders, onOrderClick }) => {
                                                         <p className="text-xs text-slate-400 truncate max-w-[120px] sm:max-w-[150px]">
                                                             {order.items?.map(i => i.product?.name).join(', ')}
                                                         </p>
-                                                        <span className="text-sm font-black text-white">৳{order.grand_total}</span>
+                                                        <span className="text-sm font-black text-white">{symbol}{Number(order.grand_total).toLocaleString()}</span>
                                                     </div>
                                                 </div>
                                             </div>

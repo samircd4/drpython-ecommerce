@@ -70,8 +70,8 @@ const ProductInfo = ({
                         >
                             <TakaIcon size={20} />
                             {displayWholesalePrice
-                                ? Number(displayWholesalePrice).toFixed(0)
-                                : Number(displayPrice).toFixed(0)}
+                                ? Number(displayWholesalePrice).toLocaleString()
+                                : Number(displayPrice).toLocaleString()}
                         </span>
 
                         {(displayWholesalePrice ||
@@ -79,7 +79,7 @@ const ProductInfo = ({
                             selectedVariant?.discount_price) && (
                                 <span className="flex items-baseline gap-1 text-xl text-gray-400 line-through">
                                     <TakaIcon size={16} />
-                                    {Number(originalPrice).toFixed(0)}
+                                    {Number(originalPrice).toLocaleString()}
                                 </span>
                             )}
                     </div>
@@ -153,7 +153,7 @@ const ProductInfo = ({
 
             <div className="text-sm text-gray-700">
                 {stockStatus === "in_stock"
-                    ? `In Stock (${displayStockQuantity} available)`
+                    ? `In Stock (${Number(displayStockQuantity).toLocaleString()} available)`
                     : "Currently unavailable"}
             </div>
 

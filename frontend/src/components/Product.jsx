@@ -61,30 +61,30 @@ const Product = ({ product }) => {
                             <>
                                 <span className="flex items-baseline gap-0.5 text-lg font-bold text-purple-700">
                                     <TakaIcon size={14} />
-                                    {product.wholesale_price}
+                                    {Number(product.wholesale_price).toLocaleString()}
                                 </span>
 
                                 <span className="flex items-baseline gap-0.5 text-xs text-gray-400 line-through">
                                     <TakaIcon size={12} />
-                                    {product.discount_price ?? product.price}
+                                    {Number(product.discount_price ?? product.price).toLocaleString()}
                                 </span>
                             </>
                         ) : product.discount_price ? (
                             <>
                                 <span className="flex items-baseline gap-0.5 text-lg font-bold text-purple-700">
                                     <TakaIcon size={14} />
-                                    {product.discount_price}
+                                    {Number(product.discount_price).toLocaleString()}
                                 </span>
 
                                 <span className="flex items-baseline gap-0.5 text-sm text-gray-400 line-through">
                                     <TakaIcon size={12} />
-                                    {product.price}
+                                    {Number(product.price).toLocaleString()}
                                 </span>
                             </>
                         ) : (
                             <span className="flex items-baseline gap-0.5 text-lg font-bold text-purple-700">
                                 <TakaIcon size={14} />
-                                {product.price}
+                                {Number(product.price).toLocaleString()}
                             </span>
                         )}
                     </div>
