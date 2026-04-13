@@ -14,6 +14,7 @@ class IsAdminOrReadOnly(BasePermission):
 from api.permissions import StaffHasActionPermission
 
 class StoreConfigurationView(generics.RetrieveUpdateAPIView):
+    queryset = StoreConfiguration.objects.all()
     serializer_class = StoreConfigurationSerializer
     permission_classes = [IsAuthenticated, StaffHasActionPermission]
 
