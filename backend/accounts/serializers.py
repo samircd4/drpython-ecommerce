@@ -415,14 +415,38 @@ class AdminUserSerializer(serializers.ModelSerializer):
         required=False
     )
     customer_type = serializers.CharField(source='customer.customer_type', read_only=True)
+    password = serializers.CharField(write_only=True, required=False, style={'input_type': 'password'})
+
+    def validate_email(self, value):
+        """Check for existing users to prevent duplicate email IntegrityError."""
+        # Standardize email
+        email = value.lower().strip()
+        
+        # If we are creating a new user (instance is None)
+        if not self.instance:
+            if User.objects.filter(email__iexact=email).exists():
+                raise serializers.ValidationError("A user with this email already exists and cannot be created again. Use the search to find and promote them.")
+        else:
+            # If we are updating an existing user
+            if User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():
+                raise serializers.ValidationError("This email is already in use by another user.")
+        
+        return email
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
             'is_staff', 'is_active', 'is_superuser', 'last_login', 'date_joined', 'groups',
-            'customer_type'
+            'customer_type', 'password'
         ]
         read_only_fields = ['id', 'date_joined', 'last_login']
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        if password:
+            instance.set_password(password)
+        return super().update(instance, validated_data)
+
 
 

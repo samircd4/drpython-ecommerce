@@ -540,14 +540,21 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """
-        Filter users: only Staff, Admins, and Wholesalers.
-        Exclude regular retail customers.
+        Filter users for listing: only Staff and Admins by default.
+        Allow searching all users (including retail customers) when a search query is provided,
+        so that anyone can be found and promoted.
         """
-        return User.objects.filter(
-            Q(is_staff=True) | 
-            Q(is_superuser=True) |
-            Q(customer__customer_type='wholesale')
-        ).distinct().order_by('-date_joined')
+        if self.action == 'list':
+            search_query = self.request.query_params.get('search')
+            # If not searching, restrict list to Staff/Admins
+            if not search_query:
+                return User.objects.filter(
+                    Q(is_staff=True) | Q(is_superuser=True)
+                ).distinct().order_by('-date_joined')
+        
+        # Default to all users for search, detail actions, etc.
+        return User.objects.all().order_by('-date_joined')
+
 
     @extend_schema(
         summary="List Users",

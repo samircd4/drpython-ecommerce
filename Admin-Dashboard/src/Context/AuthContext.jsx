@@ -65,6 +65,23 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const loginWithGoogle = async (accessToken) => {
+        try {
+            const response = await api.post('/auth/google/', {
+                access_token: accessToken
+            });
+            const { access, refresh } = response.data;
+
+            localStorage.setItem('access_token', access);
+            localStorage.setItem('refresh_token', refresh);
+
+            return await fetchUserProfile();
+        } catch (error) {
+            throw error;
+        }
+    };
+
+
     const register = async (userData) => {
         try {
             const response = await api.post('/auth/register/', userData);
@@ -84,22 +101,39 @@ export const AuthProvider = ({ children }) => {
 
     const resetPassword = async (email) => {
         try {
-            await api.post('/auth/password/reset/', { email });
+            await api.post('/auth/forgot-password/', { email });
         } catch (error) {
             throw error;
         }
     };
 
+
     const hasPermission = (permission) => {
         if (!permission) return true;
         if (user?.is_superuser) return true;
-        return user?.permissions?.includes(permission);
+        
+        const userPerms = user?.permissions || [];
+        
+        // Try direct match (e.g. 'accounts.delete_address')
+        if (userPerms.includes(permission)) return true;
+        
+        // Try partial match if permission has a dot (e.g. match 'delete_address' against 'accounts.delete_address')
+        if (permission.includes('.')) {
+            const codename = permission.split('.')[1];
+            if (userPerms.some(p => p.endsWith(codename))) return true;
+        }
+        
+        return false;
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, resetPassword, fetchUserProfile, loading, hasPermission }}>
+        <AuthContext.Provider value={{ 
+            user, login, loginWithGoogle, register, logout, 
+            resetPassword, fetchUserProfile, loading, hasPermission 
+        }}>
             {!loading && children}
         </AuthContext.Provider>
+
     );
 };
 

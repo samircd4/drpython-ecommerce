@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../Context/AuthContext';
-import { Mail, Lock, LogIn, Loader2, Github, Chrome, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, LogIn, Loader2, Chrome, Eye, EyeOff } from 'lucide-react';
+import { useGoogleLogin } from '@react-oauth/google';
+import toast from 'react-hot-toast';
 
 const Login = ({ setAuthPage }) => {
-    const { login } = useAuth();
+    const { login, loginWithGoogle } = useAuth();
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,6 +24,22 @@ const Login = ({ setAuthPage }) => {
             setIsLoading(false);
         }
     };
+
+    const handleGoogleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            setIsLoading(true);
+            setError('');
+            try {
+                await loginWithGoogle(tokenResponse.access_token);
+                toast.success("Welcome! Logged in with Google.");
+            } catch (err) {
+                setError(err.response?.data?.detail || "Google authentication failed. You may not have administrative access.");
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        onError: () => setError("Google selection failed"),
+    });
 
     return (
         <div className="min-h-screen flex items-center justify-center p-6 bg-[#071229] relative overflow-hidden">
@@ -115,16 +132,14 @@ const Login = ({ setAuthPage }) => {
                             <span className="absolute px-4 bg-[#0b1a2a] text-[10px] font-black text-slate-600 uppercase tracking-widest">Or continue with</span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="flex justify-center">
                             <button
-                                className="flex items-center justify-center gap-3 bg-[#071229] border border-slate-800 py-3 rounded-2xl hover:bg-blue-600 hover:border-blue-600 transition-all text-sm font-bold group"
+                                onClick={() => handleGoogleLogin()}
+                                disabled={isLoading}
+                                className="w-full max-w-[240px] flex items-center justify-center gap-3 bg-[#071229] border border-slate-800 py-3 rounded-2xl hover:bg-blue-600 hover:border-blue-600 transition-all text-sm font-bold group cursor-pointer disabled:opacity-50"
                             >
                                 <Chrome className="w-5 h-5 text-slate-500 group-hover:text-white" />
-                                <span className="text-slate-400 group-hover:text-white">Google</span>
-                            </button>
-                            <button className="flex items-center justify-center gap-3 bg-[#071229] border border-slate-800 py-3 rounded-2xl hover:bg-slate-700 hover:border-slate-700 transition-all text-sm font-bold group">
-                                <Github className="w-5 h-5 text-slate-500 group-hover:text-white" />
-                                <span className="text-slate-400 group-hover:text-white">Github</span>
+                                <span className="text-slate-400 group-hover:text-white">Sign in with Google</span>
                             </button>
                         </div>
                     </div>
@@ -145,5 +160,6 @@ const Login = ({ setAuthPage }) => {
         </div>
     );
 };
+
 
 export default Login;

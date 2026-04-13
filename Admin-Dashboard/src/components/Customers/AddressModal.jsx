@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Phone, User, Home, Briefcase, Star, Trash2, Pencil, Save, AlertCircle, CheckCircle, Plus, Search } from 'lucide-react';
 import api from '../../api/axiosConfig';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../Context/AuthContext';
 
 const AddressModal = ({ isOpen, onClose, address, onSave, mode: initialMode = 'view' }) => {
+    const { hasPermission } = useAuth();
     const [mode, setMode] = useState(initialMode);
     const [loading, setLoading] = useState(false);
     const [divisions, setDivisions] = useState([]);
@@ -429,7 +431,7 @@ const AddressModal = ({ isOpen, onClose, address, onSave, mode: initialMode = 'v
                     {/* Footer */}
                     <div className="px-8 py-6 bg-slate-800/20 border-t border-slate-800 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            {mode !== 'create' && (
+                            {mode !== 'create' && hasPermission('accounts.delete_address') && (
                                 <button 
                                     onClick={() => setShowDeleteConfirm(true)}
                                     className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white rounded-xl transition-all font-bold text-xs uppercase cursor-pointer"
@@ -448,16 +450,18 @@ const AddressModal = ({ isOpen, onClose, address, onSave, mode: initialMode = 'v
                                     >
                                         Close
                                     </button>
-                                    <button 
-                                        onClick={() => {
-                                            if (divisions.length === 0) fetchDivisions();
-                                            setMode('edit');
-                                        }}
-                                        className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all font-bold text-xs uppercase shadow-lg shadow-blue-600/20 cursor-pointer"
-                                    >
-                                        <Pencil className="w-3.5 h-3.5" />
-                                        Modify
-                                    </button>
+                                    {hasPermission('accounts.change_address') && (
+                                        <button 
+                                            onClick={() => {
+                                                if (divisions.length === 0) fetchDivisions();
+                                                setMode('edit');
+                                            }}
+                                            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition-all font-bold text-xs uppercase shadow-lg shadow-blue-600/20 cursor-pointer"
+                                        >
+                                            <Pencil className="w-3.5 h-3.5" />
+                                            Modify
+                                        </button>
+                                    )}
                                 </>
                             ) : (
                                 <>

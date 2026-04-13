@@ -111,7 +111,7 @@ const CustomerAddresses = () => {
                         className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95 cursor-pointer"
                         onClick={() => openAddressModal(null, 'create')}
                     >
-                        <幫手 Plus className="w-4 h-4" />
+                        <Plus className="w-4 h-4" />
                         Add Address
                     </button>
                 )}

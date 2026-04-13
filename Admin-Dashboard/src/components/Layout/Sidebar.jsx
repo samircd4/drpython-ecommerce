@@ -74,7 +74,7 @@ const menuItems = [
         permission: "accounts.view_customer",
         submenu: [
             { id: "customers", label: "Customer List", icon: Users },
-            { id: "addresses", label: "Addresses", icon: ShoppingBag }
+            { id: "addresses", label: "Addresses", icon: ShoppingBag, permission: "accounts.view_address" }
         ]
     },
     { id: "reviews", icon: Star, label: "Reviews", permission: "reviews.view_review" },

@@ -80,7 +80,6 @@ const Roles = () => {
         'cart': '🛒 Cart',
         'cartitem': '🛒 Cart Item',
         'checkout': '🛒 Checkout',
-        'address': '🏠 Address',
         'data_management': '📊 Data Management',
     };
 
