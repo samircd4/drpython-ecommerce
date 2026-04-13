@@ -199,10 +199,12 @@ const Orders = () => {
         <div className="p-0 sm:p-6 min-h-screen">
             <div className="flex justify-between items-center mb-4">
                 <Breadcrumb title="Orders" paths={["Home", "Dashboard", "Orders"]} />
-                <button onClick={() => navigate('/orders/add')} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors cursor-pointer text-sm font-semibold">
-                    <Plus className="w-4 h-4" />
-                    <span>Add Order</span>
-                </button>
+                {hasPermission('orders.add_order') && (
+                    <button onClick={() => navigate('/orders/add')} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors cursor-pointer text-sm font-semibold">
+                        <Plus className="w-4 h-4" />
+                        <span>Add Order</span>
+                    </button>
+                )}
             </div>
 
             <div className="my-6">
@@ -294,15 +296,23 @@ const Orders = () => {
                                 <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={o.status || 'Pending'} /></td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs font-mono">{new Date(o.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</td>
                                 <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                                    <button onClick={() => handleDownloadInvoice(o.id)} disabled={downloadingOrderId === o.id} className={`inline-block p-1.5 rounded-lg transition-all ${downloadingOrderId === o.id ? 'bg-slate-700 text-slate-400' : 'bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white cursor-pointer'}`}>
-                                        {downloadingOrderId === o.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-                                    </button>
+                                    {hasPermission('orders.view_order') && (
+                                        <button onClick={() => handleDownloadInvoice(o.id)} disabled={downloadingOrderId === o.id} className={`inline-block p-1.5 rounded-lg transition-all ${downloadingOrderId === o.id ? 'bg-slate-700 text-slate-400' : 'bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white cursor-pointer'}`}>
+                                            {downloadingOrderId === o.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                                        </button>
+                                    )}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex space-x-2">
-                                        <button onClick={() => handleOpenModal(o, 'view')} className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all cursor-pointer"><Eye className="h-4 w-4" /></button>
-                                        <button onClick={() => handleOpenModal(o, 'edit')} className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"><Pencil className="h-4 w-4" /></button>
-                                        <button onClick={() => handleDeleteOrder(o.id)} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"><Trash2 className="h-4 w-4" /></button>
+                                        {hasPermission('orders.view_order') && (
+                                            <button onClick={() => handleOpenModal(o, 'view')} className="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg hover:bg-purple-500 hover:text-white transition-all cursor-pointer"><Eye className="h-4 w-4" /></button>
+                                        )}
+                                        {hasPermission('orders.change_order') && (
+                                            <button onClick={() => handleOpenModal(o, 'edit')} className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"><Pencil className="h-4 w-4" /></button>
+                                        )}
+                                        {hasPermission('orders.delete_order') && (
+                                            <button onClick={() => handleDeleteOrder(o.id)} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"><Trash2 className="h-4 w-4" /></button>
+                                        )}
                                     </div>
                                 </td>
                             </tr>

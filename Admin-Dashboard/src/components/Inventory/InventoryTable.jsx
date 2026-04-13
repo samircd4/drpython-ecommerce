@@ -127,9 +127,6 @@ const InventoryTable = ({ items = [], loading = false, sortColumn, sortDirection
                                         >
                                             <Pencil className="h-4 w-4" />
                                         </button>
-                                        <button title="Archive" className="p-2 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all cursor-pointer">
-                                            <Trash2 className="h-4 w-4" />
-                                        </button>
                                     </div>
                                 </td>
                             </tr>

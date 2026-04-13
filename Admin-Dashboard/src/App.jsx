@@ -9,7 +9,6 @@ import Analytics from "./pages/Analytics"
 import Overview from "./pages/Overview"
 import Insights from "./pages/Insights"
 import Users from "./pages/Users"
-import AllUsers from "./pages/AllUsers"
 import Roles from "./pages/Roles"
 import Activity from "./pages/Activity"
 import Products from "./pages/Products"
@@ -27,6 +26,7 @@ import Notifications from "./pages/Notifications"
 import Brands from "./pages/Brands"
 import Categories from "./pages/Categories"
 import Settings from "./pages/Settings"
+import WebConfiguration from "./pages/WebConfiguration"
 import Coupons from "./pages/Coupons"
 import DataManagement from "./pages/DataManagement"
 
@@ -191,7 +191,6 @@ function AppContent() {
                                 <Route path="/insights" element={<ProtectedRoute requiredPermission="orders.view_order"><Insights /></ProtectedRoute>} />
                                 
                                 <Route path="/users" element={<ProtectedRoute requiredPermission="auth.view_user"><Users /></ProtectedRoute>} />
-                                <Route path="/all-users" element={<ProtectedRoute requiredPermission="auth.view_user"><AllUsers /></ProtectedRoute>} />
                                 <Route path="/roles" element={<ProtectedRoute requiredPermission="auth.view_user"><Roles /></ProtectedRoute>} />
                                 <Route path="/activity" element={<ProtectedRoute requiredPermission="auth.view_user"><Activity /></ProtectedRoute>} />
                                 
@@ -199,18 +198,16 @@ function AppContent() {
                                 <Route path="/products/new" element={<ProtectedRoute requiredPermission="products.add_product"><AddProduct /></ProtectedRoute>} />
                                 <Route path="/products/edit/:id" element={<ProtectedRoute requiredPermission="products.change_product"><AddProduct /></ProtectedRoute>} />
                                 <Route path="/products/view/:id" element={<ProtectedRoute requiredPermission="products.view_product"><AddProduct /></ProtectedRoute>} />
-                                <Route path="/all-products" element={<ProtectedRoute requiredPermission="products.view_product"><Products /></ProtectedRoute>} />
                                 
-                                <Route path="/brands" element={<ProtectedRoute requiredPermission="products.view_product"><Brands /></ProtectedRoute>} />
-                                <Route path="/categories" element={<ProtectedRoute requiredPermission="products.view_product"><Categories /></ProtectedRoute>} />
+                                <Route path="/brands" element={<ProtectedRoute requiredPermission="products.view_brand"><Brands /></ProtectedRoute>} />
+                                <Route path="/categories" element={<ProtectedRoute requiredPermission="products.view_category"><Categories /></ProtectedRoute>} />
                                 
                                 <Route path="/orders" element={<ProtectedRoute requiredPermission="orders.view_order"><Orders /></ProtectedRoute>} />
                                 <Route path="/orders/add" element={<ProtectedRoute requiredPermission="orders.add_order"><AddOrder /></ProtectedRoute>} />
                                 <Route path="/customers" element={<ProtectedRoute requiredPermission="accounts.view_customer"><Customers /></ProtectedRoute>} />
-                                <Route path="/all-customers" element={<ProtectedRoute requiredPermission="accounts.view_customer"><Customers /></ProtectedRoute>} />
                                 <Route path="/addresses" element={<ProtectedRoute requiredPermission="accounts.view_customer"><CustomerAddresses /></ProtectedRoute>} />
                                 <Route path="/customers/new" element={<ProtectedRoute requiredPermission="accounts.add_customer"><CustomerAdd /></ProtectedRoute>} />
-                                <Route path="/inventory" element={<ProtectedRoute requiredPermission="products.view_product"><Inventory /></ProtectedRoute>} />
+                                <Route path="/inventory" element={<ProtectedRoute requiredPermission="products.change_product"><Inventory /></ProtectedRoute>} />
                                 <Route path="/payments" element={<ProtectedRoute requiredPermission="orders.view_payment"><Payments /></ProtectedRoute>} />
                                 <Route path="/payments/new" element={<ProtectedRoute requiredPermission="orders.add_payment"><PaymentAdd /></ProtectedRoute>} />
                                 
@@ -223,7 +220,8 @@ function AppContent() {
                                 <Route path="/reviews" element={<ProtectedRoute requiredPermission="reviews.view_review"><Reviews /></ProtectedRoute>} />
                                 <Route path="/coupons" element={<ProtectedRoute requiredPermission="orders.view_coupon"><Coupons /></ProtectedRoute>} />
                                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                                <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+                                <Route path="/web-config" element={<ProtectedRoute requiredPermission="web.view_storeconfiguration"><WebConfiguration /></ProtectedRoute>} />
+                                <Route path="/notifications" element={<ProtectedRoute requiredPermission="auth.view_user"><Notifications /></ProtectedRoute>} />
 
                                 {/* Customer Detailed Views */}
                                 <Route path="/customers/view/:id" element={<ProtectedRoute requiredPermission="accounts.view_customer"><CustomerView /></ProtectedRoute>} />
@@ -234,7 +232,7 @@ function AppContent() {
                                 <Route path="/users/edit/:id" element={<ProtectedRoute requiredPermission="auth.view_user"><UserEdit /></ProtectedRoute>} />
                                 <Route path="/users/add" element={<ProtectedRoute requiredPermission="auth.view_user"><UserAdd /></ProtectedRoute>} />
                                 <Route path="*" element={<div className="p-6 text-slate-300">Page Not Found</div>} />
-                                <Route path="/export-import" element={<ProtectedRoute requiredPermission="auth.view_user"><DataManagement /></ProtectedRoute>} />
+                                <Route path="/export-import" element={<ProtectedRoute requiredPermission="products.export_import"><DataManagement /></ProtectedRoute>} />
                             </Routes>
                         </div>
                     </div>

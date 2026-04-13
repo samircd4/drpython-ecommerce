@@ -407,7 +407,7 @@ class ResendVerificationEmailView(generics.GenericAPIView):
 @extend_schema(tags=['Accounts'])
 class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, StaffHasActionPermission]
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['id', 'name', 'email', 'phone_number', 'user__username', 'user__first_name', 'user__last_name']
@@ -442,7 +442,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
 @extend_schema(tags=['Accounts'])
 class AddressViewSet(viewsets.ModelViewSet):
     serializer_class = AddressSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, StaffHasActionPermission]
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['full_name', 'phone', 'address', 'district__name', 'sub_district__name', 'customer__name', 'customer__email']
 
@@ -534,6 +534,9 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     serializer_class = AdminUserSerializer
     permission_classes = [permissions.IsAdminUser, StaffHasActionPermission]
+    filter_backends = [SearchFilter, DjangoFilterBackend]
+    search_fields = ['username', 'email', 'first_name', 'last_name']
+    filterset_fields = ['is_staff', 'is_superuser', 'is_active']
 
     def get_queryset(self):
         """
@@ -569,8 +572,20 @@ class GroupViewSet(viewsets.ModelViewSet):
 class PermissionViewSet(viewsets.ReadOnlyModelViewSet):
     """
     List all available permissions. Admin only.
+    Filtered to show only business-relevant permissions.
     """
-    queryset = Permission.objects.all().order_by('content_type__app_label', 'codename')
+    BUSINESS_APPS = ['accounts', 'orders', 'products', 'reviews', 'web', 'chat', 'auth']
+    
+    queryset = Permission.objects.filter(
+        content_type__app_label__in=['accounts', 'orders', 'products', 'reviews', 'web', 'chat', 'auth']
+    ).exclude(
+        content_type__model__in=[
+            'division', 'district', 'subdistrict',
+            'productvariant', 'productimage', 'productspecification',
+            'orderitem', 'paymentinfo', 'orderstatus', 'cart', 'cartitem', 'checkout',
+            'answer', 'message', 'reviewimage'
+        ]
+    ).order_by('content_type__app_label', 'codename')
     serializer_class = PermissionSerializer
     permission_classes = [permissions.IsAdminUser]
     pagination_class = None

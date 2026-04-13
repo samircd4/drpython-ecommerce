@@ -90,8 +90,14 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const hasPermission = (permission) => {
+        if (!permission) return true;
+        if (user?.is_superuser) return true;
+        return user?.permissions?.includes(permission);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, resetPassword, fetchUserProfile, loading }}>
+        <AuthContext.Provider value={{ user, login, register, logout, resetPassword, fetchUserProfile, loading, hasPermission }}>
             {!loading && children}
         </AuthContext.Provider>
     );

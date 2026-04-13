@@ -21,6 +21,7 @@ import toast from "react-hot-toast";
 import CouponModal from "../components/Coupon/CouponModal";
 import ConfirmModal from "../components/Layout/ConfirmModal";
 import { useStoreConfig } from "../hooks/useStoreConfig";
+import { useAuth } from "../Context/AuthContext";
 
 const formatDate = (dateString) => {
     if (!dateString) return "—";
@@ -51,6 +52,7 @@ const Coupons = () => {
     const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [copiedId, setCopiedId] = useState(null);
     const { config } = useStoreConfig();
+    const { hasPermission } = useAuth();
     const symbol = config?.currency_symbol || "৳";
 
     // Delete Modal State
@@ -145,17 +147,19 @@ const Coupons = () => {
                         Manage discount codes for your store
                     </p>
                 </div>
-                <button
-                    onClick={() => {
-                        setSelectedCoupon(null);
-                        setModalMode("create");
-                        setModalOpen(true);
-                    }}
-                    className="flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-sm transition-colors cursor-pointer shadow-lg shadow-blue-600/20"
-                >
-                    <Plus className="w-4 h-4" />
-                    New Coupon
-                </button>
+                {hasPermission('orders.add_coupon') && (
+                    <button
+                        onClick={() => {
+                            setSelectedCoupon(null);
+                            setModalMode("create");
+                            setModalOpen(true);
+                        }}
+                        className="flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-sm transition-colors cursor-pointer shadow-lg shadow-blue-600/20"
+                    >
+                        <Plus className="w-4 h-4" />
+                        New Coupon
+                    </button>
+                )}
             </div>
 
             {/* Search */}
@@ -275,35 +279,41 @@ const Coupons = () => {
 
                                     {/* Actions */}
                                     <div className="flex gap-2 pt-4 border-t border-slate-800">
-                                        <button
-                                            onClick={() => {
-                                                setSelectedCoupon(coupon);
-                                                setModalMode("view");
-                                                setModalOpen(true);
-                                            }}
-                                            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-colors cursor-pointer"
-                                        >
-                                            <Eye className="w-3.5 h-3.5" />
-                                            View
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setSelectedCoupon(coupon);
-                                                setModalMode("edit");
-                                                setModalOpen(true);
-                                            }}
-                                            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 text-xs font-bold rounded-xl transition-colors cursor-pointer"
-                                        >
-                                            <Pencil className="w-3.5 h-3.5" />
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(coupon.id)}
-                                            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-red-600/10 hover:bg-red-600/20 text-red-400 text-xs font-bold rounded-xl transition-colors cursor-pointer"
-                                        >
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                            Delete
-                                        </button>
+                                        {hasPermission('orders.view_coupon') && (
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedCoupon(coupon);
+                                                    setModalMode("view");
+                                                    setModalOpen(true);
+                                                }}
+                                                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                                            >
+                                                <Eye className="w-3.5 h-3.5" />
+                                                View
+                                            </button>
+                                        )}
+                                        {hasPermission('orders.change_coupon') && (
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedCoupon(coupon);
+                                                    setModalMode("edit");
+                                                    setModalOpen(true);
+                                                }}
+                                                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                                            >
+                                                <Pencil className="w-3.5 h-3.5" />
+                                                Edit
+                                            </button>
+                                        )}
+                                        {hasPermission('orders.delete_coupon') && (
+                                            <button
+                                                onClick={() => handleDelete(coupon.id)}
+                                                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-red-600/10 hover:bg-red-600/20 text-red-400 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                                            >
+                                                <Trash2 className="w-3.5 h-3.5" />
+                                                Delete
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </motion.div>

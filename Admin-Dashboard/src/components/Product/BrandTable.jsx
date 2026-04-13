@@ -1,7 +1,9 @@
 import React from 'react';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { useAuth } from '../../Context/AuthContext';
 
 const BrandTable = ({ brands, loading, handleDelete, onEdit, onView }) => {
+    const { hasPermission } = useAuth();
     if (loading) {
         return (
             <div className="flex items-center justify-center p-20 bg-[#0b1a2a]/50 rounded-2xl border border-slate-800">
@@ -49,21 +51,24 @@ const BrandTable = ({ brands, loading, handleDelete, onEdit, onView }) => {
                                         >
                                             <Eye className="h-5 w-5" />
                                         </button>
-                                        <button 
-                                            title="Edit Brand"
-                                            onClick={() => onEdit && onEdit(brand)}
-                                            className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"
-                                        >
-                                            <Pencil className="h-5 w-5" />
-                                        </button>
-                                        <button 
-                                            title="Delete Brand"
-                                            onClick={() => handleDelete && handleDelete(brand.id)}
-                                            className="p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-500 disabled:hover:text-red-500 disabled:hover:cursor-not-allowed"
-                                            disabled={true}
-                                        >
-                                            <Trash2 className="h-5 w-5" />
-                                        </button>
+                                        {hasPermission('products.change_brand') && (
+                                            <button 
+                                                title="Edit Brand"
+                                                onClick={() => onEdit && onEdit(brand)}
+                                                className="p-1.5 bg-green-500/10 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all cursor-pointer"
+                                            >
+                                                <Pencil className="h-5 w-5" />
+                                            </button>
+                                        )}
+                                        {hasPermission('products.delete_brand') && (
+                                            <button 
+                                                title="Delete Brand"
+                                                onClick={() => handleDelete && handleDelete(brand.id)}
+                                                className="p-1.5 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+                                            >
+                                                <Trash2 className="h-5 w-5" />
+                                            </button>
+                                        )}
                                     </div>
                                 </td>
                             </tr>

@@ -5,24 +5,24 @@ import NagadIcon from "../../assets/Nagad.svg";
 import RocketIcon from "../../assets/Rocket.svg";
 import { useConfig } from "../../context/ConfigContext";
 
-const PaymentInfoBox = ({ method }) => {
+const PaymentInfoBox = ({ method, deliveryCharge }) => {
     const { config } = useConfig();
     const symbol = config?.currency_symbol || "৳";
 
-    const PAYMENT_INFO = {
+    const info = {
         bkash: {
             title: "Bkash Payment",
-            description: "Send your payment to our personal Bkash number: 01926108816",
+            description: `Send your payment to our personal Bkash number: ${config?.bkash_number || "01926108816"}`,
             icon: <img src={BKashIcon} alt="Bkash" className="h-8 w-auto object-contain" />,
         },
         rocket: {
             title: "Rocket Payment",
-            description: "Send your payment to our personal Rocket number: 01781355377",
+            description: `Send your payment to our personal Rocket number: ${config?.rocket_number || "01781355377"}`,
             icon: <img src={RocketIcon} alt="Rocket" className="h-8 w-auto object-contain" />,
         },
         nagad: {
             title: "Nagad Payment",
-            description: "Send your payment to our personal Nagad number: 01926108816",
+            description: `Send your payment to our personal Nagad number: ${config?.nagad_number || "01926108816"}`,
             icon: <img src={NagadIcon} alt="Nagad" className="h-8 w-auto object-contain" />,
         },
         card_mfs: {
@@ -32,12 +32,10 @@ const PaymentInfoBox = ({ method }) => {
         },
         cod: {
             title: "Cash on Delivery",
-            description: `Send the delivery fee ${symbol}120 to our personal Bkash/Nagad/Upay number: 01926108816`,
+            description: `Send the delivery fee ${symbol}${deliveryCharge || 120} to our personal Bkash/Nagad number: ${config?.bkash_number || config?.nagad_number || "01926108816"}`,
             icon: <FaMoneyBillWave className="text-purple-600" />,
         },
-    };
-
-    const info = PAYMENT_INFO[method];
+    }[method];
 
     return (
         <div className="bg-purple-50 border-l-4 border-purple-600 p-4 rounded-md mb-4 flex items-start gap-3">

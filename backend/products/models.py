@@ -186,6 +186,9 @@ class Product(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        permissions = [
+            ("export_import", "Can manage data export and import"),
+        ]
 
     def save(self, *args, **kwargs):
         # 1️⃣ Auto Slug

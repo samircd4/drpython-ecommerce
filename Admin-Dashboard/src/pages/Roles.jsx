@@ -18,8 +18,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from "../api/axiosConfig";
 import Breadcrumb from "../components/Layout/Breadcrumb";
 import toast from "react-hot-toast";
+import { useAuth } from "../Context/AuthContext";
 
 const Roles = () => {
+    const { hasPermission } = useAuth();
     const [roles, setRoles] = useState([]);
     const [allPermissions, setAllPermissions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -50,23 +52,80 @@ const Roles = () => {
         fetchRolesAndPermissions();
     }, []);
 
-    // Group permissions by module (content_type or codename prefix)
+    // Friendly names for models
+    const MODEL_LABELS = {
+        'product': '📦 Product',
+        'productvariant': '📦 Product Variant',
+        'productimage': '📦 Product Image',
+        'productspecification': '📦 Product Specification',
+        'category': '🏷️ Category',
+        'brand': '🏷️ Brand',
+        'order': '🛒 Order',
+        'orderitem': '🛒 Order Item',
+        'payment': '💳 Payment',
+        'coupon': '🎟️ Coupon',
+        'customer': '👤 Customer',
+        'address': '📍 Address',
+        'review': '⭐ Review',
+        'question': '❓ Q&A',
+        'answer': '❓ Answer',
+        'contact': '📧 Contact',
+        'subscribe': '📧 Subscription',
+        'user': '🔐 User',
+        'group': '🔐 Group',
+        'conversation': '💬 Conversation',
+        'message': '💬 Message',
+        'notification': '🔔 Notification',
+        'storeconfiguration': '⚙️ Store Config',
+        'cart': '🛒 Cart',
+        'cartitem': '🛒 Cart Item',
+        'checkout': '🛒 Checkout',
+        'address': '🏠 Address',
+        'data_management': '📊 Data Management',
+    };
+
+    // Also keep app-level labels for the card breakdown
+    const APP_LABELS = {
+        'products': '📦 Products',
+        'orders': '🛒 Orders & Payments',
+        'accounts': '👤 Customers & Addresses',
+        'reviews': '⭐ Reviews',
+        'auth': '🔐 Users & Groups',
+        'chat': '💬 Chat',
+        'web': '🌐 Website',
+    };
+
+    // Group permissions by model (from backend) with friendly names
     const groupedPermissions = useMemo(() => {
         const groups = {};
         allPermissions.forEach(perm => {
-            // Content type ID is a bit opaque, using codename or name for grouping
-            // Usually codenames are like 'add_product', 'change_order'
-            // We'll group by the 'module' part (usually the part after the first underscore for django defaults, 
-            // but let's try something more robust)
+            // Special Case: Isolate Export/Import into its own card
+            if (perm.codename === 'export_import' || perm.codename === 'export_product') {
+                const groupName = MODEL_LABELS['data_management'];
+                if (!groups[groupName]) groups[groupName] = [];
+                groups[groupName].push(perm);
+                return;
+            }
+
+            const modelName = perm.model || 'system';
+            const groupName = MODEL_LABELS[modelName] || modelName;
             
-            // In Django, codenames are 'action_model'
-            const parts = perm.codename.split('_');
-            const moduleName = parts.length > 1 ? parts.slice(1).join('_') : 'system';
-            
-            if (!groups[moduleName]) groups[moduleName] = [];
-            groups[moduleName].push(perm);
+            if (!groups[groupName]) groups[groupName] = [];
+            groups[groupName].push(perm);
         });
-        return groups;
+        
+        // Sort by the order defined in MODEL_LABELS
+        const orderedKeys = Object.values(MODEL_LABELS);
+        const sorted = {};
+        orderedKeys.forEach(key => {
+            if (groups[key]) sorted[key] = groups[key];
+        });
+        // Add any remaining
+        Object.keys(groups).forEach(key => {
+            if (!sorted[key]) sorted[key] = groups[key];
+        });
+        
+        return sorted;
     }, [allPermissions]);
 
     const handleOpenModal = (role = null) => {
@@ -172,7 +231,7 @@ const Roles = () => {
                     </div>
                     <button 
                         onClick={() => handleOpenModal()}
-                        className="flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl transition-all shadow-xl shadow-indigo-600/20 font-black text-[10px] uppercase tracking-widest active:scale-[0.98]"
+                        className="flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl transition-all shadow-xl shadow-indigo-600/20 font-black text-[10px] uppercase tracking-widest active:scale-[0.98] cursor-pointer"
                     >
                         <Plus className="w-4 h-4" />
                         Initialize New Role
@@ -200,14 +259,24 @@ const Roles = () => {
                                     </div>
                                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button 
-                                            onClick={() => handleOpenModal(role)}
-                                            className="p-2 text-slate-400 hover:text-indigo-400 transition-colors"
+                                            onClick={() => hasPermission('auth.change_group') && handleOpenModal(role)}
+                                            disabled={!hasPermission('auth.change_group')}
+                                            className={`p-2 transition-colors ${
+                                                hasPermission('auth.change_group')
+                                                    ? 'text-slate-400 hover:text-indigo-400 cursor-pointer'
+                                                    : 'text-slate-600/30 cursor-not-allowed hidden'
+                                            }`}
                                         >
                                             <Save className="w-4 h-4" />
                                         </button>
                                         <button 
-                                            onClick={() => handleDeleteRole(role.id, role.name)}
-                                            className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                                            onClick={() => hasPermission('auth.delete_group') && handleDeleteRole(role.id, role.name)}
+                                            disabled={!hasPermission('auth.delete_group')}
+                                            className={`p-2 transition-colors ${
+                                                hasPermission('auth.delete_group')
+                                                    ? 'text-slate-400 hover:text-red-400 cursor-pointer'
+                                                    : 'text-slate-600/30 cursor-not-allowed hidden'
+                                            }`}
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
@@ -215,24 +284,43 @@ const Roles = () => {
                                 </div>
                                 
                                 <h3 className="text-xl font-black text-white tracking-tight uppercase mb-2">{role.name}</h3>
-                                <div className="flex items-center gap-2 mb-8">
+                                <div className="flex items-center gap-2 mb-4">
                                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-                                    <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em]">Authorized Access Group</span>
+                                    <span className="text-[10px] text-slate-500 font-black uppercase tracking-[0.2em]">{role.permissions?.length || 0} Permissions</span>
                                 </div>
                                 
-                                <div className="pt-8 border-t border-slate-800/60 flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-slate-800/50 rounded-xl">
-                                            <Key className="w-4 h-4 text-slate-400" />
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-lg font-black text-slate-200">{role.permissions?.length || 0}</span>
-                                            <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Active Policies</span>
-                                        </div>
-                                    </div>
+                                {/* Grouped permission breakdown */}
+                                <div className="space-y-1.5 mb-6 max-h-40 overflow-y-auto no-scrollbar">
+                                    {(() => {
+                                        const permIds = role.permissions || [];
+                                        if (permIds.length === 0) return (
+                                            <p className="text-[10px] text-slate-600 italic">No permissions assigned</p>
+                                        );
+                                        
+                                        // Group the role's permission IDs by the app label from allPermissions
+                                        const breakdown = {};
+                                        permIds.forEach(pid => {
+                                            const perm = allPermissions.find(p => p.id === pid);
+                                            if (perm) {
+                                                const label = APP_LABELS[perm.app_label] || perm.app_label;
+                                                if (!breakdown[label]) breakdown[label] = [];
+                                                breakdown[label].push(perm);
+                                            }
+                                        });
+                                        
+                                        return Object.entries(breakdown).map(([label, perms]) => (
+                                            <div key={label} className="flex items-center justify-between px-3 py-1.5 bg-slate-800/30 rounded-xl">
+                                                <span className="text-[11px] font-bold text-slate-400">{label}</span>
+                                                <span className="text-[10px] font-black text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-md">{perms.length}</span>
+                                            </div>
+                                        ));
+                                    })()}
+                                </div>
+                                
+                                <div className="pt-4 border-t border-slate-800/60 flex items-center justify-end">
                                     <button 
                                         onClick={() => handleOpenModal(role)}
-                                        className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300 transition-colors"
+                                        className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer"
                                     >
                                         Configure →
                                     </button>
@@ -272,7 +360,7 @@ const Roles = () => {
                                         <p className="text-xs text-slate-500 font-medium">Reconfiguring security privileges for the operational cluster.</p>
                                     </div>
                                 </div>
-                                <button onClick={() => setIsModifying(false)} className="p-3 bg-slate-800/40 hover:bg-slate-800 text-slate-400 hover:text-white rounded-2xl transition-all">
+                                <button onClick={() => setIsModifying(false)} className="p-3 bg-slate-800/40 hover:bg-slate-800 text-slate-400 hover:text-white rounded-2xl transition-all cursor-pointer"> 
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
@@ -297,38 +385,61 @@ const Roles = () => {
 
                                     {/* Permission Matrix */}
                                     <section className="space-y-8 text-left">
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex items-center justify-between flex-wrap gap-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="h-4 w-1 bg-emerald-500 rounded-full" />
                                                 <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Capability Assignment Matrix</h3>
                                             </div>
-                                            <div className="flex items-center gap-2 px-3 py-1 bg-slate-800/40 rounded-full">
-                                                <span className="text-[9px] font-black text-indigo-400">{formData.permissions.length}</span>
-                                                <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">Policies Active</span>
+                                            <div className="flex items-center gap-4">
+                                                <div className="relative">
+                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
+                                                    <input
+                                                        type="text"
+                                                        value={searchTerm}
+                                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                                        placeholder="Filter permissions..."
+                                                        className="bg-[#071229] border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-300 placeholder:text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-600/20 w-56"
+                                                    />
+                                                </div>
+                                                <div className="flex items-center gap-2 px-3 py-1 bg-slate-800/40 rounded-full">
+                                                    <span className="text-[9px] font-black text-indigo-400">{formData.permissions.length}</span>
+                                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">Active</span>
+                                                </div>
                                             </div>
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             {Object.entries(groupedPermissions).map(([module, perms]) => {
-                                                const allChecked = perms.every(p => formData.permissions.includes(p.id));
-                                                const someChecked = perms.some(p => formData.permissions.includes(p.id));
+                                                // Filter permissions by search term
+                                                const filteredPerms = searchTerm 
+                                                    ? perms.filter(p => 
+                                                        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                                        p.codename.toLowerCase().includes(searchTerm.toLowerCase())
+                                                      )
+                                                    : perms;
+                                                
+                                                if (filteredPerms.length === 0) return null;
+                                                
+                                                const allChecked = filteredPerms.every(p => formData.permissions.includes(p.id));
+                                                const someChecked = filteredPerms.some(p => formData.permissions.includes(p.id));
 
                                                 return (
                                                     <div key={module} className="bg-[#071229] border border-slate-800 rounded-3xl overflow-hidden flex flex-col">
-                                                        <div className="px-6 py-4 bg-slate-800/30 border-b border-slate-800 flex items-center justify-between">
+                                                        <div className={`px-6 py-4 border-b border-slate-800 flex items-center justify-between ${someChecked ? 'bg-indigo-900/20' : 'bg-slate-800/30'}`}>
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-xs font-black uppercase text-slate-300 tracking-widest">{module}</span>
+                                                                <span className="text-sm font-black text-slate-300 tracking-wide">{module}</span>
+                                                                <span className="text-[9px] font-bold text-slate-600">({filteredPerms.length})</span>
                                                             </div>
                                                             <button 
                                                                 type="button"
-                                                                onClick={() => handleToggleModule(perms, allChecked)}
-                                                                className={`text-[9px] font-black uppercase tracking-tighter px-2.5 py-1 rounded-lg transition-all ${allChecked ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}
+                                                                onClick={() => handleToggleModule(filteredPerms, allChecked)}
+                                                                className={`text-[9px] font-black uppercase tracking-tighter px-2.5 py-1 rounded-lg transition-all cursor-pointer ${allChecked ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'}`}
                                                             >
-                                                                {allChecked ? 'Revoke All' : 'Authorize All'}
+                                                                {allChecked ? 'Revoke All' : 'Grant All'}
                                                             </button>
                                                         </div>
                                                         <div className="p-4 grid grid-cols-1 gap-1">
-                                                            {perms.map(perm => (
+                                                            {filteredPerms.map(perm => (
                                                                 <label 
                                                                     key={perm.id}
                                                                     className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${formData.permissions.includes(perm.id) ? 'bg-indigo-600/10' : 'hover:bg-slate-800/40'}`}
@@ -347,7 +458,7 @@ const Roles = () => {
                                                                             {perm.name}
                                                                         </span>
                                                                         <span className="text-[9px] text-slate-700 font-mono font-bold tracking-tight">
-                                                                            {perm.codename}
+                                                                            {perm.app_label}.{perm.codename}
                                                                         </span>
                                                                     </div>
                                                                 </label>
@@ -366,14 +477,14 @@ const Roles = () => {
                                 <button 
                                     type="button"
                                     onClick={() => setIsModifying(false)}
-                                    className="px-8 py-4 text-slate-500 font-black uppercase tracking-widest text-[10px] hover:text-slate-300 transition-colors"
+                                    className="px-8 py-4 text-slate-500 font-black uppercase tracking-widest text-[10px] hover:text-slate-300 transition-colors cursor-pointer"
                                 >
                                     Abort Changes
                                 </button>
                                 <button 
                                     onClick={handleSubmit}
                                     disabled={saving || !formData.name.trim()}
-                                    className="flex items-center justify-center gap-3 px-12 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-indigo-600/20 transition-all active:scale-[0.98] disabled:opacity-50"
+                                    className="flex items-center justify-center gap-3 px-12 py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-indigo-600/20 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                                 >
                                     {saving ? (
                                         <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />

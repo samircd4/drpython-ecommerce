@@ -7,6 +7,7 @@ import Pagination from '../components/Layout/Pagination';
 import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../Context/AuthContext';
 
 const StatusBadge = ({ status }) => {
     const map = { Active: 'bg-green-500 text-white', Pending: 'bg-yellow-500 text-black', Banned: 'bg-red-500 text-white' };
@@ -20,6 +21,7 @@ const SortArrow = ({ column, sortColumn, sortDirection }) => {
 
 const Customers = () => {
     const navigate = useNavigate();
+    const { hasPermission } = useAuth();
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [totalCount, setTotalCount] = useState(0);
@@ -123,13 +125,15 @@ const Customers = () => {
                         { label: "Customers", path: "/customers" }
                     ]} 
                 />
-                <button 
-                    onClick={() => navigate('/customers/new')}
-                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95 cursor-pointer"
-                >
-                    <Plus className="w-4 h-4" />
-                    Add Customer
-                </button>
+                {hasPermission('accounts.add_customer') && (
+                    <button 
+                        onClick={() => navigate('/customers/new')}
+                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95 cursor-pointer"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Add Customer
+                    </button>
+                )}
             </div>
 
             <div className="bg-[#071229] p-4 rounded-xl border border-slate-800 shadow-sm">
@@ -211,8 +215,12 @@ const Customers = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs">{new Date(c.created_at).toLocaleDateString()}</td>
                                 <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex space-x-2">
-                                        <button onClick={() => navigate(`/customers/edit/${c.id}`)} title="Edit" className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-white transition-all cursor-pointer shadow-lg shadow-emerald-500/0 hover:shadow-emerald-500/20"><Pencil className="h-4 w-4" /></button>
-                                        <button title="Delete" onClick={() => handleDeleteCustomer(c.id)} className="p-2 bg-red-500/10 text-red-500 hover:text-white hover:bg-red-500 rounded-xl transition-all cursor-pointer"><Trash2 className="h-4 w-4" /></button>
+                                        {hasPermission('accounts.change_customer') && (
+                                            <button onClick={() => navigate(`/customers/edit/${c.id}`)} title="Edit" className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-white transition-all cursor-pointer shadow-lg shadow-emerald-500/0 hover:shadow-emerald-500/20"><Pencil className="h-4 w-4" /></button>
+                                        )}
+                                        {hasPermission('accounts.delete_customer') && (
+                                            <button title="Delete" onClick={() => handleDeleteCustomer(c.id)} className="p-2 bg-red-500/10 text-red-500 hover:text-white hover:bg-red-500 rounded-xl transition-all cursor-pointer"><Trash2 className="h-4 w-4" /></button>
+                                        )}
                                     </div>
                                 </td>
                             </tr>

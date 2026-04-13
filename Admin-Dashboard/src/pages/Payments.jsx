@@ -7,8 +7,10 @@ import Pagination from '../components/Layout/Pagination';
 import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../Context/AuthContext';
 
 const PaymentModal = ({ payment, isOpen, onClose, onUpdatePayment, readOnly = false, onEditClick, onDeleteClick }) => {
+    const { hasPermission } = useAuth();
     const [formData, setFormData] = useState({
         transaction_id: payment?.transaction_id || '',
         amount: payment?.amount || 0,
@@ -99,7 +101,7 @@ const PaymentModal = ({ payment, isOpen, onClose, onUpdatePayment, readOnly = fa
                             </div>
 
                             <div className="flex items-center gap-3 pt-4 mt-4 border-t border-slate-800">
-                                {onEditClick && (
+                                {onEditClick && hasPermission('orders.change_paymentinfo') && (
                                     <button 
                                         onClick={onEditClick}
                                         className="flex-1 flex items-center justify-center py-2.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl transition-all font-bold text-sm shadow-lg gap-2 cursor-pointer"
@@ -107,11 +109,10 @@ const PaymentModal = ({ payment, isOpen, onClose, onUpdatePayment, readOnly = fa
                                         <Pencil className="w-4 h-4" /> Edit
                                     </button>
                                 )}
-                                {onDeleteClick && (
+                                {onDeleteClick && hasPermission('orders.delete_paymentinfo') && (
                                     <button 
                                         onClick={onDeleteClick}
-                                        className="disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-500 disabled:hover:text-red-500 disabled:hover:cursor-not-allowed flex-1 flex items-center justify-center py-2.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all font-bold text-sm shadow-lg gap-2"
-                                        disabled={true}
+                                        className="flex-1 flex items-center justify-center py-2.5 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all font-bold text-sm shadow-lg gap-2 cursor-pointer"
                                     >
                                         <Trash2 className="w-4 h-4" /> Delete
                                     </button>
@@ -139,6 +140,7 @@ const PaymentModal = ({ payment, isOpen, onClose, onUpdatePayment, readOnly = fa
 
 const Payments = () => {
     const navigate = useNavigate();
+    const { hasPermission } = useAuth();
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -237,13 +239,15 @@ const Payments = () => {
         <div className="p-0 sm:p-6 min-h-screen bg-transparent">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <Breadcrumb title="Payments" paths={["Home", "Payments"]} />
-                <button 
-                    onClick={() => navigate('/payments/new')}
-                    className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-600/20 active:scale-95 cursor-pointer"
-                >
-                    <Plus className="w-4 h-4" />
-                    Add Payment
-                </button>
+                {hasPermission('orders.add_paymentinfo') && (
+                    <button 
+                        onClick={() => navigate('/payments/new')}
+                        className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-600/20 active:scale-95 cursor-pointer"
+                    >
+                        <Plus className="w-4 h-4" />
+                        Add Payment
+                    </button>
+                )}
             </div>
 
             <div className="my-6">

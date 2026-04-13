@@ -3,6 +3,7 @@ import { Eye, Pencil, Trash2, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useProductLink from '../../hooks/useProductLink';
 import { useStoreConfig } from '../../hooks/useStoreConfig';
+import { useAuth } from '../../Context/AuthContext';
 
 
 const SortArrow = ({ column, sortColumn, sortDirection }) => {
@@ -19,6 +20,7 @@ const TakaIcon = ({ className = "w-3 h-3" }) => {
 const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleSort, handleDelete }) => {
     const navigate = useNavigate();
     const { copyToClipboard } = useProductLink();
+    const { hasPermission } = useAuth();
 
     return (
         <div className="overflow-x-auto rounded-lg border border-slate-700 shadow-sm">
@@ -145,12 +147,25 @@ const BestSellingProductsTable = ({ products, sortColumn, sortDirection, handleS
                                             <Eye className="h-4 w-4" />
                                         </button>
                                         <button 
-                                            onClick={() => navigate(`/products/edit/${product.id}`)}
-                                            className="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500 hover:text-white transition-all cursor-pointer"
+                                            onClick={() => hasPermission('products.change_product') && navigate(`/products/edit/${product.id}`)}
+                                            disabled={!hasPermission('products.change_product')}
+                                            className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                                                hasPermission('products.change_product')
+                                                    ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white'
+                                                    : 'bg-emerald-500/5 text-emerald-400/30 cursor-not-allowed hidden'
+                                            }`}
                                         >
                                             <Pencil className="h-4 w-4" />
                                         </button>
-                                        <button onClick={() => handleDelete && handleDelete(product.id)} className="p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-all cursor-pointer">
+                                        <button 
+                                            onClick={() => handleDelete && handleDelete(product.id)} 
+                                            disabled={!hasPermission('products.delete_product')}
+                                            className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                                                hasPermission('products.delete_product')
+                                                    ? 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white'
+                                                    : 'bg-red-500/5 text-red-500/30 cursor-not-allowed hidden'
+                                            }`}
+                                        >
                                             <Trash2 className="h-4 w-4" />
                                         </button>
                                     </div>

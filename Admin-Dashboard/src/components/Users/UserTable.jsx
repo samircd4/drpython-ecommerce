@@ -1,9 +1,11 @@
 import React from 'react';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext';
 
 const UserTable = ({ users = [], loading = false }) => {
     const navigate = useNavigate();
+    const { hasPermission } = useAuth();
     return (
         <div className="overflow-x-auto rounded-xl border border-slate-700 shadow-xl">
             <table className="min-w-full divide-y divide-slate-700">
@@ -45,6 +47,8 @@ const UserTable = ({ users = [], loading = false }) => {
                                     <span className="px-2 py-1 bg-purple-500/10 text-purple-400 rounded-md text-[10px] font-black uppercase tracking-tighter">Superuser</span>
                                 ) : user.is_staff ? (
                                     <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-md text-[10px] font-black uppercase tracking-tighter">Staff</span>
+                                ) : user.customer_type === 'wholesale' ? (
+                                    <span className="px-2 py-1 bg-amber-500/10 text-amber-500 rounded-md text-[10px] font-black uppercase tracking-tighter">Wholesaler</span>
                                 ) : (
                                     <span className="px-2 py-1 bg-slate-700/50 text-slate-400 rounded-md text-[10px] font-black uppercase tracking-tighter">Customer</span>
                                 )}
@@ -62,10 +66,23 @@ const UserTable = ({ users = [], loading = false }) => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                 <div className="flex space-x-2">
-                                    <button onClick={() => navigate(`/users/edit/${user.id}`)} title="Edit" className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-white transition-all cursor-pointer shadow-lg shadow-emerald-500/0 hover:shadow-emerald-500/20">
+                                    <button 
+                                        onClick={() => hasPermission('auth.change_user') && navigate(`/users/edit/${user.id}`)} 
+                                        title="Edit" 
+                                        disabled={!hasPermission('auth.change_user')}
+                                        className={`p-2 rounded-xl transition-all shadow-lg ${
+                                            hasPermission('auth.change_user') 
+                                                ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white cursor-pointer shadow-emerald-500/0 hover:shadow-emerald-500/20' 
+                                                : 'bg-emerald-500/5 text-emerald-400/30 cursor-not-allowed hidden'
+                                        }`}
+                                    >
                                         <Pencil className="h-4 w-4" />
                                     </button>
-                                    <button title="Delete" disabled className="p-2 bg-red-500/10 text-red-500/30 rounded-xl cursor-not-allowed border border-red-500/5">
+                                    <button 
+                                        title="Delete" 
+                                        disabled={true} 
+                                        className="p-2 bg-red-500/10 text-red-500/30 rounded-xl cursor-not-allowed border border-red-500/5"
+                                    >
                                         <Trash2 className="h-4 w-4" />
                                     </button>
                                 </div>

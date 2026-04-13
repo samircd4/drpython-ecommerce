@@ -78,7 +78,7 @@ const Footer = () => {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Location</p>
-                                        <p className="text-sm font-semibold">{config?.location || "Islami Super Market, Kishoreganj"}</p>
+                                        <p className="text-sm font-semibold">{config?.location}</p>
                                     </div>
                                 </div>
                                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-4 group hover:bg-white/10 transition-all duration-300">
@@ -87,7 +87,7 @@ const Footer = () => {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Hotline</p>
-                                        <a href={`tel:${config?.support_phone || "+8801708601002"}`} className="text-sm font-semibold">{config?.support_phone || "+880 1708 601002"}</a>
+                                        <a href={`tel:${config?.support_phone}`} className="text-sm font-semibold">{config?.support_phone}</a>
                                     </div>
                                 </div>
                             </div>
@@ -216,17 +216,17 @@ const Footer = () => {
                                 {[
                                     {
                                         icon: <FaFacebookF />,
-                                        link: config?.facebook_url || "https://facebook.com/shopsarker",
+                                        link: config?.facebook_url,
                                         show: !!(config?.facebook_url || !config) // show default if config not yet loaded
                                     },
                                     {
                                         icon: <FaInstagram />,
-                                        link: config?.instagram_url || "https://www.instagram.com/sarkershop",
+                                        link: config?.instagram_url,
                                         show: !!(config?.instagram_url || !config)
                                     },
                                     {
                                         icon: <FaTiktok />,
-                                        link: config?.tiktok_url || "https://www.tiktok.com/@sarkershop",
+                                        link: config?.tiktok_url,
                                         show: !!config?.tiktok_url
                                     },
                                     {

@@ -9,8 +9,10 @@ import FilterBar from '../components/FilterBar/FilterBar';
 import ConfirmModal from '../components/Layout/ConfirmModal';
 import Pagination from '../components/Layout/Pagination';
 import api from '../api/axiosConfig';
+import { useAuth } from '../Context/AuthContext';
 
 const Categories = () => {
+    const { hasPermission } = useAuth();
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -100,12 +102,14 @@ const Categories = () => {
         <div className="p-0 sm:px-6 sm:py-4 min-h-screen" style={{ backgroundImage: 'linear-gradient(90deg,var(--bg-start),var(--bg-mid),var(--bg-end))' }}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <Breadcrumb title="Categories" paths={["Home", "Products", "Categories"]} />
-                <button 
-                    onClick={handleAddClick}
-                    className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl hover:bg-emerald-500 transition-all font-semibold shadow-lg shadow-emerald-600/20 w-fit cursor-pointer"
-                >
-                    <Plus className="h-5 w-5" /> Add Category
-                </button>
+                {hasPermission('products.add_category') && (
+                    <button 
+                        onClick={handleAddClick}
+                        className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl hover:bg-emerald-500 transition-all font-semibold shadow-lg shadow-emerald-600/20 w-fit cursor-pointer"
+                    >
+                        <Plus className="h-5 w-5" /> Add Category
+                    </button>
+                )}
             </div>
 
             <div className="my-6">

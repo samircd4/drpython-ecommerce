@@ -4,6 +4,7 @@ import Breadcrumb from '../components/Layout/Breadcrumb';
 import Pagination from '../components/Layout/Pagination';
 import api from '../api/axiosConfig';
 import useProductLink from '../hooks/useProductLink';
+import { useAuth } from '../Context/AuthContext';
 
 
 const ProductQnA = () => {
@@ -12,6 +13,7 @@ const ProductQnA = () => {
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const { copyToClipboard } = useProductLink();
+    const { hasPermission } = useAuth();
 
 
     useEffect(() => {
@@ -88,12 +90,16 @@ const ProductQnA = () => {
                                     </div>
                                 ) : (
                                     <div className="flex gap-2">
-                                        <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 rounded-lg transition-all cursor-pointer">
-                                            Answer Question
-                                        </button>
-                                        <button className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-all cursor-pointer">
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
+                                        {hasPermission('reviews.change_question') && (
+                                            <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 rounded-lg transition-all cursor-pointer">
+                                                Answer Question
+                                            </button>
+                                        )}
+                                        {hasPermission('reviews.delete_question') && (
+                                            <button className="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-all cursor-pointer">
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        )}
                                     </div>
                                 )}
                             </div>

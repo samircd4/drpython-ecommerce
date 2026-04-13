@@ -67,6 +67,13 @@ class StoreConfiguration(models.Model):
     timezone = models.CharField(max_length=100, default="Asia/Dhaka", blank=True, null=True)
     currency_symbol = models.CharField(max_length=10, default="৳", blank=True, null=True)
     show_website_name = models.BooleanField(default=False)
+
+    # Payment Settings
+    is_cod_enabled = models.BooleanField(default=True)
+    is_online_payment_enabled = models.BooleanField(default=False)
+    bkash_number = models.CharField(max_length=20, blank=True, null=True)
+    nagad_number = models.CharField(max_length=20, blank=True, null=True)
+    rocket_number = models.CharField(max_length=20, blank=True, null=True)
     
 
     def save(self, *args, **kwargs):

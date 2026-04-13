@@ -14,23 +14,27 @@ import {
     MapPin
 } from "lucide-react";
 import { useModals } from "../../Context/ModalContext";
+import { useAuth } from "../../Context/AuthContext";
 
 const fabItems = [
-    { id: 'product', label: 'Product', icon: Box, color: 'text-blue-400', path: '/products/new' },
-    { id: 'brand', label: 'Brand', icon: Tag, color: 'text-purple-400', modal: 'brand' },
-    { id: 'category', label: 'Category', icon: Layers, color: 'text-emerald-400', modal: 'category' },
-    { id: 'order', label: 'Order', icon: ShoppingBag, color: 'text-amber-400', path: '/orders/add' },
-    { id: 'payment', label: 'Payment', icon: CreditCard, color: 'text-green-400', path: '/payments/new' },
-    { id: 'customer', label: 'Customer', icon: Users, color: 'text-pink-400', path: '/customers/new' },
-    { id: 'address', label: 'Address', icon: MapPin, color: 'text-orange-400', action: 'address' },
-    { id: 'coupon', label: 'Coupon', icon: Ticket, color: 'text-yellow-400', modal: 'coupon' },
+    { id: 'product', label: 'Product', icon: Box, color: 'text-blue-400', path: '/products/new', permission: 'products.add_product' },
+    { id: 'brand', label: 'Brand', icon: Tag, color: 'text-purple-400', modal: 'brand', permission: 'products.add_brand' },
+    { id: 'category', label: 'Category', icon: Layers, color: 'text-emerald-400', modal: 'category', permission: 'products.add_category' },
+    { id: 'order', label: 'Order', icon: ShoppingBag, color: 'text-amber-400', path: '/orders/add', permission: 'orders.add_order' },
+    { id: 'payment', label: 'Payment', icon: CreditCard, color: 'text-green-400', path: '/payments/new', permission: 'orders.add_payment' },
+    { id: 'customer', label: 'Customer', icon: Users, color: 'text-pink-400', path: '/customers/new', permission: 'accounts.add_customer' },
+    { id: 'address', label: 'Address', icon: MapPin, color: 'text-orange-400', action: 'address', permission: 'accounts.add_address' },
+    { id: 'coupon', label: 'Coupon', icon: Ticket, color: 'text-yellow-400', modal: 'coupon', permission: 'orders.add_coupon' },
 ];
 
 const MobileFAB = () => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const { openModal, openAddressModal } = useModals();
+    const { hasPermission } = useAuth();
     const fabRef = useRef(null);
+
+    const visibleFabItems = fabItems.filter(item => hasPermission(item.permission));
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -53,6 +57,8 @@ const MobileFAB = () => {
         }
     };
 
+    if (visibleFabItems.length === 0) return null;
+
     return (
         <div className="fixed bottom-6 right-6 z-50" ref={fabRef}>
             {/* Menu Items */}
@@ -70,7 +76,7 @@ const MobileFAB = () => {
 
                         {/* Menu */}
                         <div className="absolute bottom-16 right-0 z-50 flex flex-col gap-2 items-end">
-                            {fabItems.map((item, index) => (
+                            {visibleFabItems.map((item, index) => (
                                 <motion.button
                                     key={item.id}
                                     initial={{ opacity: 0, x: 40, scale: 0.8 }}
@@ -84,7 +90,7 @@ const MobileFAB = () => {
                                         opacity: 0,
                                         x: 40,
                                         scale: 0.8,
-                                        transition: { delay: (fabItems.length - index) * 0.03 }
+                                        transition: { delay: (visibleFabItems.length - index) * 0.03 }
                                     }}
                                     onClick={() => handleItemClick(item)}
                                     className="flex items-center gap-3 px-4 py-3 bg-[#0b1a2a] border border-slate-700/50 rounded-xl shadow-2xl cursor-pointer group hover:bg-slate-800 transition-colors min-w-[160px]"

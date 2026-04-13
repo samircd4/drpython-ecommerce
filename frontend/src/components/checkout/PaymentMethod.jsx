@@ -33,20 +33,22 @@ const PaymentMethod = ({
                 Select Payment Method
             </h3>
             <div className="space-y-3">
-                <label className="flex items-center justify-between p-2 rounded cursor-pointer">
-                    <span className="flex items-center gap-2">
-                        <input
-                            type="radio"
-                            name="pm"
-                            value="cod"
-                            checked={paymentMethod === "cod"}
-                            onChange={(e) => onChange(e.target.value)}
-                            className="accent-purple-600 w-4 h-4"
-                        />
-                        <span>Cash on Delivery</span>
-                    </span>
-                    <FaMoneyBillWave className="text-purple-500" />
-                </label>
+                {(!config || config.is_cod_enabled !== false) && (
+                    <label className="flex items-center justify-between p-2 rounded cursor-pointer">
+                        <span className="flex items-center gap-2">
+                            <input
+                                type="radio"
+                                name="pm"
+                                value="cod"
+                                checked={paymentMethod === "cod"}
+                                onChange={(e) => onChange(e.target.value)}
+                                className="accent-purple-600 w-4 h-4"
+                            />
+                            <span>Cash on Delivery</span>
+                        </span>
+                        <FaMoneyBillWave className="text-purple-500" />
+                    </label>
+                )}
                 <label className="flex items-center justify-between p-2 rounded cursor-pointer">
                     <span className="flex items-center gap-2">
                         <input
@@ -89,31 +91,32 @@ const PaymentMethod = ({
                     </span>
                     <img src={RocketIcon} alt="Rocket" className="h-6 w-auto object-contain" />
                 </label>
-                <label className="flex items-center justify-between p-2 rounded cursor-not-allowed">
-                    <span className="flex items-center gap-2">
-                        <input
-                            type="radio"
-                            name="pm"
-                            value="card_mfs"
-                            checked={paymentMethod === "card_mfs"}
-                            onChange={(e) => onChange(e.target.value)}
-                            className="accent-purple-600 w-4 h-4"
-                            disabled={paymentMethod !== "card_mfs"}
-                        />
-                        <span>Card & MFS <Badge text="beta" /></span>
-                    </span>
-                    <span className="flex items-center gap-2">
-                        <SiVisa className="text-blue-600" />
-                        <SiMastercard className="text-purple-500" />
-                    </span>
-                </label>
+                {(config?.is_online_payment_enabled) && (
+                    <label className="flex items-center justify-between p-2 rounded cursor-pointer">
+                        <span className="flex items-center gap-2">
+                            <input
+                                type="radio"
+                                name="pm"
+                                value="card_mfs"
+                                checked={paymentMethod === "card_mfs"}
+                                onChange={(e) => onChange(e.target.value)}
+                                className="accent-purple-600 w-4 h-4"
+                            />
+                            <span>Card & MFS <Badge text="beta" /></span>
+                        </span>
+                        <span className="flex items-center gap-2">
+                            <SiVisa className="text-blue-600" />
+                            <SiMastercard className="text-purple-500" />
+                        </span>
+                    </label>
+                )}
             </div>
 
             {paymentMethod !== "card_mfs" && (
                 <div className="mt-4 pt-4 border-t">
 
                     {/* Payment info box */}
-                    <PaymentInfoBox method={paymentMethod} />
+                    <PaymentInfoBox method={paymentMethod} deliveryCharge={deliveryCharge} />
 
                     {/* Show payment fields for all methods EXCEPT when it's COD and delivery is free */}
                     {(paymentMethod === 'cod' && deliveryCharge === 0) ? null : (

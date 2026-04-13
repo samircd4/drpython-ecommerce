@@ -8,9 +8,11 @@ import api from '../api/axiosConfig';
 import { useModals } from '../Context/ModalContext';
 
 import { useLocation } from 'react-router-dom';
+import { useAuth } from '../Context/AuthContext';
 
 const CustomerAddresses = () => {
     const { openAddressModal } = useModals();
+    const { hasPermission } = useAuth();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     
@@ -104,13 +106,15 @@ const CustomerAddresses = () => {
                         { label: "Addresses", path: "/addresses" }
                     ]} 
                 />
-                <button 
-                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95 cursor-pointer"
-                    onClick={() => openAddressModal(null, 'create')}
-                >
-                    <Plus className="w-4 h-4" />
-                    Add Address
-                </button>
+                {hasPermission('accounts.add_address') && (
+                    <button 
+                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-600/20 active:scale-95 cursor-pointer"
+                        onClick={() => openAddressModal(null, 'create')}
+                    >
+                        <幫手 Plus className="w-4 h-4" />
+                        Add Address
+                    </button>
+                )}
             </div>
 
             <div className="bg-[#071229] p-4 rounded-xl border border-slate-800 shadow-sm">
@@ -177,18 +181,22 @@ const CustomerAddresses = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                     <div className="flex space-x-2">
-                                        <button 
-                                            onClick={() => openAddressModal(addr, 'edit')}
-                                            className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-white transition-all cursor-pointer shadow-lg shadow-emerald-500/0 hover:shadow-emerald-500/20"
-                                        >
-                                            <Pencil className="h-4 w-4" />
-                                        </button>
-                                        <button 
-                                            onClick={() => handleDeleteClick(addr.id)}
-                                            className="p-2 bg-red-500/10 text-red-500 hover:text-white hover:bg-red-500 rounded-xl transition-all cursor-pointer"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </button>
+                                        {hasPermission('accounts.change_address') && (
+                                            <button 
+                                                onClick={() => openAddressModal(addr, 'edit')}
+                                                className="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-white transition-all cursor-pointer shadow-lg shadow-emerald-500/0 hover:shadow-emerald-500/20"
+                                            >
+                                                <Pencil className="h-4 w-4" />
+                                            </button>
+                                        )}
+                                        {hasPermission('accounts.delete_address') && (
+                                            <button 
+                                                onClick={() => handleDeleteClick(addr.id)}
+                                                className="p-2 bg-red-500/10 text-red-500 hover:text-white hover:bg-red-500 rounded-xl transition-all cursor-pointer"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
+                                        )}
                                     </div>
                                 </td>
                             </tr>

@@ -16,7 +16,8 @@ import {
     Star,
     Mail,
     HelpCircle,
-    Ticket
+    Ticket,
+    Globe
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -47,7 +48,7 @@ const menuItems = [
         permission: "auth.view_user",
         count: 10,
         submenu: [
-            { id: "all-users", label: "All-Users", icon: Users }, 
+            { id: "users", label: "System Directory", icon: Users }, 
             { id: "roles", label: "Roles & Permissions", icon: Settings }, 
             { id: "activity", label: "User Activity", icon: Activity }
         ] 
@@ -59,9 +60,9 @@ const menuItems = [
         permission: "products.view_product",
         count: 10,
         submenu: [
-            { id: "all-products", label: "All Products", icon: Package },
-            { id: "brands", label: "Brands", icon: Star },
-            { id: "categories", label: "Categories", icon: Activity }
+            { id: "products", label: "Product Catalog", icon: Package, permission: "products.view_product" },
+            { id: "brands", label: "Brands", icon: Star, permission: "products.view_brand" },
+            { id: "categories", label: "Categories", icon: Activity, permission: "products.view_category" }
         ]
     },
     { id: "orders", icon: ShoppingBag, label: "Orders", permission: "orders.view_order" },
@@ -72,12 +73,12 @@ const menuItems = [
         label: "Customers", 
         permission: "accounts.view_customer",
         submenu: [
-            { id: "all-customers", label: "All Customers", icon: Users },
+            { id: "customers", label: "Customer List", icon: Users },
             { id: "addresses", label: "Addresses", icon: ShoppingBag }
         ]
     },
     { id: "reviews", icon: Star, label: "Reviews", permission: "reviews.view_review" },
-    { id: "inventory", icon: Package, label: "Inventory", permission: "products.view_product" },
+    { id: "inventory", icon: Package, label: "Inventory", permission: "products.change_product" },
     { id: "payments", icon: CreditCard, label: "Payments", permission: "orders.view_payment" },
     {
         id: "messages",
@@ -90,8 +91,9 @@ const menuItems = [
             { id: "contact-messages", label: "Contact Messages", icon: Mail }
         ]
     },
-    { id: "notifications", icon: Bell, label: "Notifications"},
-    { id: "export-import", icon: FileText, label: "Export/Import", badge: "New" },
+    { id: "notifications", icon: Bell, label: "Notifications", permission: "auth.view_user" },
+    { id: "export-import", icon: FileText, label: "Export/Import", badge: "New", permission: "products.export_import" },
+    { id: "web-config", icon: Globe, label: "Web Configuration", permission: "web.view_storeconfiguration" },
     { id: "settings", icon: Settings, label: "Settings" },
 ];
 
@@ -117,17 +119,20 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
 
     // Filter menu items based on permissions and update dynamic counts
     const filteredMenuItems = menuItems.map(item => {
-        if (item.id === 'products') return { ...item, count: counts.products };
-        if (item.id === 'customers') return { ...item, count: counts.customers };
-        if (item.id === 'orders') return { ...item, count: counts.orders };
-        return item;
+        let newItem = { ...item };
+        if (newItem.id === 'products') newItem.count = counts.products;
+        if (newItem.id === 'customers') newItem.count = counts.customers;
+        if (newItem.id === 'orders') newItem.count = counts.orders;
+        
+        if (newItem.submenu) {
+            newItem.submenu = newItem.submenu.filter(sub => hasPermission(sub.permission || item.permission));
+        }
+        return newItem;
     }).filter(item => {
-        const canViewParent = hasPermission(item.permission);
-        if (!canViewParent) return false;
-
-        // If it has a submenu, check if at least one sub-item is viewable (if we had sub-perms)
-        // For now, if you can see the parent, you see all sub-items
-        return true;
+        if (item.submenu) {
+            return item.submenu.length > 0;
+        }
+        return hasPermission(item.permission);
     });
     const { unreadCount: unreadTotal } = useChat();
     const [expandedItems, setExpandedItems] = useState(new Set(["analytics"]));
@@ -191,10 +196,10 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
                                     toggleExpanded(item.id);
                                     // Default navigation for parent menus
                                     if (item.id === 'messages') navigate('/chats');
-                                    else if (item.id === 'products') navigate('/all-products');
+                                    else if (item.id === 'products') navigate('/products');
                                     else if (item.id === 'analytics') navigate('/overview');
-                                    else if (item.id === 'users') navigate('/all-users');
-                                    else if (item.id === 'customers') navigate('/all-customers');
+                                    else if (item.id === 'users') navigate('/users');
+                                    else if (item.id === 'customers') navigate('/customers');
                                 } else {
                                     navigate(`/${item.id}`);
                                 }

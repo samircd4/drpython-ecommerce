@@ -1,7 +1,9 @@
 import React from 'react';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { useAuth } from '../../Context/AuthContext';
 
 const CategoryTable = ({ categories, loading, handleDelete, onEdit, onView }) => {
+    const { hasPermission } = useAuth();
     if (loading) {
         return (
             <div className="flex items-center justify-center p-20 bg-[#0b1a2a]/50 rounded-2xl border border-slate-800">
@@ -58,13 +60,22 @@ const CategoryTable = ({ categories, loading, handleDelete, onEdit, onView }) =>
                                         >
                                             <Eye className="h-5 w-5" />
                                         </button>
-                                        <button 
-                                            onClick={() => onEdit && onEdit(cat)}
-                                            className="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500 hover:text-white transition-all cursor-pointer"
-                                        >
-                                            <Pencil className="h-5 w-5" />
-                                        </button>
-                                        <button onClick={() => handleDelete && handleDelete(cat.id)} disabled={true} className="p-1.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"><Trash2 className="h-5 w-5" /></button>
+                                        {hasPermission('products.change_category') && (
+                                            <button 
+                                                onClick={() => onEdit && onEdit(cat)}
+                                                className="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500 hover:text-white transition-all cursor-pointer"
+                                            >
+                                                <Pencil className="h-5 w-5" />
+                                            </button>
+                                        )}
+                                        {hasPermission('products.delete_category') && (
+                                            <button 
+                                                onClick={() => handleDelete && handleDelete(cat.id)} 
+                                                className="p-1.5 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+                                            >
+                                                <Trash2 className="h-5 w-5" />
+                                            </button>
+                                        )}
                                     </div>
                                 </td>
                             </tr>
