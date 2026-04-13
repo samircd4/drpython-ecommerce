@@ -69,7 +69,7 @@ const Orders = () => {
     const [isDeleting, setIsDeleting] = React.useState(false);
     
     const { openOrderModal } = useModals();
-    const { user } = useAuth();
+    const { user, hasPermission } = useAuth();
     const { config } = useStoreConfig();
     const symbol = config?.currency_symbol || "৳";
     

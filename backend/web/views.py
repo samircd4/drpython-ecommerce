@@ -16,7 +16,7 @@ from api.permissions import StaffHasActionPermission
 class StoreConfigurationView(generics.RetrieveUpdateAPIView):
     queryset = StoreConfiguration.objects.all()
     serializer_class = StoreConfigurationSerializer
-    permission_classes = [IsAuthenticated, StaffHasActionPermission]
+    permission_classes = [IsAdminOrReadOnly]
 
     def get_object(self):
         return StoreConfiguration.load()

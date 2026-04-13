@@ -1,11 +1,34 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaSearch, FaBoxOpen, FaTruck, FaCheckCircle, FaMapMarkerAlt, FaClock, FaBell } from 'react-icons/fa';
+import { 
+    Search, 
+    Package, 
+    Truck, 
+    CheckCircle2, 
+    MapPin, 
+    Clock, 
+    Bell, 
+    ChevronRight, 
+    ArrowLeft,
+    Box,
+    ShoppingCart,
+    ShoppingBag
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import api from '../api/client';
 import TakaIcon from '../components/TakaIcon';
 import useWebSocket from '../hooks/useWebSocket';
+
+// --- Components ---
+
+const AuroraBackground = () => (
+    <div className="fixed inset-0 overflow-hidden -z-10 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-purple-200/40 blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-pink-200/40 blur-[120px] animate-pulse delay-700" />
+        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-indigo-200/30 blur-[100px] animate-bounce duration-[10s]" />
+    </div>
+);
 
 const CountdownTimer = ({ targetDate, onComplete }) => {
     const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
@@ -36,9 +59,62 @@ const CountdownTimer = ({ targetDate, onComplete }) => {
     if (!timeLeft) return null;
 
     return (
-        <div className="flex items-center gap-2 text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-100">
-            <FaClock className="animate-pulse" />
-            <span>Review unlocks in: {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s</span>
+        <div className="flex items-center gap-2 text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-full border border-orange-100 uppercase tracking-wider">
+            <Clock className="w-3 h-3 animate-pulse" />
+            <span>Review unlocks in {timeLeft.hours}h {timeLeft.minutes}m</span>
+        </div>
+    );
+};
+
+// --- Progress Step Component ---
+const ProgressStep = ({ step, index, total, statusJustUpdated, isNewlyCompleted }) => {
+    const Icon = step.icon;
+    
+    return (
+        <div className="flex flex-col items-center relative flex-1">
+            {/* Connection Line */}
+            {index < total - 1 && (
+                <div className="absolute top-5 left-1/2 w-full h-[2px] bg-gray-200 -z-0">
+                    <motion.div 
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: step.completed ? 1 : 0 }}
+                        className="h-full bg-gradient-to-r from-purple-600 to-pink-500 origin-left"
+                        transition={{ duration: 1, delay: index * 0.2 }}
+                    />
+                </div>
+            )}
+            
+            <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: index * 0.1 }}
+                className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${
+                    step.completed 
+                    ? 'bg-gradient-to-br from-purple-600 to-pink-500 border-transparent shadow-lg shadow-purple-200 text-white' 
+                    : 'bg-white border-gray-200 text-gray-300'
+                }`}
+            >
+                <Icon size={18} className={isNewlyCompleted ? "animate-bounce" : ""} />
+                
+                {step.completed && (
+                    <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full p-0.5"
+                    >
+                        <CheckCircle2 size={10} strokeWidth={4} />
+                    </motion.div>
+                )}
+            </motion.div>
+            
+            <div className="mt-4 text-center">
+                <p className={`text-xs font-bold transition-colors duration-300 ${step.completed ? 'text-gray-800' : 'text-gray-400'}`}>
+                    {step.title}
+                </p>
+                <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-tight">
+                    {step.date}
+                </p>
+            </div>
         </div>
     );
 };
@@ -65,7 +141,6 @@ const OrderTracking = () => {
 
         setIsLoading(true);
         setError(null);
-        // Don't clear trackingResult here to avoid flickering when refreshing for countdown
 
         try {
             const response = await api.get(`/orders/${targetId}/`);
@@ -80,10 +155,10 @@ const OrderTracking = () => {
 
             const status = (order.status || '').toLowerCase();
             const steps = [
-                { title: 'Order Placed', date: formatDate(createdDate), completed: true, icon: FaBoxOpen },
-                { title: 'Processing', date: 'In Progress', completed: false, icon: FaCheckCircle },
-                { title: 'Shipped', date: 'Pending', completed: false, icon: FaTruck },
-                { title: 'Delivered', date: 'Estimated', completed: false, icon: FaMapMarkerAlt },
+                { title: 'Confirmed', date: formatDate(createdDate), completed: true, icon: Package },
+                { title: 'Processing', date: 'In Progress', completed: false, icon: Box },
+                { title: 'On the Way', date: 'Pending', completed: false, icon: Truck },
+                { title: 'Delivered', date: 'Estimated', completed: false, icon: MapPin },
             ];
 
             if (status.includes('confirmed') || status.includes('processing') || status.includes('shipped') || status.includes('delivered') || status.includes('out')) {
@@ -92,20 +167,19 @@ const OrderTracking = () => {
             }
             if (status.includes('shipped') || status.includes('delivered') || status.includes('out')) {
                 steps[2].completed = true;
-                steps[2].date = 'Shipped';
+                steps[2].date = 'Tracking Live';
             }
             if (status.includes('delivered')) {
                 steps[3].completed = true;
-                steps[3].date = 'Delivered';
+                steps[3].date = 'Arrival Success';
             }
 
             if (status.includes('cancelled')) {
-                setError('This order has been cancelled.');
+                setError('This order was cancelled by the store administrator.');
                 setIsLoading(false);
                 return;
             }
 
-            // Calculate review unlock time: updated_at + 24 hours
             const updatedTime = new Date(order.updated_at || order.created_at);
             const unlockTime = new Date(updatedTime.getTime() + 24 * 60 * 60 * 1000);
             const now = new Date();
@@ -124,14 +198,9 @@ const OrderTracking = () => {
             });
 
         } catch (err) {
-            console.error("Order tracking error:", err);
-            if (err.response && err.response.status === 404) {
-                setError('Order not found. Please check the ID.');
-            } else if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-                setError('Access denied. You may need to log in to track this order.');
-            } else {
-                setError('Failed to track order. Please try again.');
-            }
+            console.error("Tracking Error:", err);
+            if (err.response?.status === 404) setError('Order not found. Please verify the ID.');
+            else setError('Failed to retrieve order state. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -141,25 +210,16 @@ const OrderTracking = () => {
 
     useEffect(() => {
         if (wsData) {
-            console.log("Real-time order update received:", wsData);
-            // Save the current completed step count before refetching
             if (trackingResult) {
                 setPrevStepCount(trackingResult.steps.filter(s => s.completed).length);
             }
             setNewStatus(wsData.status);
             setStatusJustUpdated(true);
             fetchTracking(id);
-
-            // Clear the animation after 4 seconds
             if (updateTimerRef.current) clearTimeout(updateTimerRef.current);
-            updateTimerRef.current = setTimeout(() => {
-                setStatusJustUpdated(false);
-                setNewStatus(null);
-            }, 4000);
+            updateTimerRef.current = setTimeout(() => { setStatusJustUpdated(false); setNewStatus(null); }, 6000);
         }
-        return () => {
-            if (updateTimerRef.current) clearTimeout(updateTimerRef.current);
-        };
+        return () => updateTimerRef.current && clearTimeout(updateTimerRef.current);
     }, [wsData, id, fetchTracking]);
 
     useEffect(() => {
@@ -175,244 +235,277 @@ const OrderTracking = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
-
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="w-full max-w-md bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden border border-white/50"
-            >
-                <div className="p-8">
-                    <div className="text-center mb-8">
-                        <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
-                            Track Your Order
-                        </h2>
-                        <p className="text-gray-500 mt-2 text-sm">
-                            Enter your order ID to see the current status.
-                        </p>
-                    </div>
-
-                    <form onSubmit={handleTrack} className="space-y-6 relative">
-                        <div className="relative group">
-                            <input
-                                type="text"
-                                value={orderId}
-                                onChange={(e) => setOrderId(e.target.value)}
-                                placeholder="Order ID (e.g. 45)"
-                                className="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-200 text-gray-700 placeholder-gray-400 group-hover:bg-white group-hover:shadow-md"
-                            />
-                            <div className="absolute inset-y-0 right-0 p-4 flex items-center pointer-events-none">
-                                <FaSearch className="text-gray-400 group-focus-within:text-purple-500 transition-colors" />
-                            </div>
-                        </div>
-
-                        <motion.button
-                            whileHover={{ scale: 1.02, boxShadow: "0 10px 25px -5px rgba(147, 51, 234, 0.4)" }}
-                            whileTap={{ scale: 0.98 }}
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer flex justify-center items-center gap-2"
-                        >
-                            {isLoading ? (
-                                <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-                            ) : (
-                                "Track Order"
-                            )}
-                        </motion.button>
-                    </form>
-
-                    {error && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            className="text-red-500 text-center mt-4 text-sm bg-red-50 py-2 rounded-lg"
-                        >
-                            {error}
-                        </motion.div>
-                    )}
-                </div>
-            </motion.div>
-
-            <AnimatePresence>
-                {trackingResult && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 40 }}
+        <div className="min-h-screen bg-gray-50/50 pb-12 pt-0 sm:px-6 lg:px-8 relative font-sans">
+            <AuroraBackground />
+            
+            <div className="max-w-4xl mx-auto space-y-16 pt-12">
+                {/* Header/Search Hero */}
+                {!trackingResult && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 20 }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                        className="w-full max-w-md mt-8 bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-white/50 p-6"
+                        className="text-center pb-20 pt-6 space-y-6"
                     >
-                        {/* Real-time Update Banner */}
-                        <AnimatePresence>
-                            {statusJustUpdated && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -20, height: 0 }}
-                                    animate={{ opacity: 1, y: 0, height: 'auto' }}
-                                    exit={{ opacity: 0, y: -10, height: 0 }}
-                                    transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-                                    className="mb-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-3 rounded-xl flex items-center gap-3 shadow-lg shadow-green-200"
-                                >
-                                    <motion.div
-                                        animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
-                                        transition={{ duration: 0.6, repeat: 2 }}
-                                    >
-                                        <FaBell className="text-lg" />
-                                    </motion.div>
-                                    <div>
-                                        <p className="font-bold text-sm">Status Updated!</p>
-                                        <p className="text-xs text-green-100">Your order is now: {newStatus || trackingResult.status}</p>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-
-                        <div className="flex justify-between items-end mb-6 border-b border-gray-100 pb-4">
-                            <div>
-                                <h3 className="text-lg font-bold text-gray-800">Order {trackingResult.id}</h3>
-                                <motion.p
-                                    key={trackingResult.status}
-                                    initial={statusJustUpdated ? { scale: 1.3, color: '#16a34a' } : false}
-                                    animate={{ scale: 1, color: '#9333ea' }}
-                                    transition={{ duration: 0.8, type: 'spring' }}
-                                    className="font-medium text-sm"
-                                >
-                                    {trackingResult.status}
-                                </motion.p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-xs text-gray-400">Est. Delivery</p>
-                                <p className="text-sm font-bold text-gray-700">{trackingResult.estimatedDelivery}</p>
-                            </div>
+                        <div className="mx-auto w-20 h-20 bg-white rounded-3xl shadow-2xl shadow-purple-200 flex items-center justify-center text-purple-600 mb-8 border border-white">
+                            <ShoppingBag className="w-10 h-10" />
                         </div>
+                        <h1 className="text-5xl font-black text-gray-900 tracking-tight">
+                            Where's my <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">Order?</span>
+                        </h1>
+                        <p className="text-gray-500 max-w-md mx-auto text-lg leading-relaxed">
+                            Keep an eye on your latest purchase. Enter your order ID below to get real-time tracking updates.
+                        </p>
+                        
+                        <form onSubmit={handleTrack} className="max-w-md mx-auto mt-10 space-y-4">
+                            <div className="relative group">
+                                <input
+                                    type="text"
+                                    value={orderId}
+                                    onChange={(e) => setOrderId(e.target.value)}
+                                    placeholder="Order ID (e.g. 1024)"
+                                    className="w-full px-8 py-5 bg-white border-2 border-transparent rounded-[2rem] shadow-2xl focus:ring-4 focus:ring-purple-100 outline-none transition-all duration-300 text-gray-800 text-lg group-hover:shadow-purple-100"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="absolute right-3 top-3 bottom-3 px-8 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-full font-bold shadow-lg hover:shadow-purple-200 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                                >
+                                    {isLoading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Search size={20} />}
+                                    <span>Track</span>
+                                </button>
+                            </div>
+                            {error && <p className="text-red-500 text-sm font-medium animate-bounce">{error}</p>}
+                        </form>
+                    </motion.div>
+                )}
 
-                        <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
-                            {trackingResult.steps.map((step, index) => {
-                                const Icon = step.icon;
-                                const isNewlyCompleted = statusJustUpdated && step.completed && index >= prevStepCount;
-                                return (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.3 + index * 0.1 }}
-                                        className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
-                                    >
-                                        <motion.div
-                                            animate={isNewlyCompleted ? {
-                                                scale: [1, 1.4, 1],
-                                                boxShadow: [
-                                                    '0 0 0 0 rgba(147, 51, 234, 0)',
-                                                    '0 0 0 12px rgba(147, 51, 234, 0.3)',
-                                                    '0 0 0 0 rgba(147, 51, 234, 0)'
-                                                ]
-                                            } : {}}
-                                            transition={{ duration: 0.8, delay: index * 0.15, repeat: isNewlyCompleted ? 2 : 0 }}
-                                            className={`flex items-center justify-center w-10 h-10 rounded-full border-2 shrink-0 z-10 transition-colors duration-500 ${step.completed
-                                                    ? 'bg-purple-600 border-purple-600 shadow-lg shadow-purple-200'
-                                                    : 'bg-white border-gray-300'
-                                                }`}
-                                        >
-                                            <Icon className={`w-4 h-4 transition-colors duration-500 ${step.completed ? 'text-white' : 'text-gray-300'}`} />
-                                        </motion.div>
-                                        <div className="ml-6 w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] md:ml-0 md:px-6">
-                                            <motion.div
-                                                className="flex flex-col"
-                                                animate={isNewlyCompleted ? { x: [0, 5, -3, 0] } : {}}
-                                                transition={{ duration: 0.4, delay: 0.3 + index * 0.15 }}
-                                            >
-                                                <h4 className={`font-bold text-sm transition-colors duration-500 ${step.completed ? 'text-gray-800' : 'text-gray-400'}`}>{step.title}</h4>
-                                                <span className={`text-xs transition-colors duration-500 ${isNewlyCompleted ? 'text-green-500 font-semibold' : 'text-gray-400'}`}>
-                                                    {isNewlyCompleted ? '✓ Just updated!' : step.date}
-                                                </span>
-                                            </motion.div>
-                                        </div>
-                                    </motion.div>
-                                );
-                            })}
-                        </div>
-
-                        {/* Order Items & Total */}
+                {/* Tracking View */}
+                <AnimatePresence>
+                    {trackingResult && (
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.6 }}
-                            className="mt-10 pt-6 border-t border-gray-100"
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="space-y-6"
                         >
-                            <h4 className="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wider">Order Items</h4>
-                            <div className="space-y-6">
-                                {trackingResult.items && trackingResult.items.map((item, idx) => (
-                                    <div key={idx} className="flex flex-col gap-3 pb-4 border-b border-gray-50 last:border-0 last:pb-0">
-                                        <div className="flex gap-4 items-center">
-                                            <div className="flex-shrink-0 w-16 h-16 bg-gray-50 rounded-lg overflow-hidden border border-gray-100">
-                                                {item.product.image ? (
-                                                    <img src={item.product.image} alt={item.product.name} className="w-full h-full object-contain" />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                                        <FaBoxOpen />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-900 truncate">{item.product.name}</p>
-                                                <div className="flex text-xs text-gray-500 mt-0.5 space-x-2 font-sans font-medium">
-                                                    <span>Qty: {item.quantity}</span>
-                                                    {item.color && <span>• {item.color}</span>}
-                                                    {item.storage && <span>• {item.storage}GB</span>}
-                                                </div>
-                                            </div>
-                                            <div className="text-sm font-bold text-gray-900 flex items-center gap-1 whitespace-nowrap">
-                                                <TakaIcon size={14} />
-                                                {parseFloat(item.price || 0).toLocaleString()}
-                                            </div>
-                                        </div>
-
-                                        {/* Per-item Review Logic */}
-                                        {trackingResult.status.toLowerCase().includes('delivered') && (
-                                            <div className="flex justify-end pt-1">
-                                                {trackingResult.canReview ? (
-                                                    <button
-                                                        onClick={() => navigate(`/products/${item.product.slug || item.product}/?tab=reviews`)}
-                                                        className="w-full sm:w-auto text-xs font-bold bg-white text-purple-600 border border-purple-200 px-4 py-2 rounded-lg hover:bg-purple-50 transition-all shadow-sm cursor-pointer hover:shadow-md transform active:scale-95"
-                                                    >
-                                                        Review Product
-                                                    </button>
-                                                ) : (
-                                                    <CountdownTimer
-                                                        targetDate={trackingResult.unlockTime}
-                                                        onComplete={() => setRefreshTrigger(prev => prev + 1)}
-                                                    />
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center bg-gray-50 p-4 rounded-xl">
-                                <span className="font-medium text-gray-600">Total Amount</span>
-
-                                <div className="flex items-center gap-1 text-xl font-bold text-purple-600 whitespace-nowrap">
-                                    <TakaIcon size={20} />
-                                    {parseFloat(trackingResult.totalAmount).toLocaleString()}
+                            {/* Top Stats Bar */}
+                            <div className="flex items-center justify-between">
+                                <button 
+                                    onClick={() => navigate(-1)}
+                                    className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-purple-600 cursor-pointer"
+                                >
+                                    <ArrowLeft size={24} />
+                                </button>
+                                <div className="bg-white px-6 py-2 rounded-full shadow-sm border border-gray-100 text-sm font-bold text-gray-600">
+                                    Track ID # {trackingResult.id}
                                 </div>
                             </div>
 
-                            <div className="mt-8">
-                                {!trackingResult.canReview ? (
-                                    <div className="bg-blue-50 text-blue-700 px-4 py-3 rounded-xl text-sm border border-blue-100 text-center font-medium">
-                                        <p>You can provide a review 24 hours after delivery.</p>
+                            {/* Main Tracking Card */}
+                            <div className="bg-white/70 backdrop-blur-xl border border-white rounded-[2.5rem] shadow-2xl overflow-hidden">
+                                {/* Header Section */}
+                                <div className="p-8 md:p-12 bg-gradient-to-br from-white/40 to-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-3">
+                                            <h2 className="text-3xl font-black text-gray-900 tracking-tight">Order Status</h2>
+                                            <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-black uppercase rounded-full border border-purple-200">
+                                                {trackingResult.status}
+                                            </span>
+                                        </div>
+                                        <p className="text-gray-500 text-sm font-medium">Updated just now via system synchronization</p>
                                     </div>
-                                ) : (
-                                    <div className="text-center text-xs text-gray-400 font-medium">
-                                        <p>Order ID: {trackingResult.id}</p>
+                                    <div className="hidden md:block text-right">
+                                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Estimated Arrival</p>
+                                        <p className="text-2xl font-black text-purple-600">{trackingResult.estimatedDelivery}</p>
                                     </div>
-                                )}
+                                </div>
+
+                                {/* Progress Visualizer (Desktop Horizontal) */}
+                                <div className="px-8 pb-12 pt-4 hidden md:flex items-start justify-between relative">
+                                    {trackingResult.steps.map((step, idx) => (
+                                        <ProgressStep 
+                                            key={idx} 
+                                            step={step} 
+                                            index={idx} 
+                                            total={trackingResult.steps.length}
+                                            statusJustUpdated={statusJustUpdated}
+                                            isNewlyCompleted={statusJustUpdated && step.completed && idx >= prevStepCount}
+                                        />
+                                    ))}
+                                </div>
+
+                                {/* Mobile Progress (Vertical) */}
+                                <div className="md:hidden px-8 pb-12 space-y-8 relative before:absolute before:left-12 before:top-2 before:bottom-2 before:w-[2px] before:bg-gray-100">
+                                    {trackingResult.steps.map((step, idx) => (
+                                        <div key={idx} className="flex items-center gap-6 relative z-10">
+                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-2 ${
+                                                step.completed ? 'bg-purple-600 border-purple-600 text-white shadow-lg' : 'bg-white border-gray-200 text-gray-200'
+                                            }`}>
+                                                <step.icon size={18} />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className={`font-bold text-sm ${step.completed ? 'text-gray-900' : 'text-gray-400'}`}>{step.title}</h4>
+                                                <p className="text-[10px] text-gray-400 uppercase font-medium">{step.date}</p>
+                                            </div>
+                                            {step.completed && <CheckCircle2 size={16} className="text-purple-600" />}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {/* Order Details Card */}
+                                <div className="md:col-span-2 bg-white/70 backdrop-blur-xl border border-white rounded-[2.5rem] shadow-xl p-8">
+                                    <div className="flex items-center justify-between mb-8">
+                                        <h3 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                                            <Package className="text-purple-600" size={20} />
+                                            Package Items
+                                        </h3>
+                                        <span className="text-xs font-bold text-gray-400">{trackingResult.items.length} Units</span>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        {trackingResult.items.map((item, idx) => (
+                                            <motion.div 
+                                                initial={{ opacity: 0, x: -20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: 0.1 * idx }}
+                                                key={idx} 
+                                                className="flex items-center gap-6 group p-4 hover:bg-white rounded-3xl transition-all"
+                                            >
+                                                <div className="w-20 h-20 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 p-2 shrink-0 group-hover:scale-105 transition-transform">
+                                                    <img 
+                                                        src={item.product?.image || '/placeholder.png'} 
+                                                        alt={item.product?.name} 
+                                                        className="w-full h-full object-contain"
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-sm font-black text-gray-900 truncate uppercase tracking-tight">{item.product?.name}</h4>
+                                                    <div className="flex items-center gap-3 mt-1">
+                                                        <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-black">QTY: {item.quantity}</span>
+                                                        {item.variant && <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Variant: {item.variant.name || 'Standard'}</span>}
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="flex items-center justify-end font-black text-purple-600">
+                                                        <TakaIcon size={14} />
+                                                        <span className="text-lg">{(item.price * item.quantity).toLocaleString()}</span>
+                                                    </div>
+                                                    
+                                                    {trackingResult.status.toLowerCase().includes('delivered') && (
+                                                        <div className="mt-2">
+                                                            {trackingResult.canReview ? (
+                                                                <button 
+                                                                    onClick={() => navigate(`/product/${item.product.slug}`)}
+                                                                    className="text-[10px] font-black underline text-purple-600 hover:text-pink-500 cursor-pointer"
+                                                                >
+                                                                    WRITE REVIEW
+                                                                </button>
+                                                            ) : (
+                                                                <CountdownTimer 
+                                                                    targetDate={trackingResult.unlockTime} 
+                                                                    onComplete={() => setRefreshTrigger(t => t + 1)}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Order Summary Vertical */}
+                                <div className="bg-gradient-to-br from-purple-700 to-pink-600 rounded-[2.5rem] shadow-xl p-8 text-white flex flex-col justify-between">
+                                    <div className="space-y-6">
+                                        <div className="flex items-center gap-3 opacity-80">
+                                            <Bell size={20} />
+                                            <span className="text-xs font-black uppercase tracking-widest">Pricing Overview</span>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-center opacity-70">
+                                                <span className="text-xs font-bold uppercase">Subtotal</span>
+                                                <div className="flex items-center gap-1 font-bold">
+                                                    <TakaIcon className="text-xs" />
+                                                    <span>{parseFloat(trackingResult.totalAmount).toLocaleString()}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between items-center opacity-70">
+                                                <span className="text-xs font-bold uppercase">Shipping</span>
+                                                <div className="flex items-center gap-1 font-bold">
+                                                    <TakaIcon className="text-xs" />
+                                                    <span>0</span>
+                                                </div>
+                                            </div>
+                                            <div className="border-t border-white/20 pt-4 mt-4 flex justify-between items-end">
+                                                <div>
+                                                    <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Total Bill</div>
+                                                    <div className="text-4xl font-black mt-2 flex items-center gap-2">
+                                                        <TakaIcon className="text-5xl translate-y-[2px]" />
+                                                        <span>{parseFloat(trackingResult.totalAmount).toLocaleString()}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Banner */}
+                                    <div className="mt-12 p-4 bg-white/20 rounded-[2rem] backdrop-blur-md border border-white/20 text-center">
+                                        <div className="text-[10px] font-black tracking-widest uppercase mb-1">Support Available</div>
+                                        <button 
+                                            onClick={() => navigate('/contact')} 
+                                            className="text-white flex items-center justify-center gap-2 mx-auto hover:scale-105 transition-transform cursor-pointer"
+                                        >
+                                            <span className="font-black text-sm">NEED HELP?</span>
+                                            <ChevronRight size={16} />
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* Notification Toast (Realtime Status) */}
+            <AnimatePresence>
+                {statusJustUpdated && (
+                    <motion.div
+                        initial={{ opacity: 0, x: 100, scale: 0.9 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: 100, scale: 0.9 }}
+                        className="fixed bottom-10 right-10 z-[100] bg-white rounded-3xl shadow-2xl p-6 border border-purple-100 flex items-center gap-6 max-w-sm"
+                    >
+                        <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-500 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-purple-200">
+                            <Bell className="animate-swing" size={32} />
+                        </div>
+                        <div>
+                            <h4 className="text-sm font-black text-gray-900 uppercase tracking-tighter">Status Upgrade!</h4>
+                            <p className="text-xs text-gray-500 font-medium leading-relaxed">Your order <span className="text-purple-600 font-black">#{trackingResult?.id}</span> is now <span className="font-black underline">{newStatus || trackingResult?.status}</span>.</p>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
+            
+            {/* Custom Styles for animations */}
+            <style jsx>{`
+                @keyframes swing {
+                    0% { transform: rotate(0); }
+                    10% { transform: rotate(15deg); }
+                    20% { transform: rotate(-12deg); }
+                    30% { transform: rotate(10deg); }
+                    40% { transform: rotate(-8deg); }
+                    50% { transform: rotate(6deg); }
+                    60% { transform: rotate(-4deg); }
+                    70% { transform: rotate(2deg); }
+                    80% { transform: rotate(-1deg); }
+                    100% { transform: rotate(0); }
+                }
+                .animate-swing {
+                    animation: swing 2s infinite;
+                }
+            `}</style>
         </div>
     );
 };
