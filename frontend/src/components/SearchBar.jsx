@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import api from '../api/client';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useConfig } from '../context/ConfigContext';
 
 const SearchBar = ({ onFocus, onBlur, onOpen, onClose }) => {
     const [showInput, setShowInput] = useState(false);
@@ -10,6 +11,8 @@ const SearchBar = ({ onFocus, onBlur, onOpen, onClose }) => {
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const location = useLocation();
+    const { config } = useConfig();
+    const symbol = config?.currency_symbol || "৳";
 
     const wrapperRef = useRef(null);
     const inputRef = useRef(null);
@@ -158,7 +161,7 @@ const SearchBar = ({ onFocus, onBlur, onOpen, onClose }) => {
                                             {product.name}
                                         </p>
                                         <p className="text-xs text-gray-500">
-                                            ৳ {product.discount_price || product.price}
+                                            {symbol} {product.discount_price || product.price}
                                         </p>
                                     </div>
                                 </li>

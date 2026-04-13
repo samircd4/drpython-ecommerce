@@ -16,11 +16,13 @@ import productsData from "../data/products.json";
 
 import SEO from "../components/SEO";
 import { Helmet } from "react-helmet-async";
+import { useConfig } from "../context/ConfigContext";
 
 const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { addToCart } = useCart();
+    const { config } = useConfig();
     const containerRef = useRef(null);
 
     // ALL HOOKS AT THE TOP — NO CONDITIONALS BEFORE THEM!
@@ -365,7 +367,7 @@ const ProductDetails = () => {
         "offers": {
             "@type": "Offer",
             "url": `https://sarker.shop/product/${product.slug || product.id}`,
-            "priceCurrency": "BDT",
+            "priceCurrency": config?.currency || "BDT",
             "price": displayPrice,
             "availability": stockStatus === "in_stock" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
         }

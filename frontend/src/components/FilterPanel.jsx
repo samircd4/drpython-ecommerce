@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaStar, FaRegStar, FaTimes } from 'react-icons/fa'
 import { MdFilterList } from 'react-icons/md'
+import { useConfig } from '../context/ConfigContext'
 
 const FilterPanel = ({
     open,
@@ -22,6 +23,8 @@ const FilterPanel = ({
     onToggleBrand,
     onClearAll,
 }) => {
+    const { config } = useConfig();
+    const symbol = config?.currency_symbol || "৳";
     // We only want to use createPortal if we have a document body
     if (typeof document === 'undefined') return null
 
@@ -67,7 +70,7 @@ const FilterPanel = ({
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Price Range</h3>
                                     <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-lg">
-                                        ৳{priceMin} - ৳{priceMax}
+                                        {symbol}{priceMin} - {symbol}{priceMax}
                                     </span>
                                 </div>
                                 <div className="space-y-6">

@@ -2,29 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRocket, FaGift, FaTrophy, FaStar, FaMobileAlt } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-
-const offers = [
-    {
-        icon: <FaMobileAlt className="text-yellow-400" />,
-        text: "৳500–৳1,000 OFF on Smartphones | Use Coupon Code: SAVE500 / SAVE700 / SAVE1000"
-    },
-    {
-        icon: <FaGift className="text-yellow-400" />,
-        text: "First 100 Orders Get FREE Gift — Hurry up, limited offer!"
-    },
-    {
-        icon: <FaTrophy className="text-yellow-400" />,
-        text: "First 10 Customers Get EXTRA Reward — Limited Offer!"
-    },
-    {
-        icon: <FaStar className="text-yellow-400" />,
-        text: "Get ৳300 OFF on Your First Order | Use Coupon Code: WELCOME300",
-        badge: "NEW"
-    }
-];
+import { useConfig } from '../context/ConfigContext';
 
 const AnnouncementBar = () => {
+    const { config } = useConfig();
+    const symbol = config?.currency_symbol || '৳';
     const [currentIndex, setCurrentIndex] = useState(0);
+
+    const offers = [
+        {
+            icon: <FaMobileAlt className="text-yellow-400" />,
+            text: `${symbol}500–${symbol}1,000 OFF on Smartphones | Use Coupon Code: SAVE500 / SAVE700 / SAVE1000`
+        },
+        {
+            icon: <FaGift className="text-yellow-400" />,
+            text: "First 100 Orders Get FREE Gift — Hurry up, limited offer!"
+        },
+        {
+            icon: <FaTrophy className="text-yellow-400" />,
+            text: "First 10 Customers Get EXTRA Reward — Limited Offer!"
+        },
+        {
+            icon: <FaStar className="text-yellow-400" />,
+            text: `Get ${symbol}300 OFF on Your First Order | Use Coupon Code: WELCOME300`,
+            badge: "NEW"
+        }
+    ];
 
     useEffect(() => {
         const timer = setInterval(() => {
