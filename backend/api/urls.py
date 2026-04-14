@@ -26,5 +26,6 @@ urlpatterns = [
     path('', include('products.urls')),
     path('', include('reviews.urls')),
     path('', include('web.urls')),
+    path('', include('dev_feedback.urls')),
 ]
 

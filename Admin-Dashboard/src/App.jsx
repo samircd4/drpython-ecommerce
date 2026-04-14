@@ -40,6 +40,7 @@ import UserAdd from "./pages/UserAdd"
 import CustomerAdd from "./pages/CustomerAdd"
 import PaymentAdd from "./pages/PaymentAdd"
 import AddOrder from "./pages/AddOrder"
+import DevFeedback from "./pages/DevFeedback"
 
 import Login from "./pages/Auth/Login"
 import Register from "./pages/Auth/Register"
@@ -233,6 +234,7 @@ function AppContent() {
                                 <Route path="/users/add" element={<ProtectedRoute requiredPermission="auth.view_user"><UserAdd /></ProtectedRoute>} />
                                 <Route path="*" element={<div className="p-6 text-slate-300">Page Not Found</div>} />
                                 <Route path="/export-import" element={<ProtectedRoute requiredPermission="products.export_import"><DataManagement /></ProtectedRoute>} />
+                                <Route path="/dev-feedback" element={<ProtectedRoute><DevFeedback /></ProtectedRoute>} />
                             </Routes>
                         </div>
                     </div>

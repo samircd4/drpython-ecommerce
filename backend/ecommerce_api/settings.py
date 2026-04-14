@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'web',
     'api',
     'chat',
+    'dev_feedback',
 
     # Social Login
     'allauth',

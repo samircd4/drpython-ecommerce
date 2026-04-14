@@ -17,7 +17,8 @@ import {
     Mail,
     HelpCircle,
     Ticket,
-    Globe
+    Globe,
+    Bug
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -93,6 +94,7 @@ const menuItems = [
     },
     { id: "notifications", icon: Bell, label: "Notifications", permission: "auth.view_user" },
     { id: "export-import", icon: FileText, label: "Export/Import", badge: "New", permission: "products.export_import" },
+    { id: "dev-feedback", icon: Bug, label: "Dev Feedback", badge: "New" },
     { id: "web-config", icon: Globe, label: "Web Configuration", permission: "web.view_storeconfiguration" },
     { id: "settings", icon: Settings, label: "Settings" },
 ];
@@ -233,6 +235,7 @@ const Sidebar = ({ collapsed, mobileOpen = false, onToggle, currentPage, onPageC
                                     {item.id === 'dashboard' && item.badge && <span className="px-2 py-1 text-xs bg-slate-600 text-slate-100 rounded-sm">{item.badge}</span>}
                                     {item.id === 'analytics' && item.badge && <span className="px-2 py-1 text-xs bg-slate-600 text-slate-100 rounded-sm">{item.badge}</span>}
                                     {item.id === 'export-import' && item.badge && <span className="px-2 py-1 text-xs bg-slate-600 text-slate-100 rounded-sm">{item.badge}</span>}
+                                    {item.id === 'dev-feedback' && item.badge && <span className="px-2 py-1 text-xs bg-red-600/70 text-slate-100 rounded-sm">{item.badge}</span>}
                                     {item.count ? <span className="px-2 py-1 text-xs bg-slate-700 text-slate-200 rounded-full">{item.count}</span> : null}
                                     
                                     {item.submenu && (

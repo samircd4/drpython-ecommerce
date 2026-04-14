@@ -21,6 +21,7 @@ import ResetPassword from './pages/ResetPassword';
 import EmailVerification from './pages/EmailVerification';
 import Team from './pages/Team';
 import TeamMemberDetails from './pages/TeamMemberDetails';
+import DevFeedback from './pages/DevFeedback';
 
 
 
@@ -50,7 +51,7 @@ const App = () => (
                 <Route path="order-tracking/:id?" element={<OrderTracking />} />
                 <Route path="terms" element={<Terms />} />
             </Route>
-
+            <Route path="dev-feedback" element={<DevFeedback />} />
         </Routes>
     </Router>
 );
