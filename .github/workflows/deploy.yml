@@ -2,9 +2,9 @@ name: Deploy to Development Server
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, prod]
   pull_request:
-    branches: [dev]
+    branches: [dev, prod]
 
 jobs:
   # ========== TEST JOBS ==========
@@ -48,8 +48,14 @@ jobs:
           username: ${{ secrets.DEV_SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/sarker_dev
-            git pull origin dev
+            BRANCH="${{ github.ref_name }}"
+            if [ "$BRANCH" = "prod" ]; then
+              DIR="~/sarker_prod"
+            else
+              DIR="~/sarker_dev"
+            fi
+            cd $DIR
+            git pull origin $BRANCH
             docker compose -f docker-compose.dev.yml up -d --build --force-recreate --remove-orphans
             docker image prune -f
-            echo "✅ Deployment successful!"
+            echo "✅ Deployment to $BRANCH successful!"
