@@ -14,7 +14,7 @@ const ProductDetailsTabs = ({ product, productReviews = [], onProductUpdate }) =
         { key: "description", label: "Description" },
         { key: "reviews", label: `Reviews` },
         { key: "qa", label: `Q&A` },
-        { key: "video", label: "Video" },
+        // { key: "video", label: "Video" },
     ];
 
     useEffect(() => {
@@ -116,11 +116,11 @@ const ProductDetailsTabs = ({ product, productReviews = [], onProductUpdate }) =
 
                 <div className="border-t border-gray-100 max-w-4xl mx-auto opacity-50" />
 
-                <section id="video" className="scroll-mt-64">
+                {/* <section id="video" className="scroll-mt-64">
                     <div className="max-w-4xl mx-auto">
                         <ProductVideo videoUrl={product.video} />
                     </div>
-                </section>
+                </section> */}
             </div>
         </div>
     );

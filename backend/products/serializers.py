@@ -126,7 +126,6 @@ class ProductSerializer(serializers.ModelSerializer):
     gallery_images = serializers.SerializerMethodField()
     specifications = ProductSpecificationSerializer(many=True, read_only=True)
     variants = ProductVariantSerializer(many=True, read_only=True)
-    related_products = SimpleProductSerializer(many=True, read_only=True)
     reviews = ReviewSerializer(many=True, read_only=True)
     questions = QuestionSerializer(many=True, read_only=True)
     sold_count = serializers.IntegerField(read_only=True)
@@ -139,14 +138,6 @@ class ProductSerializer(serializers.ModelSerializer):
     category_id = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(), source='category', write_only=True
     )
-    related_products_ids = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Product.objects.all(),
-        source='related_products',
-        write_only=True,
-        required=False
-    )
-
     uploaded_images = serializers.ListField(
         child=serializers.ImageField(allow_empty_file=False, use_url=False),
         write_only=True,
@@ -176,9 +167,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
             'variants_input',
             'variants',
-
-            'related_products_ids',
-            'related_products',
 
             'rating', 'reviews_count', 'reviews', 'questions',
             'product_type', 'stock_quantity', 'sold_count', 'is_featured', 'is_bestseller', 'is_active',
@@ -217,7 +205,6 @@ class ProductSerializer(serializers.ModelSerializer):
         uploaded_images = validated_data.pop('uploaded_images', [])
         specs_input = validated_data.pop('specs_input', None)
         variants_input = validated_data.pop('variants_input', None)
-        related_products = validated_data.pop('related_products', [])
 
         # Update core fields
         for attr, value in validated_data.items():
@@ -263,9 +250,6 @@ class ProductSerializer(serializers.ModelSerializer):
                 instance.image = pimg.image
                 instance.save(update_fields=['image'])
 
-        # Update Related Products
-        if related_products is not None:
-            instance.related_products.set(related_products)
 
         # Update Gallery Images (already handled above via FILES)
         pass

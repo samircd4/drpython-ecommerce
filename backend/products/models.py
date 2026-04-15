@@ -150,9 +150,6 @@ class Product(models.Model):
     brand = models.ForeignKey(
         Brand, on_delete=models.CASCADE, related_name="products"
     )
-    related_products = models.ManyToManyField(
-        "self", blank=True, symmetrical=False
-    )
 
     # --- 3. Media & Content ---
     image = models.ImageField(

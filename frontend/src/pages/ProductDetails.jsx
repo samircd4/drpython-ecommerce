@@ -29,6 +29,7 @@ const ProductDetails = () => {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [relatedProductsData, setRelatedProductsData] = useState([]);
 
     const [activeIndex, setActiveIndex] = useState(0);
     const [prevIndex, setPrevIndex] = useState(0);
@@ -78,8 +79,15 @@ const ProductDetails = () => {
         variants = [],
         category: categoryObj = {},
         wholesale_price = null,
-        related_products = [],
     } = product || {};
+
+    // Set related_products to items from the same category
+    const related_products = useMemo(() => {
+        if (!relatedProductsData || relatedProductsData.length === 0) return [];
+        
+        // Filter out current product and return related products from API
+        return relatedProductsData.filter(p => String(p.id) !== String(product?.id));
+    }, [relatedProductsData, product?.id]);
 
     const brand = brandObj?.name || "Unknown Brand";
 
@@ -143,6 +151,29 @@ const ProductDetails = () => {
 
         fetchProduct();
     }, [id]);
+
+    // Fetch related products from the same category
+    useEffect(() => {
+        if (!product || !product.category) {
+            setRelatedProductsData([]);
+            return;
+        }
+
+        const fetchRelatedProducts = async () => {
+            try {
+                const categoryId = product.category?.id;
+                if (categoryId) {
+                    const response = await api.get(`/products/?category=${categoryId}&limit=10`);
+                    setRelatedProductsData(response.data.results || response.data);
+                }
+            } catch (err) {
+                console.error("Error fetching related products:", err);
+                setRelatedProductsData([]);
+            }
+        };
+
+        fetchRelatedProducts();
+    }, [product?.category?.id]);
 
     const { data: wsData } = useWebSocket(productId ? `/ws/product/${productId}/` : null);
 
@@ -328,7 +359,7 @@ const ProductDetails = () => {
                 ...product,
                 price: cartPrice
             };
-            
+
             await addToCart(payload, qty, silent);
         } catch {
             if (!silent) toast.error("Failed to add to cart");

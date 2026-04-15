@@ -62,7 +62,6 @@ class ProductViewSet(viewsets.ModelViewSet):
             'gallery_images',
             'specifications',
             'variants',
-            'related_products',
             'reviews__customer'
         )
         .annotate(
