@@ -63,18 +63,18 @@ jobs:
               DIR="~/sarker_dev"
               COMPOSE_FILE="docker-compose.dev.yml"
             fi
-            
+
             echo "📦 Deploying $BRANCH branch to $DIR..."
             cd $DIR
-            
+
             # Pull latest code
             echo "📥 Pulling latest code from $BRANCH..."
             git pull origin $BRANCH || { echo "❌ Git pull failed"; docker compose -f $COMPOSE_FILE logs --tail=50; exit 1; }
-            
+
             # Build and start containers
             echo "🔨 Building and starting containers..."
             docker compose -f $COMPOSE_FILE up -d --build --force-recreate --remove-orphans || { echo "❌ Docker compose failed"; docker compose -f $COMPOSE_FILE logs --tail=50; exit 1; }
-            
+
             # Health check - verify containers are running
             echo "🏥 Running health checks..."
             RETRY=0
@@ -91,17 +91,17 @@ jobs:
                 sleep 5
               fi
             done
-            
+
             if [ $RETRY -eq $HEALTH_CHECK_RETRIES ]; then
               echo "❌ Health check failed after $HEALTH_CHECK_RETRIES attempts"
               docker compose -f $COMPOSE_FILE logs --tail=100
               exit 1
             fi
-            
+
             # Cleanup
             echo "🧹 Cleaning up unused images..."
             docker image prune -f
-            
+
             # Success message
             echo ""
             echo "✅ Deployment to $BRANCH successful!"
