@@ -40,6 +40,7 @@ export const useStoreConfig = () => {
   const clearCache = () => {
     cachedConfig = null;
     cachedTimestamp = null;
+    fetchPromise = null;
     sessionStorage.removeItem("storeConfig");
     sessionStorage.removeItem("storeConfig_timestamp");
   };
