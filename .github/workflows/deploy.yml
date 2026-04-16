@@ -46,6 +46,14 @@ jobs:
     timeout-minutes: 10
 
     steps:
+      - name: Debug - Check host connectivity
+        run: |
+          echo "Attempting to resolve and ping host..."
+          HOST="${{ secrets.DEV_SERVER_HOST }}"
+          echo "Host: $HOST"
+          nslookup $HOST || echo "⚠️ DNS resolution failed"
+          timeout 5 bash -c "echo > /dev/tcp/$HOST/22" 2>/dev/null && echo "✅ Port 22 is open" || echo "❌ Port 22 is unreachable"
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@master
         with:
@@ -53,6 +61,7 @@ jobs:
           username: ${{ secrets.DEV_SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 300s
+          debug: true
           script: |
             set -e  # Exit on any error
             BRANCH="${{ github.ref_name }}"
