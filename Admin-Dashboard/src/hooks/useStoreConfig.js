@@ -105,17 +105,27 @@ export const useStoreConfig = () => {
       }
     }
 
-    // Listen for config updates from admin in other tabs
+    // Listen for config updates from current tab (custom event)
+    const handleConfigUpdated = () => {
+      clearCache();
+      refreshConfig();
+    };
+
+    // Listen for config updates from other tabs (storage event)
     const handleStorageChange = (e) => {
       if (e.key === "storeConfigUpdated") {
-        // Clear cache and refetch when admin updates config
         clearCache();
         refreshConfig();
       }
     };
 
+    window.addEventListener("storeConfigUpdated", handleConfigUpdated);
     window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storeConfigUpdated", handleConfigUpdated);
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   const updateConfigLocal = (newConfig) => {

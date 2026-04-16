@@ -164,6 +164,9 @@ const WebConfiguration = () => {
 
             updateConfigLocal(res.data);
 
+            // Dispatch custom event to update config in current tab immediately
+            window.dispatchEvent(new Event('storeConfigUpdated'));
+
             // Broadcast config update to other tabs via localStorage
             try {
                 localStorage.setItem('storeConfigUpdated', JSON.stringify({
