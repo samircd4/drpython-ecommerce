@@ -1,6 +1,7 @@
 // App.jsx
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useVisitorTracking } from './hooks/useVisitorTracking';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -23,36 +24,45 @@ import Team from './pages/Team';
 import TeamMemberDetails from './pages/TeamMemberDetails';
 import DevFeedback from './pages/DevFeedback';
 
+// Routes component that uses the tracking hook
+const AppRoutes = () => {
+    useVisitorTracking();
 
+    return (
+        <>
+            <ScrollToTop />
+            <Routes>
+                <Route path="/" element={<Layout />}>
+                    <Route index element={<Home />} />
+                    <Route path="about" element={<About />} />
+                    <Route path="team" element={<Team />} />
+                    <Route path="team/:id" element={<TeamMemberDetails />} />
+                    <Route path="products" element={<Products />} />
+                    <Route path="products/:id" element={<ProductDetails />} />
+                    <Route path="categories" element={<CategoryPage />} />
+                    <Route path="category/:slug" element={<CategoryPage />} />
+                    <Route path="brand/:slug" element={<CategoryPage />} />
+                    <Route path="cart" element={<Cart />} />
+                    <Route path="checkout" element={<Checkout />} />
+                    <Route path="contact" element={<Contact />} />
+                    <Route path="account" element={<Account />} />
+                    <Route path="forgot-password" element={<ForgotPassword />} />
+                    <Route path="password-reset-confirm" element={<ResetPassword />} />
+                    <Route path="verify-email" element={<EmailVerification />} />
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="order-success" element={<OrderSuccess />} />
+                    <Route path="order-tracking/:id?" element={<OrderTracking />} />
+                    <Route path="terms" element={<Terms />} />
+                </Route>
+                <Route path="dev-feedback" element={<DevFeedback />} />
+            </Routes>
+        </>
+    );
+};
 
 const App = () => (
     <Router>
-        <ScrollToTop />
-        <Routes>
-            <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
-                <Route path="about" element={<About />} />
-                <Route path="team" element={<Team />} />
-                <Route path="team/:id" element={<TeamMemberDetails />} />
-                <Route path="products" element={<Products />} />
-                <Route path="products/:id" element={<ProductDetails />} />
-                <Route path="categories" element={<CategoryPage />} />
-                <Route path="category/:slug" element={<CategoryPage />} />
-                <Route path="brand/:slug" element={<CategoryPage />} />
-                <Route path="cart" element={<Cart />} />
-                <Route path="checkout" element={<Checkout />} />
-                <Route path="contact" element={<Contact />} />
-                <Route path="account" element={<Account />} />
-                <Route path="forgot-password" element={<ForgotPassword />} />
-                <Route path="password-reset-confirm" element={<ResetPassword />} />
-                <Route path="verify-email" element={<EmailVerification />} />
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="order-success" element={<OrderSuccess />} />
-                <Route path="order-tracking/:id?" element={<OrderTracking />} />
-                <Route path="terms" element={<Terms />} />
-            </Route>
-            <Route path="dev-feedback" element={<DevFeedback />} />
-        </Routes>
+        <AppRoutes />
     </Router>
 );
 

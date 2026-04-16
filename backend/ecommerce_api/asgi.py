@@ -7,20 +7,20 @@ For more information on this file, see
 https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 """
 
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 
 # Initialize Django ASGI application early
 django_asgi_app = get_asgi_application()
 
-from django.urls import path
-from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
-from channels.generic.websocket import AsyncWebsocketConsumer
-import products.routing
-import orders.routing
-import notifications.routing
-import chat.routing
+# Import Django-dependent modules after initialization
 from chat.middleware import TokenAuthMiddleware
+import tracking.routing
+import chat.routing
+import notifications.routing
+import orders.routing
+import products.routing
 
 
 class DebugConsumer(AsyncWebsocketConsumer):
@@ -37,6 +37,7 @@ application = ProtocolTypeRouter({
     "http": django_asgi_app,
     "websocket": TokenAuthMiddleware(
         URLRouter(
+            tracking.routing.websocket_urlpatterns +
             notifications.routing.websocket_urlpatterns +
             orders.routing.websocket_urlpatterns +
             products.routing.websocket_urlpatterns +
@@ -44,4 +45,3 @@ application = ProtocolTypeRouter({
         )
     ),
 })
-
