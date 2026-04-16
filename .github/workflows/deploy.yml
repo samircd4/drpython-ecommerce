@@ -1,59 +1,15 @@
-name: Deploy to Development Server
+name: Deploy
 
 on:
   push:
     branches: [dev, prod]
-  pull_request:
-    branches: [dev, prod]
-
-env:
-  DEPLOYMENT_TIMEOUT: 300
-  HEALTH_CHECK_RETRIES: 5
 
 jobs:
-  # ========== TEST JOBS ==========
-  test-backend-build:
-    runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - name: Build backend image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./backend
-          push: false
-
-  test-frontend-build:
-    runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-    steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
-      - name: Build frontend image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./frontend
-          push: false
-
-  # ========== DEPLOY JOB ==========
   deploy:
-    needs: [test-backend-build, test-frontend-build]
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
-      - name: Debug - Check host connectivity
-        run: |
-          echo "Attempting to resolve and ping host..."
-          HOST="${{ secrets.DEV_SERVER_HOST }}"
-          echo "Host: $HOST"
-          nslookup $HOST || echo "⚠️ DNS resolution failed"
-          timeout 5 bash -c "echo > /dev/tcp/$HOST/22" 2>/dev/null && echo "✅ Port 22 is open" || echo "❌ Port 22 is unreachable"
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@master
         with:
@@ -61,58 +17,18 @@ jobs:
           username: ${{ secrets.DEV_SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 300s
-          debug: true
           script: |
-            set -e  # Exit on any error
+            set -e
             BRANCH="${{ github.ref_name }}"
             if [ "$BRANCH" = "prod" ]; then
-              DIR="~/sarker_prod"
-              COMPOSE_FILE="docker-compose.prod.yml"
+              DIR="$HOME/sarker_prod"
+              FILE="docker-compose.prod.yml"
             else
-              DIR="~/sarker_dev"
-              COMPOSE_FILE="docker-compose.dev.yml"
+              DIR="$HOME/sarker_dev"
+              FILE="docker-compose.dev.yml"
             fi
 
-            echo "📦 Deploying $BRANCH branch to $DIR..."
             cd $DIR
-
-            # Pull latest code
-            echo "📥 Pulling latest code from $BRANCH..."
-            git pull origin $BRANCH || { echo "❌ Git pull failed"; docker compose -f $COMPOSE_FILE logs --tail=50; exit 1; }
-
-            # Build and start containers
-            echo "🔨 Building and starting containers..."
-            docker compose -f $COMPOSE_FILE up -d --build --force-recreate --remove-orphans || { echo "❌ Docker compose failed"; docker compose -f $COMPOSE_FILE logs --tail=50; exit 1; }
-
-            # Health check - verify containers are running
-            echo "🏥 Running health checks..."
-            RETRY=0
-            while [ $RETRY -lt $HEALTH_CHECK_RETRIES ]; do
-              RUNNING=$(docker compose -f $COMPOSE_FILE ps --services --filter "status=running" | wc -l)
-              TOTAL=$(docker compose -f $COMPOSE_FILE ps --services | wc -l)
-              if [ $RUNNING -eq $TOTAL ] && [ $TOTAL -gt 0 ]; then
-                echo "✅ All containers running ($RUNNING/$TOTAL)"
-                break
-              fi
-              RETRY=$((RETRY + 1))
-              if [ $RETRY -lt $HEALTH_CHECK_RETRIES ]; then
-                echo "⏳ Waiting for containers... (attempt $RETRY/$HEALTH_CHECK_RETRIES)"
-                sleep 5
-              fi
-            done
-
-            if [ $RETRY -eq $HEALTH_CHECK_RETRIES ]; then
-              echo "❌ Health check failed after $HEALTH_CHECK_RETRIES attempts"
-              docker compose -f $COMPOSE_FILE logs --tail=100
-              exit 1
-            fi
-
-            # Cleanup
-            echo "🧹 Cleaning up unused images..."
-            docker image prune -f
-
-            # Success message
-            echo ""
-            echo "✅ Deployment to $BRANCH successful!"
-            echo "⏰ Deployed at: $(date)"
-            docker compose -f $COMPOSE_FILE ps
+            git pull origin $BRANCH
+            docker compose -f $FILE up -d --build
+            docker compose -f $FILE ps
