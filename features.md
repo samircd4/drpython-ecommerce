@@ -2,7 +2,7 @@
 
 A comprehensive overview of all the features and capabilities of the **Sarker.shop** e-commerce platform.
 
----
+----
 
 ## 1. Customer-Facing Features (Frontend)
 
