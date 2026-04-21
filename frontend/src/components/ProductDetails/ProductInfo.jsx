@@ -102,9 +102,10 @@ const ProductInfo = ({
             </div>
 
             {product?.short_description && (
-                <div className="mt-4 p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500 text-gray-700 text-sm leading-relaxed">
-                    {product.short_description}
-                </div>
+                <div 
+                    className="mt-4 p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500 text-gray-700 text-sm leading-relaxed description-content prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{ __html: product.short_description }}
+                />
             )}
 
             <div className="border-t my-6" />

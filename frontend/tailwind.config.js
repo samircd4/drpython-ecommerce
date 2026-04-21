@@ -105,12 +105,19 @@ export default {
           },
         },
       },
+      backgroundImage: {
+        'premium-gradient': 'linear-gradient(135deg, var(--primary-600) 0%, var(--secondary-600) 100%)',
+        'glass-gradient': 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+        'dark-gradient': 'linear-gradient(180deg, var(--bg-light) 0%, var(--bg-muted) 100%)',
+      },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
       },
       boxShadow: {
-        "primary-glow":
-          "0 0 15px var(--primary-600), 0 0 25px var(--primary-600), 0 0 35px var(--primary-600)",
+        "primary-glow": "0 0 20px -5px var(--primary-400), 0 0 15px -10px var(--primary-600)",
+        "secondary-glow": "0 0 20px -5px var(--secondary-400), 0 0 15px -10px var(--secondary-600)",
+        "accent-glow": "0 0 20px -5px var(--accent-400), 0 0 15px -10px var(--accent-600)",
+        "glass": "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
       },
     },
   },
