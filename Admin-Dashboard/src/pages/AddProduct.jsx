@@ -514,19 +514,19 @@ const AddProduct = () => {
                                         <div className="flex items-center justify-between">
                                             <label className="text-sm font-medium text-slate-300">Short Description</label>
                                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                                                (formData.short_description?.length || 0) > 150 
+                                                (formData.short_description?.length || 0) > 450 
                                                 ? 'bg-red-500/10 text-red-400 border-red-500/20' 
-                                                : (formData.short_description?.length || 0) > 130
+                                                : (formData.short_description?.length || 0) > 400
                                                 ? 'bg-orange-500/10 text-orange-400 border-orange-500/20'
                                                 : 'bg-slate-800 text-slate-500 border-slate-700'
                                             }`}>
-                                                {formData.short_description?.length || 0} / 160
+                                                {formData.short_description?.length || 0} / 500
                                             </span>
                                         </div>
                                         <textarea
                                             name="short_description"
                                             rows="2"
-                                            maxLength="160"
+                                            maxLength="500"
                                             placeholder="A brief summary for cards and lists..."
                                             value={formData.short_description}
                                             onChange={handleChange}
