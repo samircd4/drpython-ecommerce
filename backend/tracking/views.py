@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
-from django.middleware.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt
 import json
 
 logger = logging.getLogger(__name__)
