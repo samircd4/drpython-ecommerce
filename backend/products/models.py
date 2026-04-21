@@ -160,7 +160,7 @@ class Product(models.Model):
     )
 
     short_description = models.TextField(
-        blank=True, max_length=500
+        blank=True
     )
     description = models.TextField(blank=True)
 

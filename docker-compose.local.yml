@@ -106,6 +106,7 @@ services:
       - "5173:5173"
     environment:
       - VITE_API_URL=http://localhost:8000/api
+      - VITE_TRACKING_WS_URL=ws://localhost:8001/ws/live-insights/
       - VITE_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
@@ -116,13 +117,14 @@ services:
     container_name: sarker_admin_local
     working_dir: /app
     volumes:
-      - ./Admin-Dashboard:/app
+      - ./admin-dashboard:/app
       - /app/node_modules
     ports:
       - "5174:5174"
     environment:
       - VITE_API_BASE_URL=http://localhost:8000/api
-      - VITE_WS_URL=ws://localhost:8001/ws/chat/
+      - VITE_WS_URL=ws://localhost:8000/ws/chat/
+      - VITE_TRACKING_WS_URL=ws://localhost:8001/ws/live-insights/
       - VITE_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true

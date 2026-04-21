@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from corsheaders.defaults import default_headers
+import dj_database_url
+from datetime import timedelta
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -25,12 +28,17 @@ load_dotenv(BASE_DIR / '.env', override=False)
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-16m5sa@!uf8bl7l91hd_ynkgn$qqij-ar5%-j^i%bp32#7j#=k')
+SECRET_KEY = os.getenv(
+    'SECRET_KEY', 'django-insecure-16m5sa@!uf8bl7l91hd_ynkgn$qqij-ar5%-j^i%bp32#7j#=k')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
+
 def _bool(val, default):
-    if val is None: return default
+    if val is None:
+        return default
     return str(val).lower() in ['true', '1', 'yes', 't', 'y']
+
 
 DEBUG = _bool(os.getenv('DEBUG'), True)
 
@@ -40,7 +48,6 @@ DEBUG = _bool(os.getenv('DEBUG'), True)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
-
 
 
 # Application definition
@@ -73,6 +80,7 @@ INSTALLED_APPS = [
     'api',
     'chat',
     'dev_feedback',
+    'tracking',
 
     # Social Login
     'allauth',
@@ -143,10 +151,10 @@ SPECTACULAR_SETTINGS = {
     },
 }
 
-from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),     # 1 day of uninterrupted browsing
+    # 1 day of uninterrupted browsing
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),    # Stay logged in for a week
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
@@ -191,7 +199,6 @@ WSGI_APPLICATION = 'ecommerce_api.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-import dj_database_url
 
 DATABASES = {
     'default': dj_database_url.config(
@@ -220,7 +227,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # =========================
 # ALLOWED HOSTS
 # =========================
-_allowed_hosts = os.getenv('ALLOWED_HOSTS', 'sarker.shop,www.sarker.shop,dev.sarker.shop,localhost,127.0.0.1,backend,*')
+_allowed_hosts = os.getenv(
+    'ALLOWED_HOSTS', 'sarker.shop,www.sarker.shop,dev.sarker.shop,localhost,127.0.0.1,backend,*')
 ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts.split(',')]
 if '*' in ALLOWED_HOSTS:
     ALLOWED_HOSTS = ['*']
@@ -242,14 +250,13 @@ CORS_ALLOWED_ORIGINS = [
     "https://dev-admin.sarker.shop",
 ]
 
-# When True, all origins are allowed. Since we use credentials, 
+# When True, all origins are allowed. Since we use credentials,
 # django-cors-headers will reflect the requester's Origin.
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True  # Legacy support
 CORS_ALLOW_CREDENTIALS = True
 CORS_PREFLIGHT_MAX_AGE = 86400
 
-from corsheaders.defaults import default_headers
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "x-guest-id",
@@ -259,7 +266,8 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 # =========================
 # CSRF (Admin / Cookies)
 # =========================
-_csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://sarker.shop,https://www.sarker.shop,https://dev.sarker.shop')
+_csrf_origins = os.getenv(
+    'CSRF_TRUSTED_ORIGINS', 'https://sarker.shop,https://www.sarker.shop,https://dev.sarker.shop')
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(',')]
 
 # Add local origins for development
@@ -291,7 +299,6 @@ TIME_ZONE = 'Asia/Dhaka'
 
 USE_I18N = True
 USE_TZ = True
-
 
 
 # Static files (CSS, JavaScript, Images)
@@ -332,7 +339,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/admin/login/'
 API_BASE_URL = "http://127.0.0.1:8000/api"
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
-BACKEND_URL = os.getenv('BACKEND_URL', f"https://{os.getenv('DOMAIN', 'sarker.shop')}")
+BACKEND_URL = os.getenv(
+    'BACKEND_URL', f"https://{os.getenv('DOMAIN', 'sarker.shop')}")
 
 REST_AUTH = {
     'USE_JWT': True,
@@ -357,7 +365,7 @@ ANYMAIL = {
 
 DEFAULT_FROM_EMAIL = 'Sarker Shop <info@sarker.shop>'
 
-SERVER_EMAIL = "info@sarker.shop" 
+SERVER_EMAIL = "info@sarker.shop"
 
 
 # Allauth / Social Account Settings
@@ -402,7 +410,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
         'INIT_PARAMS': {'cookie': True},
         'FIELDS': [
-            'id', 'first_name', 'last_name', 'middle_name', 'name', 
+            'id', 'first_name', 'last_name', 'middle_name', 'name',
             'name_format', 'picture', 'short_name'
         ],
         'EXCHANGE_TOKEN': True,

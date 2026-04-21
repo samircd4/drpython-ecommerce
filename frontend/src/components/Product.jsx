@@ -54,7 +54,12 @@ const Product = ({ product }) => {
                         {product.name}
                     </Link>
                 </h3>
-                {/* <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p> */}
+                {product.short_description && (
+                    <div 
+                        className="text-gray-600 mb-4 text-xs line-clamp-2 overflow-hidden"
+                        dangerouslySetInnerHTML={{ __html: product.short_description }}
+                    />
+                )}
                 <div className="mt-auto">
                     <div className="mb-2 flex items-center gap-2 whitespace-nowrap">
                         {product.wholesale_price ? (
