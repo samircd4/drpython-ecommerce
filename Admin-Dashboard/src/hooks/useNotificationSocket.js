@@ -25,9 +25,15 @@ const useNotificationSocket = (token, userId, onNotification) => {
         }
 
         isUnmountedRef.current = false;
-        const BASE_WS = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8000/ws/chat/';
-        // Derive notification URL from base WS URL
-        const WS_URL = BASE_WS.replace('localhost', '127.0.0.1').replace('/ws/chat/', '') + `/ws/notifications/${userId}/`;
+        const BASE_WS = (import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8000').trim();
+        const apiPath = `/ws/notifications/${userId}/`;
+
+        // Robust normalization
+        let WS_URL = `${BASE_WS}${apiPath}`;
+        WS_URL = WS_URL.replace(/([^:])\/\//g, '$1/'); // Fix // but keep wss://
+        if (WS_URL.includes('/ws/ws/')) {
+            WS_URL = WS_URL.replace('/ws/ws/', '/ws/'); // Deduplicate /ws/
+        }
 
         const connect = () => {
             if (isUnmountedRef.current) return;
