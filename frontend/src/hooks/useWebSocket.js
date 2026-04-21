@@ -28,34 +28,32 @@ const useWebSocket = (url) => {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             let fullUrl = url;
 
-            // 1. If we have a dedicated WS URL defined in .env, use it
-            const envWsUrl = import.meta.env.VITE_WS_URL;
-            
             if (!url.startsWith('ws')) {
+                const envWsUrl = import.meta.env.VITE_WS_URL;
+                let base;
+
                 if (envWsUrl) {
-                    // Ensure base is trimmed and has no trailing slash
-                    const base = envWsUrl.trim().replace(/\/+$/, '');
-                    // Ensure path starts with a single slash
-                    const path = url.startsWith('/') ? url : '/' + url;
-                    
-                    fullUrl = `${base}${path}`;
-                    
-                    // Deduplicate /ws/ws or // if they happen
-                    fullUrl = fullUrl.replace(/([^:])\/\//g, '$1/');
-                    if (fullUrl.includes('/ws/ws/')) {
-                        fullUrl = fullUrl.replace('/ws/ws/', '/ws/');
-                    }
+                    base = envWsUrl.trim();
                 } else {
-                    // Fallback logic
-                    const envApiUrl = import.meta.env.VITE_API_URL;
-                    let host = window.location.host;
-                    
-                    if (envApiUrl && envApiUrl.startsWith('http')) {
-                        try {
-                            host = new URL(envApiUrl).host;
-                        } catch (e) {}
-                    }
-                    fullUrl = `${protocol}//${host}${url}`;
+                    const fallbackHost = window.location.host;
+                    base = `${protocol}//${fallbackHost}`;
+                }
+
+                // Ensure path starts with a slash
+                const path = url.startsWith('/') ? url : '/' + url;
+                
+                // Construct and normalize:
+                // 1. Join base and path
+                // 2. Replace multiple slashes with a single one (except after protocol)
+                // 3. Specifically fix /ws/ws/ if it appears
+                fullUrl = `${base}${path}`;
+                
+                // Normalize slashes (but preserve ws:// or wss://)
+                fullUrl = fullUrl.replace(/([^:])\/\//g, '$1/');
+                
+                // Specific fix for the common /ws/ws/ issue
+                if (fullUrl.includes('/ws/ws/')) {
+                    fullUrl = fullUrl.replace('/ws/ws/', '/ws/');
                 }
             }
 
