@@ -23,7 +23,15 @@ const useChatSocket = (token, onMessage) => {
 
         isUnmountedRef.current = false;
 
-        const WS_URL = import.meta.env.VITE_WS_URL || 'wss://sarker.shop/ws/chat/';
+        const BASE_WS = (import.meta.env.VITE_WS_URL || 'wss://sarker.shop').trim();
+        const apiPath = '/ws/chat/';
+
+        // Robust normalization
+        let WS_URL = `${BASE_WS}${apiPath}`;
+        WS_URL = WS_URL.replace(/([^:])\/\//g, '$1/'); // Fix // but keep wss://
+        if (WS_URL.includes('/ws/ws/')) {
+            WS_URL = WS_URL.replace('/ws/ws/', '/ws/'); // Deduplicate /ws/
+        }
 
         const connect = () => {
             if (isUnmountedRef.current) return;
@@ -43,9 +51,7 @@ const useChatSocket = (token, onMessage) => {
             }
 
             // Ensure URL ends correctly for query params
-            const fullWsUrl = WS_URL.includes('?') 
-                ? `${WS_URL}&token=${token}` 
-                : `${WS_URL}${WS_URL.endsWith('/') ? '' : '/'}?token=${token}`;
+            const fullWsUrl = `${WS_URL}?token=${token}`;
             
             const socket = new WebSocket(fullWsUrl);
             socketRef.current = socket;
