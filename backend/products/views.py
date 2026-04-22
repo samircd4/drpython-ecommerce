@@ -73,6 +73,24 @@ class ProductViewSet(viewsets.ModelViewSet):
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
 
+    def get_queryset(self):
+        queryset = (
+            Product.objects.all()
+            .select_related('brand', 'category')
+            .prefetch_related(
+                'gallery_images',
+                'specifications',
+                'variants',
+                'reviews__customer'
+            )
+            .annotate(
+                sold_count=Coalesce(Sum('order_items__quantity'), 0)
+            )
+        )
+        if self.request and self.request.user and self.request.user.is_staff:
+            return queryset
+        return queryset.filter(is_active=True)
+
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
 
