@@ -60,7 +60,8 @@ jobs:
 
             echo "Deploying $BRANCH..."
             cd $DIR
-            git pull origin $BRANCH
+            git fetch origin $BRANCH
+            git reset --hard origin/$BRANCH
             docker compose -f $FILE up -d --build
 
             # Health check
