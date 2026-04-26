@@ -25,7 +25,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </HelmetProvider>
 );
 ```
-
 **Step 3:** Create a Reusable `SEO` Component
 Create `src/components/SEO.jsx` to inject meta tags easily on any page:
 

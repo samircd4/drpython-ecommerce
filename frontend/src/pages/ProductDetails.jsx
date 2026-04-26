@@ -152,20 +152,18 @@ const ProductDetails = () => {
         fetchProduct();
     }, [id]);
 
-    // Fetch related products from the same category
+    // Fetch related products from the same category (via backend)
     useEffect(() => {
-        if (!product || !product.category) {
+        if (!product || !id) {
             setRelatedProductsData([]);
             return;
         }
 
         const fetchRelatedProducts = async () => {
             try {
-                const categoryId = product.category?.id;
-                if (categoryId) {
-                    const response = await api.get(`/products/?category=${categoryId}&limit=10`);
-                    setRelatedProductsData(response.data.results || response.data);
-                }
+                // Use the optimized /related/ endpoint which handles category matching
+                const response = await api.get(`/products/${encodeURIComponent(id)}/related/`);
+                setRelatedProductsData(response.data || []);
             } catch (err) {
                 console.error("Error fetching related products:", err);
                 setRelatedProductsData([]);
@@ -173,7 +171,7 @@ const ProductDetails = () => {
         };
 
         fetchRelatedProducts();
-    }, [product?.category?.id]);
+    }, [id, product?.id]);
 
     const { data: wsData } = useWebSocket(productId ? `/ws/product/${productId}/` : null);
 

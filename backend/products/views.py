@@ -209,22 +209,14 @@ class ProductViewSet(viewsets.ModelViewSet):
     # ----------------------------
     # 🔗 RELATED PRODUCTS
     # ----------------------------
-    @extend_schema(summary="Related Products")
     @action(detail=True, methods=['get'])
     def related(self, request, pk=None):
         product = self.get_object()
 
-        related = product.related_products.all()
-
-        if related.count() < 4:
-            same_category = (
-                Product.objects
-                .filter(category=product.category)
-                .exclude(id=product.id)
-                .exclude(id__in=related.values_list('id', flat=True))
-                .order_by('?')[:4]
-            )
-            related = (related | same_category).distinct()
+        related = Product.objects.filter(
+            category=product.category,
+            is_active=True
+        ).exclude(id=product.id).order_by('?')[:8]
 
         return Response(
             self.get_serializer(related, many=True).data

@@ -8,7 +8,7 @@ import os
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
     logo = models.ImageField(upload_to='categories/', blank=True, null=True)
     parent = models.ForeignKey(
         'self', on_delete=models.SET_NULL, null=True, blank=True, related_name='children')
@@ -60,7 +60,7 @@ class Category(models.Model):
 
 class Brand(models.Model):
     name = models.CharField(max_length=50)
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
     logo = models.ImageField(upload_to='brands/', blank=True, null=True)
 
     def save(self, *args, **kwargs):
@@ -99,7 +99,7 @@ class Product(models.Model):
 
     # --- 1. Identity ---
     name = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
 
     # Public readable ID → SS123456
     product_id = models.CharField(
@@ -149,6 +149,9 @@ class Product(models.Model):
     )
     brand = models.ForeignKey(
         Brand, on_delete=models.CASCADE, related_name="products"
+    )
+    related_products = models.ManyToManyField(
+        'self', blank=True, symmetrical=False
     )
 
     # --- 3. Media & Content ---
