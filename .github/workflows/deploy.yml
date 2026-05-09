@@ -48,7 +48,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 300s
           script: |
-            set -e
+            bash -e << 'EOF'
             BRANCH="${{ github.ref_name }}"
             if [ "$BRANCH" = "prod" ]; then
               DIR="$HOME/sarker_prod"
@@ -67,7 +67,7 @@ jobs:
             # Health check
             echo "Running health checks..."
             RETRY=0
-            while [ $RETRY -lt $HEALTH_CHECK_RETRIES ]; do
+            while [ $RETRY -lt ${{ env.HEALTH_CHECK_RETRIES }} ]; do
               RUNNING=$(docker compose -f $FILE ps --services --filter "status=running" | wc -l)
               TOTAL=$(docker compose -f $FILE ps --services | wc -l)
               if [ $RUNNING -eq $TOTAL ] && [ $TOTAL -gt 0 ]; then
@@ -75,15 +75,16 @@ jobs:
                 break
               fi
               RETRY=$((RETRY + 1))
-              if [ $RETRY -lt $HEALTH_CHECK_RETRIES ]; then
+              if [ $RETRY -lt ${{ env.HEALTH_CHECK_RETRIES }} ]; then
                 sleep 5
               fi
             done
 
-            if [ $RETRY -eq $HEALTH_CHECK_RETRIES ]; then
+            if [ $RETRY -eq ${{ env.HEALTH_CHECK_RETRIES }} ]; then
               echo "Health check failed"
               docker compose -f $FILE logs --tail=100
               exit 1
             fi
 
             docker compose -f $FILE ps
+            EOF
