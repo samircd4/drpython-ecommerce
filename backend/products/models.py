@@ -31,8 +31,8 @@ class Category(models.Model):
             try:
                 from django.core.files.uploadedfile import UploadedFile
                 if isinstance(self.logo, UploadedFile):
-                    from utils.images import convert_to_webp
-                    optimized = convert_to_webp(self.logo)
+                    from utils.images import process_image_to_webp
+                    optimized = process_image_to_webp(self.logo, name_source=self.name)
                     if optimized:
                         self.logo = optimized
             except Exception as e:
@@ -78,8 +78,8 @@ class Brand(models.Model):
             try:
                 from django.core.files.uploadedfile import UploadedFile
                 if isinstance(self.logo, UploadedFile):
-                    from utils.images import convert_to_webp
-                    optimized = convert_to_webp(self.logo)
+                    from utils.images import process_image_to_webp
+                    optimized = process_image_to_webp(self.logo, name_source=self.name)
                     if optimized:
                         self.logo = optimized
             except Exception as e:
@@ -217,9 +217,25 @@ class Product(models.Model):
         if self.image:
             try:
                 from django.core.files.uploadedfile import UploadedFile
-                if isinstance(self.image, UploadedFile):
-                    from utils.images import convert_to_webp
-                    optimized = convert_to_webp(self.image)
+                from utils.images import process_image_to_webp
+                
+                process_needed = False
+                if isinstance(self.image, UploadedFile) or not self.image.name.endswith('.webp'):
+                    process_needed = True
+                elif self.pk:
+                    old_instance = Product.objects.get(pk=self.pk)
+                    if old_instance.image != self.image:
+                        process_needed = True
+                
+                if process_needed:
+                    optimized = process_image_to_webp(
+                        self.image, 
+                        name_source=self.name, 
+                        category=self.category.name,
+                        brand=self.brand.name,
+                        description=self.short_description or self.description,
+                        add_watermark=True
+                    )
                     if optimized:
                         self.image = optimized
             except Exception as e:
@@ -377,25 +393,32 @@ class ProductImage(models.Model):
         if self.image:
             try:
                 from django.core.files.uploadedfile import UploadedFile
-                from utils.images import convert_to_webp
+                from utils.images import process_image_to_webp
 
                 # Only optimize if it's a new file or the file has changed
-                if not self.pk or (self.pk and ProductImage.objects.get(pk=self.pk).image != self.image):
-                    if isinstance(self.image, UploadedFile):
-                        optimized = convert_to_webp(self.image)
-                        if optimized:
-                            self.image = optimized
-            except ProductImage.DoesNotExist:
-                # Handle case where object doesn't exist yet (new image)
-                try:
-                    from django.core.files.uploadedfile import UploadedFile
-                    from utils.images import convert_to_webp
-                    if isinstance(self.image, UploadedFile):
-                        optimized = convert_to_webp(self.image)
-                        if optimized:
-                            self.image = optimized
-                except Exception as e:
-                    print(f"Error optimizing ProductImage (new): {e}")
+                process_needed = False
+                if not self.pk or not self.image.name.endswith('.webp'):
+                    process_needed = True
+                else:
+                    try:
+                        old_instance = ProductImage.objects.get(pk=self.pk)
+                        if old_instance.image != self.image:
+                            process_needed = True
+                    except ProductImage.DoesNotExist:
+                        process_needed = True
+
+                if process_needed:
+                    optimized = process_image_to_webp(
+                        self.image, 
+                        name_source=self.product.name, 
+                        category=self.product.category.name,
+                        brand=self.product.brand.name,
+                        description=self.alt_text or self.product.short_description or self.product.description,
+                        add_watermark=True,
+                        index=self.order if self.order > 0 else None
+                    )
+                    if optimized:
+                        self.image = optimized
             except Exception as e:
                 print(f"Error optimizing ProductImage: {e}")
 

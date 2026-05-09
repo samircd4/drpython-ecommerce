@@ -23,6 +23,22 @@ class Review(models.Model):
     class Meta:
         unique_together = ('product', 'customer')
 
+    def save(self, *args, **kwargs):
+        if self.image:
+            try:
+                from django.core.files.uploadedfile import UploadedFile
+                from utils.images import process_image_to_webp
+                if isinstance(self.image, UploadedFile):
+                    optimized = process_image_to_webp(
+                        self.image, 
+                        name_source=f"review-{self.product.slug}-{self.customer.id}"
+                    )
+                    if optimized:
+                        self.image = optimized
+            except Exception as e:
+                print(f"Error optimizing Review image: {e}")
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.rating}★ - {self.customer.name}"
 
@@ -32,6 +48,22 @@ class ReviewImage(models.Model):
         Review, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='reviews/attachments/')
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if self.image:
+            try:
+                from django.core.files.uploadedfile import UploadedFile
+                from utils.images import process_image_to_webp
+                if isinstance(self.image, UploadedFile):
+                    optimized = process_image_to_webp(
+                        self.image, 
+                        name_source=f"review-img-{self.review.id}-{self.id or 'new'}"
+                    )
+                    if optimized:
+                        self.image = optimized
+            except Exception as e:
+                print(f"Error optimizing ReviewImage: {e}")
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Image for {self.review}"

@@ -63,8 +63,8 @@ class Message(models.Model):
             try:
                 from django.core.files.uploadedfile import UploadedFile
                 if isinstance(self.image, UploadedFile):
-                    from utils.images import convert_to_webp
-                    optimized = convert_to_webp(self.image)
+                    from utils.images import process_image_to_webp
+                    optimized = process_image_to_webp(self.image, name_source=f"chat-{self.id or 'new'}", add_watermark=False)
                     if optimized:
                         self.image = optimized
             except Exception as e:

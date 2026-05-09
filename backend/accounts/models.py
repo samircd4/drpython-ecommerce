@@ -70,8 +70,12 @@ class Customer(models.Model):
             try:
                 from django.core.files.uploadedfile import UploadedFile
                 if isinstance(self.avatar, UploadedFile):
-                    from utils.images import convert_to_webp
-                    optimized = convert_to_webp(self.avatar, max_size=(500, 500))  # Avatars can be smaller
+                    from utils.images import process_image_to_webp
+                    optimized = process_image_to_webp(
+                        self.avatar, 
+                        name_source=self.name, 
+                        max_size=(500, 500)
+                    )  # Avatars can be smaller
                     if optimized:
                         self.avatar = optimized
             except Exception as e:

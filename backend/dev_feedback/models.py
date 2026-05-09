@@ -1,3 +1,4 @@
+# pyrefly: ignore [missing-import]
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -72,6 +73,22 @@ class DevFeedback(models.Model):
         ordering = ['-created_at']
         verbose_name = 'Developer Feedback'
         verbose_name_plural = 'Developer Feedbacks'
+
+    def save(self, *args, **kwargs):
+        if self.screenshot:
+            try:
+                from django.core.files.uploadedfile import UploadedFile
+                from utils.images import process_image_to_webp
+                if isinstance(self.screenshot, UploadedFile):
+                    optimized = process_image_to_webp(
+                        self.screenshot, 
+                        name_source=f"feedback-{self.id or 'new'}"
+                    )
+                    if optimized:
+                        self.screenshot = optimized
+            except Exception as e:
+                print(f"Error optimizing DevFeedback screenshot: {e}")
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"[{self.get_type_display()}] {self.title} ({self.get_status_display()})"
