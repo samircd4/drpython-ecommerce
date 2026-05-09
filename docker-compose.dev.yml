@@ -98,6 +98,9 @@ services:
     restart: always
     ports:
       - "${ADMIN_PORT:-9091}:80"
+    volumes:
+      - dev_static:/var/www/static
+      - dev_media:/var/www/media
     depends_on:
       - backend_api
 
@@ -105,4 +108,3 @@ volumes:
   dev_postgres_data:
   dev_static:
   dev_media:
-

@@ -116,6 +116,9 @@ services:
     restart: always
     ports:
       - "${ADMIN_PORT:-8082}:80"
+    volumes:
+      - prod_static:/var/www/static
+      - prod_media:/var/www/media
     depends_on:
       - backend_api
 
