@@ -9,13 +9,15 @@ from .import_views import import_data
 from tracking.views import block_user_view
 
 urlpatterns = [
+    # API Root — must be first to take priority over router auto-generated roots
+    path('', api_root, name='api-root'),
+
     path("export/<str:model_name>", export_data, name="export-data"),
     path("import/<str:model_name>", import_data, name="import-data"),
 
     # Tracking endpoints
     path('tracking/block-user/', block_user_view, name='block-user'),
 
-    path('', api_root, name='api-root'),
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('docs/', login_required(SpectacularSwaggerView.as_view(url_name='schema',
          template_name='swagger_ui.html')), name='swagger-ui'),
@@ -32,4 +34,5 @@ urlpatterns = [
     path('', include('reviews.urls')),
     path('', include('web.urls')),
     path('', include('dev_feedback.urls')),
+    path('live-tv/', include('live_tv.urls')),
 ]

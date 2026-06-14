@@ -80,4 +80,8 @@ def api_root(request, format=None):
             'export': reverse('export-data', args=['products'], request=request, format=format),
             'import': reverse('import-data', args=['products'], request=request, format=format),
         },
+        'live_tv': {
+            'countries': reverse('country-list', request=request, format=format),
+            'channels': reverse('channel-list', request=request, format=format),
+        },
     })
