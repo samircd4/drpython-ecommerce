@@ -1,8 +1,10 @@
 import logging
 import yt_dlp
+import requests
 import os
+import re
 from django.conf import settings
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 
@@ -59,20 +61,26 @@ class ChannelViewSet(viewsets.ModelViewSet):
 
 
 class YouTubeStreamResolverView(APIView):
-    """Dynamically extracts the real-time .m3u8 live stream link
-
-    from a persistent YouTube channel/video URL and redirects the player.
-    """
-
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
         youtube_url = request.GET.get("url")
+        segment_url = request.GET.get("seg_url")
+
+        production_proxy = os.getenv("YOUTUBE_RESOLVER_PROXY")
+        proxy_dict = {"http": production_proxy, "https": production_proxy} if production_proxy else {}
+
+        if segment_url:
+            try:
+                response = requests.get(segment_url, proxies=proxy_dict, stream=True, timeout=15)
+                django_stream = HttpResponse(response.content, content_type=response.headers.get('Content-Type'))
+                django_stream["Access-Control-Allow-Origin"] = "*"
+                return django_stream
+            except Exception as e:
+                return JsonResponse({"error": str(e)}, status=500)
 
         if not youtube_url:
-            return JsonResponse(
-                {"error": 'Missing required "url" parameter.'}, status=400
-            )
+            return JsonResponse({"error": 'Missing required "url" parameter.'}, status=400)
 
         ydl_opts = {
             "format": "best",
@@ -80,49 +88,45 @@ class YouTubeStreamResolverView(APIView):
             "quiet": True,
             "no_warnings": True,
             "skip_download": True,
-            "http_headers": {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Language": "en-US,en;q=0.5",
-            },
-            "extractor_args": {
-                "youtube": {
-                    "player_client": ["default", "-android_sdkless"]
-                }
-            }
+            "remote_components": ["ejs:github"],
         }
 
-        # 1. Read proxy from environment variable (only present in production .env)
-        production_proxy = os.getenv("YOUTUBE_RESOLVER_PROXY")
-        if production_proxy:
-            logger.info("YouTube resolver using proxy: %s", production_proxy)
-            ydl_opts["proxy"] = production_proxy
-        else:
-            logger.warning("YOUTUBE_RESOLVER_PROXY environment variable is not set.")
+        possible_cookie_paths = [
+            "/app/youtube_cookies.txt",
+            os.path.join(settings.BASE_DIR, "youtube_cookies.txt"),
+            "youtube_cookies.txt"
+        ]
+        for path in possible_cookie_paths:
+            if os.path.exists(path):
+                ydl_opts["cookiefile"] = path
+                break
 
-        # 2. Check for cookie file path (only loaded in production)
-        if not settings.DEBUG:
-            cookie_path = os.path.join(settings.BASE_DIR, "youtube_cookies.txt")
-            if os.path.exists(cookie_path):
-                logger.info("YouTube resolver using cookiefile at: %s", cookie_path)
-                ydl_opts["cookiefile"] = cookie_path
-            else:
-                logger.warning("youtube_cookies.txt not found at: %s", cookie_path)
+        if production_proxy:
+            ydl_opts["proxy"] = production_proxy
 
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(youtube_url, download=False)
                 stream_url = info.get("url")
 
-                if stream_url:
-                    return HttpResponseRedirect(stream_url)
+            if not stream_url:
+                return JsonResponse({"error": "Unable to parse live stream manifest."}, status=404)
 
-                return JsonResponse(
-                    {"error": "Unable to parse live stream manifest source."},
-                    status=404,
-                )
+            response = requests.get(stream_url, proxies=proxy_dict, timeout=15)
+            playlist_content = response.text
+
+            base_api_url = request.build_absolute_uri(request.path)
+            
+            def replace_link(match):
+                actual_google_url = match.group(0)
+                return f"{base_api_url}?seg_url={actual_google_url}"
+
+            modified_playlist = re.sub(r'https?://[^\s]+googlevideo\.com[^\s]+', replace_link, playlist_content)
+
+            django_response = HttpResponse(modified_playlist, content_type="application/x-mpegURL")
+            django_response["Access-Control-Allow-Origin"] = "*"
+            django_response["Access-Control-Allow-Headers"] = "*"
+            return django_response
 
         except Exception as e:
-            return JsonResponse(
-                {"error": f"Stream extraction failed: {str(e)}"}, status=500
-            )
+            return JsonResponse({"error": f"Stream extraction failed: {str(e)}"}, status=500)
