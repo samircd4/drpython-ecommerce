@@ -67,10 +67,17 @@ class YouTubeStreamResolverView(APIView):
         youtube_url = request.GET.get("url")
         segment_url = request.GET.get("seg_url")
 
+        if not segment_url:
+            query_string = request.META.get('QUERY_STRING', '')
+            if 'seg_url=' in query_string:
+                segment_url = query_string.split('seg_url=', 1)[1]
+
         production_proxy = os.getenv("YOUTUBE_RESOLVER_PROXY")
         proxy_dict = {"http": production_proxy, "https": production_proxy} if production_proxy else {}
 
         if segment_url:
+            import urllib.parse
+            segment_url = urllib.parse.unquote(segment_url)
             try:
                 response = requests.get(segment_url, proxies=proxy_dict, stream=True, timeout=15)
                 django_stream = HttpResponse(response.content, content_type=response.headers.get('Content-Type'))
@@ -88,7 +95,7 @@ class YouTubeStreamResolverView(APIView):
             "quiet": True,
             "no_warnings": True,
             "skip_download": True,
-            "remote_components": ["ejs:github"],
+            "socket_timeout": 10,
         }
 
         possible_cookie_paths = [
@@ -117,9 +124,11 @@ class YouTubeStreamResolverView(APIView):
 
             base_api_url = request.build_absolute_uri(request.path)
             
+            import urllib.parse
             def replace_link(match):
                 actual_google_url = match.group(0)
-                return f"{base_api_url}?seg_url={actual_google_url}"
+                encoded_url = urllib.parse.quote(actual_google_url)
+                return f"{base_api_url}?seg_url={encoded_url}"
 
             modified_playlist = re.sub(r'https?://[^\s]+googlevideo\.com[^\s]+', replace_link, playlist_content)
 
