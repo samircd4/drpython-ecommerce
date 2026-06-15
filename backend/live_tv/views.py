@@ -1,9 +1,12 @@
+import logging
 import yt_dlp
 import os
 from django.conf import settings
 from django.http import HttpResponseRedirect, JsonResponse
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
+
+logger = logging.getLogger(__name__)
 
 from .models import Channel, Country
 from .serializers import ChannelSerializer, CountrySerializer
@@ -82,17 +85,29 @@ class YouTubeStreamResolverView(APIView):
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 "Accept-Language": "en-US,en;q=0.5",
             },
+            "extractor_args": {
+                "youtube": {
+                    "player_client": ["default", "-android_sdkless"]
+                }
+            }
         }
 
         # 1. Read proxy from environment variable (only present in production .env)
         production_proxy = os.getenv("YOUTUBE_RESOLVER_PROXY")
         if production_proxy:
+            logger.info("YouTube resolver using proxy: %s", production_proxy)
             ydl_opts["proxy"] = production_proxy
+        else:
+            logger.warning("YOUTUBE_RESOLVER_PROXY environment variable is not set.")
 
-        # 2. Check for cookie file path (used in production or if local gets flagged)
-        cookie_path = os.path.join(settings.BASE_DIR, "youtube_cookies.txt")
-        if os.path.exists(cookie_path):
-            ydl_opts["cookiefile"] = cookie_path
+        # 2. Check for cookie file path (only loaded in production)
+        if not settings.DEBUG:
+            cookie_path = os.path.join(settings.BASE_DIR, "youtube_cookies.txt")
+            if os.path.exists(cookie_path):
+                logger.info("YouTube resolver using cookiefile at: %s", cookie_path)
+                ydl_opts["cookiefile"] = cookie_path
+            else:
+                logger.warning("youtube_cookies.txt not found at: %s", cookie_path)
 
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
