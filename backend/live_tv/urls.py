@@ -10,7 +10,7 @@ router.register(r"channels", ChannelViewSet, basename="channel")
 urlpatterns = [
     # Explicit standalone endpoint for dynamic stream resolution
     path(
-        "youtube-resolve/",YouTubeStreamResolverView.as_view(),name="youtube-stream-resolve",
+        "youtube-resolve",YouTubeStreamResolverView.as_view(),name="youtube-stream-resolve",
     ),
     # Automated router paths for viewsets
     path("", include(router.urls)),

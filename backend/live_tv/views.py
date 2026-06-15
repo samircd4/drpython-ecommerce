@@ -1,4 +1,6 @@
 import yt_dlp
+import os
+from django.conf import settings
 from django.http import HttpResponseRedirect, JsonResponse
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
@@ -52,14 +54,13 @@ class ChannelViewSet(viewsets.ModelViewSet):
 
         return queryset
 
-
 class YouTubeStreamResolverView(APIView):
     """Dynamically extracts the real-time .m3u8 live stream link
 
     from a persistent YouTube channel/video URL and redirects the player.
     """
 
-    permission_classes = [permissions.AllowAny]  # Publicly accessible for playback
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
         youtube_url = request.GET.get("url")
@@ -69,14 +70,26 @@ class YouTubeStreamResolverView(APIView):
                 {"error": 'Missing required "url" parameter.'}, status=400
             )
 
-        # High-performance options to fetch metadata only without downloading segments
+        # Updated high-compatibility configuration keys
         ydl_opts = {
             "format": "best",
             "noplaylist": True,
             "quiet": True,
             "no_warnings": True,
             "skip_download": True,
+            # Emulate standard Chrome headers to bypass format restrictions
+            "http_headers": {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.5",
+            },
         }
+
+        # Path to your Netscape format cookies file
+        cookie_path = os.path.join(settings.BASE_DIR, "youtube_cookies.txt")
+
+        if os.path.exists(cookie_path):
+            ydl_opts["cookiefile"] = cookie_path
 
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -84,7 +97,6 @@ class YouTubeStreamResolverView(APIView):
                 stream_url = info.get("url")
 
                 if stream_url:
-                    # Return an HTTP 302 Redirect. Frontend Hls.js handles this automatically.
                     return HttpResponseRedirect(stream_url)
 
                 return JsonResponse(
