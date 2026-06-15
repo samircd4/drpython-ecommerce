@@ -31,6 +31,7 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_SECRET=${GOOGLE_SECRET}
       - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+      - YOUTUBE_RESOLVER_PROXY=${YOUTUBE_RESOLVER_PROXY}
     volumes:
       - prod_static:/app/staticfiles
       - prod_media:/app/media
