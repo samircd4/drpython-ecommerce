@@ -54,6 +54,7 @@ class ChannelViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+
 class YouTubeStreamResolverView(APIView):
     """Dynamically extracts the real-time .m3u8 live stream link
 
@@ -70,15 +71,12 @@ class YouTubeStreamResolverView(APIView):
                 {"error": 'Missing required "url" parameter.'}, status=400
             )
 
-        # Updated high-compatibility configuration keys
         ydl_opts = {
             "format": "best",
             "noplaylist": True,
             "quiet": True,
             "no_warnings": True,
             "skip_download": True,
-            "proxy": "http://samircd4:DI7RRzBMJeYkdCId_country-UnitedStates@proxy.packetstream.io:31112",
-            # Emulate standard Chrome headers to bypass format restrictions
             "http_headers": {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -86,9 +84,13 @@ class YouTubeStreamResolverView(APIView):
             },
         }
 
-        # Path to your Netscape format cookies file
-        cookie_path = os.path.join(settings.BASE_DIR, "youtube_cookies.txt")
+        # 1. Read proxy from environment variable (only present in production .env)
+        production_proxy = os.getenv("YOUTUBE_RESOLVER_PROXY")
+        if production_proxy:
+            ydl_opts["proxy"] = production_proxy
 
+        # 2. Check for cookie file path (used in production or if local gets flagged)
+        cookie_path = os.path.join(settings.BASE_DIR, "youtube_cookies.txt")
         if os.path.exists(cookie_path):
             ydl_opts["cookiefile"] = cookie_path
 
