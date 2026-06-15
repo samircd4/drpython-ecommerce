@@ -173,3 +173,4 @@ Add this in your `<SEO>` component:
 * [ ] Generate a dynamic `sitemap.xml` listing all valid frontend product URLs.
 * [ ] Setup Nginx bot-routing to serve pre-rendered HTML to social media crawlers.
 * [ ] Implement `WebP` image compression on the Django backend.
+

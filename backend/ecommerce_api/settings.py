@@ -249,6 +249,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://dev.sarker.shop",
     "https://admin.sarker.shop",
     "https://dev-admin.sarker.shop",
+    "https://live.sarker.shop",
 ]
 
 # When True, all origins are allowed. Since we use credentials,
@@ -268,7 +269,7 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 # CSRF (Admin / Cookies)
 # =========================
 _csrf_origins = os.getenv(
-    'CSRF_TRUSTED_ORIGINS', 'https://sarker.shop,https://www.sarker.shop,https://dev.sarker.shop')
+    'CSRF_TRUSTED_ORIGINS', 'https://sarker.shop,https://www.sarker.shop,https://dev.sarker.shop,https://live.sarker.shop')
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(',')]
 
 # Add local origins for development
