@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
     curl \
+    unzip \
     # Playwright dependencies
     libnss3 \
     libnspr4 \
@@ -25,6 +26,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcairo2 \
     libasound2 \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Deno for yt-dlp JavaScript runtime/n-challenge solver
+RUN curl -fsSL https://deno.land/install.sh | sh
+ENV DENO_INSTALL="/root/.deno"
+ENV PATH="$DENO_INSTALL/bin:$PATH"
 
 # Set working directory
 WORKDIR /app

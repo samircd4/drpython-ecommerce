@@ -1,12 +1,7 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import (
-    ChannelViewSet,
-    CountryViewSet,
-    YouTubeStreamProxyView,
-    YouTubeStreamResolverView,
-)
+from .views import ChannelViewSet, CountryViewSet, YouTubeStreamResolverView
 
 router = DefaultRouter()
 router.register(r"countries", CountryViewSet, basename="country")
@@ -18,12 +13,6 @@ urlpatterns = [
         "youtube-resolve",
         YouTubeStreamResolverView.as_view(),
         name="youtube-stream-resolve",
-    ),
-    # Proxy endpoint for rewriting HLS manifests and streaming segments
-    path(
-        "youtube-proxy",
-        YouTubeStreamProxyView.as_view(),
-        name="youtube-stream-proxy",
     ),
     # Automated router paths for viewsets
     path("", include(router.urls)),
