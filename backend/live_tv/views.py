@@ -115,7 +115,11 @@ class YouTubeStreamResolverView(APIView):
                 stream_url = info.get("url")
 
                 if stream_url:
-                    return HttpResponseRedirect(stream_url)
+                    import urllib.parse
+                    proxy_url = request.build_absolute_uri(
+                        f"/api/live-tv/youtube-proxy?url={urllib.parse.quote_plus(stream_url)}"
+                    )
+                    return HttpResponseRedirect(proxy_url)
 
                 return JsonResponse(
                     {"error": "Unable to parse live stream manifest source."},
@@ -125,4 +129,97 @@ class YouTubeStreamResolverView(APIView):
         except Exception as e:
             return JsonResponse(
                 {"error": f"Stream extraction failed: {str(e)}"}, status=500
+            )
+
+
+class YouTubeStreamProxyView(APIView):
+    """Proxies and rewrites HLS manifest and segment streams to bypass
+
+    client IP-binding checks enforced by YouTube.
+    """
+
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        import urllib.parse
+        import requests
+        from django.http import StreamingHttpResponse, HttpResponse
+
+        target_url = request.GET.get("url")
+        if not target_url:
+            return JsonResponse(
+                {"error": 'Missing required "url" parameter.'}, status=400
+            )
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        }
+
+        # 1. Apply YOUTUBE_RESOLVER_PROXY if present in production environment
+        proxies = {}
+        production_proxy = os.getenv("YOUTUBE_RESOLVER_PROXY")
+        if production_proxy:
+            proxies = {
+                "http": production_proxy,
+                "https": production_proxy,
+            }
+
+        try:
+            # Fetch content from target URL (stream=True for segment streaming)
+            response = requests.get(
+                target_url,
+                headers=headers,
+                proxies=proxies,
+                stream=True,
+                timeout=15,
+            )
+
+            content_type = response.headers.get("Content-Type", "")
+            is_m3u8 = (
+                "mpegurl" in content_type
+                or "application/x-mpegurl" in content_type
+                or target_url.split("?")[0].endswith(".m3u8")
+            )
+
+            # Case A: Handle HLS playlist manifest (.m3u8) by parsing and rewriting URLs
+            if is_m3u8:
+                content = response.text
+                lines = content.splitlines()
+                rewritten_lines = []
+                base_url = target_url.rsplit("/", 1)[0] + "/"
+
+                for line in lines:
+                    stripped_line = line.strip()
+                    if stripped_line and not stripped_line.startswith("#"):
+                        # Resolve relative paths and build full absolute URL
+                        absolute_url = urllib.parse.urljoin(base_url, stripped_line)
+                        proxy_url = request.build_absolute_uri(
+                            f"/api/live-tv/youtube-proxy?url={urllib.parse.quote_plus(absolute_url)}"
+                        )
+                        rewritten_lines.append(proxy_url)
+                    else:
+                        rewritten_lines.append(line)
+
+                rewritten_content = "\n".join(rewritten_lines)
+                return HttpResponse(
+                    rewritten_content,
+                    content_type="application/vnd.apple.mpegurl",
+                    status=response.status_code,
+                )
+
+            # Case B: Handle binary video segment files (.ts) by streaming them
+            django_response = StreamingHttpResponse(
+                response.iter_content(chunk_size=8192),
+                content_type=content_type,
+                status=response.status_code,
+            )
+            # Forward caching and content headers
+            for header in ["Content-Length", "Accept-Ranges"]:
+                if header in response.headers:
+                    django_response[header] = response.headers[header]
+            return django_response
+
+        except Exception as e:
+            return JsonResponse(
+                {"error": f"Stream proxy failed: {str(e)}"}, status=500
             )
