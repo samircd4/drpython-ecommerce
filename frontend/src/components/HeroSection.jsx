@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import samsungImg from "../assets/samsung.webp";
 import samsungImg_2 from "../assets/samsung-2.webp";
 import sarker_shop from "../assets/sarker_shop_architecture.png";
-import worldCupBanner from "../assets/sarker_shop_live_world_cup.png";
+import worldCupBanner from "../assets/sarker_shop_live_world_cup.jpg";
 
 const slides = [
     {
