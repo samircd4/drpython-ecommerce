@@ -9,7 +9,8 @@ class CountrySerializer(serializers.ModelSerializer):
 
 class ChannelSerializer(serializers.ModelSerializer):
     country_name = serializers.CharField(source='country.name', read_only=True)
+    category_name = serializers.CharField(source='category.name', read_only=True) 
 
     class Meta:
         model = Channel
-        fields = ['id', 'name', 'logo', 'stream_url', 'category', 'is_active', 'country', 'country_name']
+        fields = ['id', 'name', 'logo', 'stream_url', 'category', 'category_name', 'is_active', 'country', 'country_name']       
