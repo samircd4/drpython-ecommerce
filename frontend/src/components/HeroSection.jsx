@@ -1,30 +1,49 @@
 // src/components/HeroSection.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import samsungImg from "../assets/samsung.webp";
 import samsungImg_2 from "../assets/samsung-2.webp";
-import sarker_shop from "../assets/sarker_shop_architecture.png"
+import sarker_shop from "../assets/sarker_shop_architecture.png";
+import worldCupBanner from "../assets/world_cup_live.png";
 
 const slides = [
     {
         id: 1,
         title: "Sarker Shop Architecture",
-        subtitle: "Modern E-Commerce Ecosytem",
+        subtitle: "Modern E-Commerce Ecosystem",
         image: sarker_shop,
+        link: "/products",
+        ctaText: "Explore Architecture",
+        openInNewTab: false
     },
     {
         id: 2,
         title: "Welcome to Sarker Shop",
         subtitle: "Find the best electronics and accessories here!",
         image: samsungImg,
+        link: "/products",
+        ctaText: "Shop Now",
+        openInNewTab: false
     },
     {
         id: 3,
         title: "Exclusive Deals",
         subtitle: "Save big on headphones, laptops, and more.",
         image: samsungImg_2,
+        link: "/products",
+        ctaText: "Shop Now",
+        openInNewTab: false
+    },
+    {
+        id: 4,
+        title: "Watch World Cup Live!",
+        subtitle: "Don't miss a single goal! Experience the thrill of every match streamed live.",
+        image: worldCupBanner,
+        link: "https://live.sarker.shop", // Explicit absolute URL for your subdomain
+        ctaText: "Watch Now",
+        openInNewTab: true 
     }
 ];
 
@@ -37,7 +56,6 @@ const HeroSection = () => {
     const prevSlide = () =>
         setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
 
-    // Auto slide
     useEffect(() => {
         if (!paused) {
             timeoutRef.current = setTimeout(nextSlide, 5000);
@@ -91,12 +109,25 @@ const HeroSection = () => {
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.7 }}
                         >
-                            <Link
-                                to="/products"
-                                className="inline-block bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold shadow-lg transition-all duration-300 cursor-pointer animate-pulse-glow hover:animate-none hover:shadow-primary-glow transform hover:scale-105"
-                            >
-                                Shop Now
-                            </Link>
+                            {slides[current].openInNewTab ? (
+                                // For External/Subdomain Cross-Origin New Tab Routing
+                                <a
+                                    href={slides[current].link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-block bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold shadow-lg transition-all duration-300 cursor-pointer animate-pulse-glow hover:animate-none hover:shadow-primary-glow transform hover:scale-105"
+                                >
+                                    {slides[current].ctaText}
+                                </a>
+                            ) : (
+                                // For Internal Application Same Tab Routing
+                                <Link
+                                    to={slides[current].link}
+                                    className="inline-block bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold shadow-lg transition-all duration-300 cursor-pointer animate-pulse-glow hover:animate-none hover:shadow-primary-glow transform hover:scale-105"
+                                >
+                                    {slides[current].ctaText}
+                                </Link>
+                            )}
                         </motion.div>
                     </div>
                 </motion.div>
