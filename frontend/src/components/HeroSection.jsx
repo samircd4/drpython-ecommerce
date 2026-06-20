@@ -1,6 +1,6 @@
 // src/components/HeroSection.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import samsungImg from "../assets/samsung.webp";
@@ -43,7 +43,7 @@ const slides = [
         image: worldCupBanner,
         link: "https://live.sarker.shop", // Explicit absolute URL for your subdomain
         ctaText: "Watch Now",
-        openInNewTab: true 
+        openInNewTab: true
     }
 ];
 
