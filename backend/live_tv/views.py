@@ -206,7 +206,7 @@ class BioscopePremiumStreamView(APIView):
 
     def get(self, request, *args, **kwargs):
         base_stream_url = "https://fifa-stream-01.bioscopelive.com/out/v1/60e7608404004b1186261497b404630b/"
-        manifest_name = "index_2.m3u8"
+        manifest_name = "index.m3u8"
         full_url = f"{base_stream_url}{manifest_name}"
 
         # Swapping fallback function directly with global hardcoded dictionary packets
