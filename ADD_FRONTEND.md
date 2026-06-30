@@ -66,7 +66,7 @@ UV_COMPILE_BYTECODE=0
 DOMAIN=localhost
 ALLOWED_HOSTS=*
 FRONTEND_URL=http://localhost:5173
-VITE_API_URL=http://localhost:8000/api
+VITE_API_URL=http://localhost:8000
 VITE_WS_URL=ws://localhost:8001/ws
 
 # Frontend hot-reload via node image:
@@ -88,7 +88,7 @@ DOMAIN=myclient.shop
 ALLOWED_HOSTS=myclient.shop,www.myclient.shop
 CSRF_TRUSTED_ORIGINS=https://myclient.shop
 FRONTEND_URL=https://myclient.shop
-VITE_API_URL=https://myclient.shop/api
+VITE_API_URL=https://myclient.shop
 VITE_WS_URL=wss://myclient.shop/ws
 
 # Frontend built into a static Nginx image:
