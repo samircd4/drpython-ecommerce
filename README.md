@@ -145,7 +145,7 @@ docker compose up -d --build
 | Service | URL |
 |---|---|
 | Frontend | <http://localhost:5173> (hot-reload ✅) |
-| Backend API | <http://localhost:8000/api/> |
+| Backend API | <http://localhost:8000> |
 | Admin Dashboard | <http://localhost:5174> |
 | Django Admin | <http://localhost:8000/admin/> |
 
