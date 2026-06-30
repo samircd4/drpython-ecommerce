@@ -1,8 +1,6 @@
 # Dr Python — Ecommerce Platform
 
-A scalable SaaS ecommerce monorepo built by **Dr Python**. The core backend and admin dashboard live here. Each client frontend is linked as a separate Git submodule under the `frontend/` directory.
-
-> For full instructions on connecting a client frontend, see [ADD_FRONTEND.md](./ADD_FRONTEND.md).
+A scalable SaaS ecommerce monorepo built by **Dr Python**. The Django backend and React admin dashboard are the core. Each client frontend is a separate Git submodule linked under `frontend/`.
 
 ---
 
@@ -10,123 +8,267 @@ A scalable SaaS ecommerce monorepo built by **Dr Python**. The core backend and 
 
 ```
 drpython-ecommerce/
-├── backend/              # Django REST API (DRF + Daphne + Celery)
+├── backend/              # Django API  (DRF + Daphne + Celery + WebSocket)
 ├── admin-dashboard/      # React admin panel
-├── frontend/             # Empty — client frontends are added as submodules here
-│   └── .gitkeep
-├── nginx/                # Nginx config templates
-├── docker-compose.yml    # Single unified compose file (all environments)
-├── .env.example          # Environment variable template
-└── ADD_FRONTEND.md       # Guide: how to add a client frontend
+├── frontend/             # Client frontends live here as Git submodules
+│   └── .gitkeep          # Placeholder — replaced by submodules per client
+├── nginx/                # Nginx config templates for VPS
+├── docker-compose.yml    # Single compose file for all envs and all clients
+├── .env.example          # Full environment variable reference
+└── ADD_FRONTEND.md       # Step-by-step guide: how to add a new client
 ```
 
 ---
 
-## Quick Start
+## New Client Setup — Local Development
 
-### 1. Clone the repository
+Follow these steps exactly every time you onboard a new client.
+
+### Step 1 — Clone the Core Repository
+
 ```bash
 git clone https://github.com/samircd4/drpython-ecommerce.git
 cd drpython-ecommerce
 ```
 
-### 2. Add a client frontend submodule
+---
+
+### Step 2 — Add the Client Frontend as a Submodule
+
 ```bash
-git submodule add <frontend-repo-url> frontend/<client-name>
+# Syntax: git submodule add <frontend-repo-url> frontend/<client-name>
+git submodule add https://github.com/your-org/client-frontend.git frontend/client-name
 git submodule update --init --recursive
 ```
 
-### 3. Configure environment
-```bash
-cp .env.example .env
-nano .env   # Fill in all values — especially CLIENT_NAME and FRONTEND_CONTEXT
-```
-
-### 4. Start services
-```bash
-docker compose up -d --build
-```
-
----
-
-## Docker Compose
-
-This project uses a **single `docker-compose.yml`** for all environments and all clients.
-Behaviour is controlled entirely by variables in `.env`.
-
-| Mode | Key `.env` settings |
-|------|---------------------|
-| **Local dev** | `RESTART_POLICY=no`, `DEBUG=True`, `FRONTEND_IMAGE=node:20-alpine`, hot-reload enabled |
-| **Server (staging/prod)** | `RESTART_POLICY=always`, `DEBUG=False`, `FRONTEND_IMAGE=` (blank → build from Dockerfile) |
-
-No more separate `local`, `dev`, or `prod` compose files.
-
----
-
-## Environment Setup
-
-```bash
-cp .env.example .env
-nano .env
-```
-
-Key variables to set for every new client deployment:
-
-| Variable | Description |
-|---|---|
-| `CLIENT_NAME` | Unique prefix for Docker containers (e.g. `sarker`, `gurudeb`) |
-| `FRONTEND_CONTEXT` | Path to the client submodule (e.g. `./frontend/sarker-shop`) |
-| `FRONTEND_VOLUME` | Same path — used for local hot-reload volume mount |
-| `POSTGRES_DB` | Database name for this client |
-| `DOMAIN` | Client domain (e.g. `myclient.shop`) |
-| `SECRET_KEY` | Django secret key (generate one per client) |
-
-See `.env.example` for the full reference with both local and server configurations.
-
----
-
-## VPS Deployment
-
-### First-Time Setup
-```bash
-cd /var/www/<client-name>
-git clone https://github.com/samircd4/drpython-ecommerce.git .
-git submodule update --init --recursive
-cp .env.example .env
-nano .env   # Set SERVER mode variables and client-specific values
-docker compose up -d --build
-docker compose exec backend_api python manage.py migrate
-docker compose exec backend_api python manage.py createsuperuser
-docker compose exec backend_api python manage.py collectstatic --noinput
-```
-
-### Update After Code Change
-```bash
-git pull origin master
-git submodule update --remote --merge
-docker compose down
-docker compose up -d --build
-```
-
-> ⚠ **Always backup the database before updating on production:**
->
+> On a fresh clone of an existing deployment that already has submodules:
 > ```bash
-> docker exec -t <CLIENT_NAME>_db pg_dumpall -c -U <POSTGRES_USER> > backup_$(date +%Y%m%d).sql
+> git submodule update --init --recursive
 > ```
 
 ---
 
-## Nginx Setup
-
-Copy the relevant Nginx config from the `nginx/` folder for your client domain:
+### Step 3 — Configure Environment
 
 ```bash
-# Replace <client.shop> with the actual domain
-cp nginx/<client.shop>.conf /etc/nginx/sites-available/<client.shop>
+cp .env.example .env
+```
+
+Open `.env` and fill in the required values. At minimum:
+
+| Variable | What to set |
+|---|---|
+| `CLIENT_NAME` | Short unique name, e.g. `sarker` — used as container prefix |
+| `POSTGRES_DB` | Database name, e.g. `sarker_db` |
+| `POSTGRES_USER` | DB username |
+| `POSTGRES_PASSWORD` | Strong password |
+| `SECRET_KEY` | Generate one (see below) |
+| `FRONTEND_VOLUME` | Path to submodule: `./frontend/client-name` |
+| `FRONTEND_CONTEXT` | Same path: `./frontend/client-name` |
+| `COMPOSE_PROFILES` | `local` for development |
+
+**Generate a Django secret key:**
+```bash
+uv run python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+---
+
+### Step 4 — Build and Start All Services
+
+Docker handles PostgreSQL, Redis, the backend, Celery, and the frontend automatically.
+
+```bash
+docker compose up -d --build
+```
+
+This starts:
+- `postgres` database
+- `redis` cache and message broker
+- `backend_api` — Django/Daphne HTTP server
+- `backend_ws` — Django/Daphne WebSocket server
+- `celery_worker` — background task worker
+- `frontend_local` — client frontend with hot-reload (Vite)
+- `admin_local` — admin dashboard with hot-reload (Vite)
+
+**Check all containers are running:**
+```bash
+docker compose ps
+```
+
+**View logs:**
+```bash
+docker compose logs -f backend_api
+```
+
+---
+
+### Step 5 — Run Database Migrations
+
+```bash
+docker compose exec backend_api uv run python manage.py migrate
+```
+
+---
+
+### Step 6 — Create a Superuser
+
+```bash
+docker compose exec backend_api uv run python manage.py createsuperuser
+```
+
+---
+
+### Step 7 — Collect Static Files
+
+```bash
+docker compose exec backend_api uv run python manage.py collectstatic --noinput
+```
+
+---
+
+### Step 8 — Access the Application
+
+| Service | URL |
+|---|---|
+| Client Frontend | <http://localhost:5173> (hot-reload ✅) |
+| Admin Dashboard | <http://localhost:5174> (hot-reload ✅) |
+| Backend API | <http://localhost:8000> |
+| Django Admin | <http://localhost:8000/admin/> |
+| API Docs | <http://localhost:8000/docs/> |
+
+---
+
+## New Client Setup — VPS / Production Server
+
+### Step 1 — Clone and Configure
+
+```bash
+cd /var/www/<client-name>
+git clone https://github.com/samircd4/drpython-ecommerce.git .
+git submodule add https://github.com/your-org/client-frontend.git frontend/client-name
+git submodule update --init --recursive
+
+cp .env.example .env
+nano .env
+```
+
+Set these values differently from local:
+
+| Variable | Server value |
+|---|---|
+| `COMPOSE_PROFILES` | `server` |
+| `RESTART_POLICY` | `always` |
+| `UV_COMPILE_BYTECODE` | `1` |
+| `DEBUG` | `False` |
+| `DOMAIN` | `myclient.shop` |
+| `ALLOWED_HOSTS` | `myclient.shop,www.myclient.shop` |
+| `CSRF_TRUSTED_ORIGINS` | `https://myclient.shop` |
+| `FRONTEND_URL` | `https://myclient.shop` |
+| `VITE_API_URL` | `https://myclient.shop` |
+| `VITE_WS_URL` | `wss://myclient.shop/ws` |
+| `FRONTEND_PORT` | `8081` |
+| `ADMIN_PORT` | `8082` |
+| `BACKEND_PORT` | `8001` |
+| `WS_PORT` | `8011` |
+
+### Step 2 — Build and Start
+
+```bash
+docker compose up -d --build
+```
+
+### Step 3 — First-Time Server Initialisation
+
+```bash
+docker compose exec backend_api uv run python manage.py migrate
+docker compose exec backend_api uv run python manage.py createsuperuser
+docker compose exec backend_api uv run python manage.py collectstatic --noinput
+```
+
+---
+
+## Updating an Existing Deployment
+
+```bash
+# Pull latest backend/admin changes
+git pull origin master
+
+# Pull latest frontend changes
+git submodule update --remote --merge
+
+# Rebuild and restart
+docker compose down
+docker compose up -d --build
+
+# Apply any new migrations
+docker compose exec backend_api uv run python manage.py migrate
+```
+
+> ⚠️ **Always back up the database before updating on production:**
+> ```bash
+> docker exec -t ${CLIENT_NAME}_db pg_dumpall -c -U ${POSTGRES_USER} > backup_$(date +%Y%m%d_%H%M).sql
+> ```
+
+---
+
+## Installing New Python Packages
+
+Always use `uv` inside the `backend/` directory where `pyproject.toml` lives:
+
+```bash
+cd backend
+uv add <package-name>
+```
+
+Then rebuild the Docker image:
+
+```bash
+docker compose up -d --build backend_api backend_ws celery_worker
+```
+
+---
+
+## Useful Commands
+
+```bash
+# View running containers
+docker compose ps
+
+# Stream logs from a service
+docker compose logs -f backend_api
+docker compose logs -f frontend_local
+
+# Django shell
+docker compose exec backend_api uv run python manage.py shell
+
+# Run a specific migration
+docker compose exec backend_api uv run python manage.py migrate <app_name>
+
+# Create a new Django app
+docker compose exec backend_api uv run python manage.py startapp <app_name>
+
+# Restart a single service
+docker compose restart backend_api
+
+# Stop everything
+docker compose down
+
+# Stop and remove volumes (⚠️ deletes database data)
+docker compose down -v
+```
+
+---
+
+## Nginx Setup (VPS)
+
+```bash
+# Copy config for the client domain
+cp nginx/<template>.conf /etc/nginx/sites-available/<client.shop>
 ln -s /etc/nginx/sites-available/<client.shop> /etc/nginx/sites-enabled/
 
-# SSL with Certbot
-certbot --nginx -d <client.shop> -d admin.<client.shop>
+# Issue SSL certificate
+certbot --nginx -d <client.shop> -d www.<client.shop> -d admin.<client.shop>
 
 # Test and reload
 nginx -t && systemctl reload nginx
@@ -134,38 +276,15 @@ nginx -t && systemctl reload nginx
 
 ---
 
-## Local Development
+## Running Two Clients on the Same VPS
 
-```bash
-cp .env.example .env
-# Set FRONTEND_IMAGE=node:20-alpine and other LOCAL mode variables
-docker compose up -d --build
-```
+Use a different `CLIENT_NAME` and unique port numbers for each client's `.env`:
 
-| Service | URL |
-|---|---|
-| Frontend | <http://localhost:5173> (hot-reload ✅) |
-| Backend API | <http://localhost:8000> |
-| Admin Dashboard | <http://localhost:5174> |
-| Django Admin | <http://localhost:8000/admin/> |
-
----
-
-## Useful Commands
-
-```bash
-# View backend logs
-docker compose logs -f backend_api
-
-# Run Django shell
-docker compose exec backend_api python manage.py shell
-
-# Run migrations
-docker compose exec backend_api python manage.py migrate
-
-# Collect static files
-docker compose exec backend_api python manage.py collectstatic --noinput
-
-# Sync submodules after a pull
-git submodule update --init --recursive
-```
+| Variable | Client A | Client B |
+|---|---|---|
+| `CLIENT_NAME` | `sarker` | `gurudeb` |
+| `DB_PORT` | `5433` | `5434` |
+| `BACKEND_PORT` | `8001` | `8002` |
+| `WS_PORT` | `8011` | `8012` |
+| `FRONTEND_PORT` | `8081` | `8083` |
+| `ADMIN_PORT` | `8082` | `8084` |
