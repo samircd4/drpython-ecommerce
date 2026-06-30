@@ -1,149 +1,134 @@
-# SarkerShop — Deployment Guide
+# Dr Python — Ecommerce Platform
 
-## Branch Strategy
+A scalable SaaS ecommerce monorepo built by **Dr Python**. The core backend and admin dashboard live here. Each client frontend is linked as a separate Git submodule under the `frontend/` directory.
 
-| Branch | Purpose              | Domain             |
-|--------|---------------------|--------------------|
-| `loc`  | Local development   | localhost:5173     |
-| `dev`  | Staging / Testing   | dev.sarker.shop    |
-| `prod` | Production          | sarker.shop        |
-
-### Recommended Workflow
-
-```
-loc → dev → prod
-```
-
-1. Write code on `loc`
-2. Merge `loc` → `dev` and push
-3. Deploy to VPS and test on `dev.sarker.shop`
-4. If all good, merge `dev` → `prod` and deploy to `sarker.shop`
+> For full instructions on connecting a client frontend, see [ADD_FRONTEND.md](./ADD_FRONTEND.md).
 
 ---
 
-## Docker Compose Files
+## Repository Structure
 
-| File                       | Used For         | Command                                         |
-|----------------------------|------------------|-------------------------------------------------|
-| `docker-compose.local.yml` | Local dev        | `docker compose -f docker-compose.local.yml up` |
-| `docker-compose.dev.yml`   | Staging (VPS)    | `docker compose -f docker-compose.dev.yml up`   |
-| `docker-compose.prod.yml`  | Production (VPS) | `docker compose -f docker-compose.prod.yml up`  |
+```
+drpython-ecommerce/
+├── backend/              # Django REST API (DRF + Daphne + Celery)
+├── admin-dashboard/      # React admin panel
+├── frontend/             # Empty — client frontends are added as submodules here
+│   └── .gitkeep
+├── nginx/                # Nginx config templates
+├── docker-compose.yml    # Single unified compose file (all environments)
+├── .env.example          # Environment variable template
+└── ADD_FRONTEND.md       # Guide: how to add a client frontend
+```
 
 ---
 
-## Port Assignments (on VPS)
+## Quick Start
 
-| Service          | Dev Port | Prod Port |
-|------------------|----------|-----------|
-| Backend (API)    | `8000`   | `8001`    |
-| Frontend (Nginx) | `9090`   | `8081`    |
-| Admin Dashboard  | `9091`   | `8082`    |
+### 1. Clone the repository
+```bash
+git clone https://github.com/samircd4/drpython-ecommerce.git
+cd drpython-ecommerce
+```
+
+### 2. Add a client frontend submodule
+```bash
+git submodule add <frontend-repo-url> frontend/<client-name>
+git submodule update --init --recursive
+```
+
+### 3. Configure environment
+```bash
+cp .env.example .env
+nano .env   # Fill in all values — especially CLIENT_NAME and FRONTEND_CONTEXT
+```
+
+### 4. Start services
+```bash
+docker compose up -d --build
+```
+
+---
+
+## Docker Compose
+
+This project uses a **single `docker-compose.yml`** for all environments and all clients.
+Behaviour is controlled entirely by variables in `.env`.
+
+| Mode | Key `.env` settings |
+|------|---------------------|
+| **Local dev** | `RESTART_POLICY=no`, `DEBUG=True`, `FRONTEND_IMAGE=node:20-alpine`, hot-reload enabled |
+| **Server (staging/prod)** | `RESTART_POLICY=always`, `DEBUG=False`, `FRONTEND_IMAGE=` (blank → build from Dockerfile) |
+
+No more separate `local`, `dev`, or `prod` compose files.
 
 ---
 
 ## Environment Setup
 
-### On Any Server
+```bash
+cp .env.example .env
+nano .env
+```
 
-1. Copy the example file:
+Key variables to set for every new client deployment:
 
-   ```bash
-   cp .env.example .env
-   ```
+| Variable | Description |
+|---|---|
+| `CLIENT_NAME` | Unique prefix for Docker containers (e.g. `sarker`, `gurudeb`) |
+| `FRONTEND_CONTEXT` | Path to the client submodule (e.g. `./frontend/sarker-shop`) |
+| `FRONTEND_VOLUME` | Same path — used for local hot-reload volume mount |
+| `POSTGRES_DB` | Database name for this client |
+| `DOMAIN` | Client domain (e.g. `myclient.shop`) |
+| `SECRET_KEY` | Django secret key (generate one per client) |
 
-2. Edit `.env` with real values:
-
-   ```bash
-   nano .env
-   ```
-
-### Required `.env` Variables
-
-See `.env.example` for all variables and their descriptions.
+See `.env.example` for the full reference with both local and server configurations.
 
 ---
 
 ## VPS Deployment
 
-### First-Time Setup (Dev)
-
+### First-Time Setup
 ```bash
-cd /root/sarker_dev
-git clone https://github.com/samircd4/sarker_shop_2026.git .
-git checkout dev
+cd /var/www/<client-name>
+git clone https://github.com/samircd4/drpython-ecommerce.git .
+git submodule update --init --recursive
 cp .env.example .env
-nano .env   # Fill in your values
-docker compose -f docker-compose.dev.yml up -d --build
-docker compose -f docker-compose.dev.yml exec backend python manage.py migrate
-docker compose -f docker-compose.dev.yml exec backend python manage.py createsuperuser
+nano .env   # Set SERVER mode variables and client-specific values
+docker compose up -d --build
+docker compose exec backend_api python manage.py migrate
+docker compose exec backend_api python manage.py createsuperuser
+docker compose exec backend_api python manage.py collectstatic --noinput
 ```
 
-### Update Dev After Code Change
-
+### Update After Code Change
 ```bash
-cd /root/sarker_dev
-git pull origin dev
-docker compose -f docker-compose.dev.yml down
-docker compose -f docker-compose.dev.yml up -d --build
+git pull origin master
+git submodule update --remote --merge
+docker compose down
+docker compose up -d --build
 ```
 
-### First-Time Setup (Prod)
-
-```bash
-cd /root/sarker_prod
-git clone https://github.com/samircd4/sarker_shop_2026.git .
-git checkout prod
-cp .env.example .env
-nano .env   # Fill in your PRODUCTION values (strong passwords, real secret key)
-docker compose -f docker-compose.prod.yml up -d --build
-docker compose -f docker-compose.prod.yml exec backend python manage.py migrate
-docker compose -f docker-compose.prod.yml exec backend python manage.py createsuperuser
-```
-
-### Update Prod After Code Change
-
-```bash
-cd /root/sarker_prod
-git pull origin prod
-docker compose -f docker-compose.prod.yml down
-docker compose -f docker-compose.prod.yml up -d --build
-```
-
-> ⚠ **Always backup the production database before updating:**
+> ⚠ **Always backup the database before updating on production:**
 >
 > ```bash
-> docker exec -t sarker_prod_db_1 pg_dumpall -c -U sarker_user > backup_$(date +%Y%m%d).sql
+> docker exec -t <CLIENT_NAME>_db pg_dumpall -c -U <POSTGRES_USER> > backup_$(date +%Y%m%d).sql
 > ```
 
 ---
 
-## Nginx Setup on VPS
+## Nginx Setup
 
-Copy the Nginx configs from the `nginx/` folder:
+Copy the relevant Nginx config from the `nginx/` folder for your client domain:
 
 ```bash
-# For sarker.shop
-cp /root/sarker_prod/nginx/sarker.shop.conf /etc/nginx/sites-available/sarker.shop
-ln -s /etc/nginx/sites-available/sarker.shop /etc/nginx/sites-enabled/
+# Replace <client.shop> with the actual domain
+cp nginx/<client.shop>.conf /etc/nginx/sites-available/<client.shop>
+ln -s /etc/nginx/sites-available/<client.shop> /etc/nginx/sites-enabled/
 
-# For dev.sarker.shop
-cp /root/sarker_dev/nginx/dev.sarker.shop.conf /etc/nginx/sites-available/dev.sarker.shop
-ln -s /etc/nginx/sites-available/dev.sarker.shop /etc/nginx/sites-enabled/
+# SSL with Certbot
+certbot --nginx -d <client.shop> -d admin.<client.shop>
 
 # Test and reload
-nginx -t && systemctl reload nginx
-
-# For admin.sarker.shop
-cp /root/sarker_prod/nginx/admin.sarker.shop.conf /etc/nginx/sites-available/admin.sarker.shop
-ln -s /etc/nginx/sites-available/admin.sarker.shop /etc/nginx/sites-enabled/
-certbot --nginx -d admin.sarker.shop
-
-# For dev-admin.sarker.shop
-cp /root/sarker_dev/nginx/dev-admin.sarker.shop.conf /etc/nginx/sites-available/dev-admin.sarker.shop
-ln -s /etc/nginx/sites-available/dev-admin.sarker.shop /etc/nginx/sites-enabled/
-certbot --nginx -d dev-admin.sarker.shop
-
-# Final reload
 nginx -t && systemctl reload nginx
 ```
 
@@ -152,32 +137,35 @@ nginx -t && systemctl reload nginx
 ## Local Development
 
 ```bash
-git checkout loc
-git pull origin loc
-docker compose -f docker-compose.local.yml up -d --build
+cp .env.example .env
+# Set FRONTEND_IMAGE=node:20-alpine and other LOCAL mode variables
+docker compose up -d --build
 ```
 
-- Frontend: <http://localhost:5173> (with hot-reload ✅)
-- Backend API: <http://localhost:8000/api/>
-- Admin: <http://localhost:8000/admin/>
+| Service | URL |
+|---|---|
+| Frontend | <http://localhost:5173> (hot-reload ✅) |
+| Backend API | <http://localhost:8000/api/> |
+| Admin Dashboard | <http://localhost:5174> |
+| Django Admin | <http://localhost:8000/admin/> |
 
 ---
 
 ## Useful Commands
 
 ```bash
-# View logs
-docker compose -f docker-compose.dev.yml logs -f backend
+# View backend logs
+docker compose logs -f backend_api
 
 # Run Django shell
-docker compose -f docker-compose.dev.yml exec backend python manage.py shell
+docker compose exec backend_api python manage.py shell
 
 # Run migrations
-docker compose -f docker-compose.dev.yml exec backend python manage.py migrate
+docker compose exec backend_api python manage.py migrate
 
-# Collect static files manually
-docker compose -f docker-compose.dev.yml exec backend python manage.py collectstatic --noinput
+# Collect static files
+docker compose exec backend_api python manage.py collectstatic --noinput
 
-# Sync with repository
-git pull
+# Sync submodules after a pull
+git submodule update --init --recursive
 ```
