@@ -447,3 +447,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# Ensure uploaded files have global read permission so Nginx container can serve them
+FILE_UPLOAD_PERMISSIONS = 0o644

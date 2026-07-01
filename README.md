@@ -248,14 +248,25 @@ docker compose exec backend_api uv run python manage.py migrate <app_name>
 # Create a new Django app
 docker compose exec backend_api uv run python manage.py startapp <app_name>
 
+# Restart all services
+docker compose restart
+
 # Restart a single service
-docker compose restart backend_api
+docker compose restart <service_name> (e.g. backend_api, frontend_local)
 
 # Stop everything
 docker compose down
 
 # Stop and remove volumes (⚠️ deletes database data)
 docker compose down -v
+
+# Reapply environment changes (after modifying .env or .env.gurudeb)
+docker compose down
+docker compose up -d
+
+# Or for custom client profiles:
+docker compose --env-file .env.gurudeb -p gurudeb down
+docker compose --env-file .env.gurudeb -p gurudeb up -d
 ```
 
 ---
