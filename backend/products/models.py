@@ -234,7 +234,6 @@ class Product(models.Model):
                         category=self.category.name,
                         brand=self.brand.name,
                         description=self.short_description or self.description,
-                        add_watermark=True
                     )
                     if optimized:
                         self.image = optimized
@@ -414,7 +413,6 @@ class ProductImage(models.Model):
                         category=self.product.category.name,
                         brand=self.product.brand.name,
                         description=self.alt_text or self.product.short_description or self.product.description,
-                        add_watermark=True,
                         index=self.order if self.order > 0 else None
                     )
                     if optimized:
