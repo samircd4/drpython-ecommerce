@@ -39,9 +39,19 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ['customer']
 
     def get_customer_avatar(self, obj):
-        if obj.customer.avatar:
-            return obj.customer.avatar.url
-        return obj.customer.social_avatar_url
+        request = self.context.get('request')
+        url = None
+        if hasattr(obj, 'customer') and obj.customer:
+            if obj.customer.avatar:
+                url = obj.customer.avatar.url
+            elif getattr(obj.customer, 'social_avatar_url', None):
+                url = obj.customer.social_avatar_url
+
+        if url:
+            if request and not url.startswith('http'):
+                return request.build_absolute_uri(url)
+            return url
+        return None
 
     def validate(self, data):
         request = self.context.get('request')
