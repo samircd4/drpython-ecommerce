@@ -8,10 +8,14 @@ from decimal import Decimal
 from .models import Order, Cart, Checkout, CartItem, OrderStatus, Coupon, PaymentInfo
 from .serializers import OrderSerializer, CartSerializer, CheckoutSerializer, CartItemSerializer, CouponSerializer, PaymentInfoSerializer
 
-# For pdf generator
-from django.http import HttpResponse
+import logging
+from django.conf import settings
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from utils.pdf import generate_invoice_pdf
 
+logger = logging.getLogger(__name__)
 
 from api.permissions import StaffHasActionPermission
 
@@ -26,7 +30,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     # Permissions
     # --------------------
     def get_permissions(self):
-        if self.action in ['create', 'validate_coupon']:
+        if self.action in ['create', 'validate_coupon', 'initiate_payment']:
             return [permissions.AllowAny()]
         return [permissions.IsAuthenticated(), StaffHasActionPermission()]
 
@@ -81,6 +85,26 @@ class OrderViewSet(viewsets.ModelViewSet):
             "discount_amount": discount_amount,
             "message": "Coupon applied successfully!"
         })
+
+    # --------------------
+    # Initiate Payment (for unpaid / retry orders)
+    # --------------------
+    @action(detail=True, methods=['post'], url_path='initiate-payment', permission_classes=[permissions.AllowAny], authentication_classes=[])
+    def initiate_payment(self, request, pk=None):
+        try:
+            order = Order.objects.get(pk=pk)
+        except Order.DoesNotExist:
+            return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if order.payment_info and order.payment_info.is_paid:
+            return Response({"detail": "Order is already paid."}, status=status.HTTP_400_BAD_REQUEST)
+
+        from .sslcommerz import SSLCommerzClient
+        client = SSLCommerzClient()
+        res = client.initiate_payment(order, request=request)
+        if res.get('success'):
+            return Response(res, status=status.HTTP_200_OK)
+        return Response({"detail": res.get('message', 'Failed to initiate payment.')}, status=status.HTTP_400_BAD_REQUEST)
     @extend_schema(
         summary="Create Order",
         description="""
@@ -423,3 +447,171 @@ class CouponViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return [permissions.IsAuthenticated()]
         return [permissions.IsAdminUser(), StaffHasActionPermission()]
+
+
+# =============================================================
+# SSLCOMMERZ CALLBACK VIEWS
+# =============================================================
+
+def _get_ssl_params(request):
+    """
+    SSLCommerz POSTs payment data to these endpoints.
+    Helper to safely read params from POST (and fall back to GET for resilience).
+    """
+    data = request.POST if request.method == 'POST' else request.GET
+    return data
+
+
+@csrf_exempt
+def sslcommerz_success_view(request):
+    """
+    Handles callback from SSLCommerz on successful payment.
+    SSLCommerz POSTs to this URL; it validates payment and redirects to frontend.
+    Accepts both POST (SSLCommerz server callback) and GET (browser redirect fallback).
+    """
+    data = _get_ssl_params(request)
+
+    val_id = data.get('val_id')
+    tran_id = data.get('tran_id')
+    card_type = data.get('card_type')
+    bank_tran_id = data.get('bank_tran_id')
+    amount_str = data.get('amount')
+    value_a = data.get('value_a')
+
+    frontend_url = settings.FRONTEND_URL.rstrip('/')
+
+    order = None
+    if tran_id:
+        order = Order.objects.filter(payment_info__transaction_id=tran_id).first()
+    if not order and value_a and value_a.isdigit():
+        order = Order.objects.filter(id=int(value_a)).first()
+    if not order and tran_id and tran_id.startswith('ORD'):
+        try:
+            order_id_part = tran_id.split('-')[0].replace('ORD', '')
+            order = Order.objects.filter(id=int(order_id_part)).first()
+        except Exception:
+            pass
+
+    if not order:
+        logger.error(f"SSLCommerz success received for unknown order. tran_id: {tran_id}, val_id: {val_id}")
+        return HttpResponseRedirect(f"{frontend_url}/payment/failed?reason=order_not_found")
+
+    from .sslcommerz import SSLCommerzClient
+    client = SSLCommerzClient()
+    validated_data = client.validate_payment(val_id) if val_id else None
+
+    if validated_data:
+        if order.payment_info:
+            order.payment_info.is_paid = True
+            order.payment_info.payment_method = 'sslcommerz'
+            order.payment_info.transaction_id = bank_tran_id or tran_id
+            order.payment_info.paid_from = card_type or validated_data.get('card_type', 'SSLCommerz')
+            try:
+                order.payment_info.amount = Decimal(str(validated_data.get('amount', amount_str or order.grand_total)))
+            except Exception:
+                pass
+            order.payment_info.payment_date = timezone.now()
+            order.payment_info.save()
+
+        processing_status, _ = OrderStatus.objects.get_or_create(
+            status_code='processing', defaults={'display_name': 'Processing'}
+        )
+        order.order_status = processing_status
+        order.save(update_fields=['order_status'])
+
+        # Clear cart for user if authenticated
+        if order.customer and order.customer.user_id:
+            Cart.objects.filter(user_id=order.customer.user_id).delete()
+
+        redirect_url = f"{frontend_url}/payment/success?order_id={order.id}&tran_id={tran_id or ''}"
+        return HttpResponseRedirect(redirect_url)
+    else:
+        logger.error(f"SSLCommerz validation failed for order #{order.id}, val_id: {val_id}")
+        redirect_url = f"{frontend_url}/payment/failed?order_id={order.id}&reason=validation_failed"
+        return HttpResponseRedirect(redirect_url)
+
+
+@csrf_exempt
+def sslcommerz_fail_view(request):
+    """
+    Handles callback from SSLCommerz when payment fails.
+    Accepts both POST (SSLCommerz server callback) and GET (browser redirect fallback).
+    """
+    data = _get_ssl_params(request)
+    tran_id = data.get('tran_id')
+    value_a = data.get('value_a')
+    frontend_url = settings.FRONTEND_URL.rstrip('/')
+
+    order = None
+    if tran_id:
+        order = Order.objects.filter(payment_info__transaction_id=tran_id).first()
+    if not order and value_a and value_a.isdigit():
+        order = Order.objects.filter(id=int(value_a)).first()
+
+    order_param = f"order_id={order.id}&" if order else ""
+    return HttpResponseRedirect(f"{frontend_url}/payment/failed?{order_param}reason=payment_failed&tran_id={tran_id or ''}")
+
+
+@csrf_exempt
+def sslcommerz_cancel_view(request):
+    """
+    Handles callback from SSLCommerz when customer cancels payment.
+    Accepts both POST (SSLCommerz server callback) and GET (browser redirect fallback).
+    """
+    data = _get_ssl_params(request)
+    tran_id = data.get('tran_id')
+    value_a = data.get('value_a')
+    frontend_url = settings.FRONTEND_URL.rstrip('/')
+
+    order = None
+    if tran_id:
+        order = Order.objects.filter(payment_info__transaction_id=tran_id).first()
+    if not order and value_a and value_a.isdigit():
+        order = Order.objects.filter(id=int(value_a)).first()
+
+    order_param = f"order_id={order.id}&" if order else ""
+    return HttpResponseRedirect(f"{frontend_url}/payment/cancelled?{order_param}tran_id={tran_id or ''}")
+
+
+@csrf_exempt
+def sslcommerz_ipn_view(request):
+    """
+    Handles background server-to-server Instant Payment Notification (IPN) webhook from SSLCommerz.
+    """
+    val_id = request.POST.get('val_id')
+    tran_id = request.POST.get('tran_id')
+    card_type = request.POST.get('card_type')
+    bank_tran_id = request.POST.get('bank_tran_id')
+    value_a = request.POST.get('value_a')
+
+    order = None
+    if tran_id:
+        order = Order.objects.filter(payment_info__transaction_id=tran_id).first()
+    if not order and value_a and value_a.isdigit():
+        order = Order.objects.filter(id=int(value_a)).first()
+
+    if not order or not val_id:
+        return JsonResponse({"status": "FAILED", "reason": "Order or val_id missing"}, status=400)
+
+    from .sslcommerz import SSLCommerzClient
+    client = SSLCommerzClient()
+    validated_data = client.validate_payment(val_id)
+
+    if validated_data:
+        if order.payment_info and not order.payment_info.is_paid:
+            order.payment_info.is_paid = True
+            order.payment_info.payment_method = 'sslcommerz'
+            order.payment_info.transaction_id = bank_tran_id or tran_id
+            order.payment_info.paid_from = card_type or validated_data.get('card_type', 'SSLCommerz')
+            order.payment_info.payment_date = timezone.now()
+            order.payment_info.save()
+
+            processing_status, _ = OrderStatus.objects.get_or_create(
+                status_code='processing', defaults={'display_name': 'Processing'}
+            )
+            order.order_status = processing_status
+            order.save(update_fields=['order_status'])
+
+        return JsonResponse({"status": "SUCCESS", "message": "IPN validated and order updated."})
+
+    return JsonResponse({"status": "FAILED", "reason": "Validation rejected"}, status=400)

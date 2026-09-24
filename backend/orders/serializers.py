@@ -147,6 +147,10 @@ class OrderSerializer(serializers.ModelSerializer):
         ret = super().to_representation(instance)
         if instance.order_status:
             ret['status'] = instance.order_status.display_name
+        if hasattr(instance, '_payment_url'):
+            ret['payment_url'] = instance._payment_url
+        if hasattr(instance, '_payment_error'):
+            ret['payment_error'] = instance._payment_error
         return ret
 
     def update(self, instance, validated_data):
@@ -529,6 +533,19 @@ class OrderSerializer(serializers.ModelSerializer):
                     )
             except Exception as e:
                 print(f"Error in post-order triggers: {e}")
+
+            # If payment method is sslcommerz, initiate SSLCommerz payment session
+            if p_method == 'sslcommerz':
+                try:
+                    from .sslcommerz import SSLCommerzClient
+                    ssl_client = SSLCommerzClient()
+                    payment_res = ssl_client.initiate_payment(order, request=request)
+                    if payment_res.get('success'):
+                        order._payment_url = payment_res.get('payment_url')
+                    else:
+                        order._payment_error = payment_res.get('message')
+                except Exception as e:
+                    print(f"Error initiating SSLCommerz payment: {e}")
 
         return order
 

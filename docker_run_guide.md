@@ -118,7 +118,7 @@ docker compose exec backend_api uv run python manage.py loaddata products.json
 | **Frontend (Shop)** | http://localhost:5175 |
 | **Admin Dashboard** | http://localhost:5176 |
 | **Django Admin** | http://localhost:8002/admin |
-| **API Root** | http://localhost:8002/api/ |
+| **API Root** | http://localhost:8002/docs/ |
 
 ---
 

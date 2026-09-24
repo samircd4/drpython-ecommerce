@@ -21,7 +21,9 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables
-load_dotenv(BASE_DIR / '.env', override=False)
+# Priority: backend/.env → root ../.env → OS environment (Docker injects via env_file)
+load_dotenv(BASE_DIR / '.env', override=False)                # backend/.env (local dev)
+load_dotenv(BASE_DIR.parent / '.env', override=False)         # root .env  (monorepo / Docker Compose)
 
 
 # Quick-start development settings - unsuitable for production
@@ -342,7 +344,14 @@ LOGIN_URL = '/admin/login/'
 API_BASE_URL = "http://127.0.0.1:8000/api"
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
 BACKEND_URL = os.getenv(
-    'BACKEND_URL', f"https://{os.getenv('DOMAIN', 'sarker.shop')}")
+    'BACKEND_URL', 'http://localhost:8000' if DEBUG else f"https://{os.getenv('DOMAIN', 'gurudebenterprise.com')}")
+
+# =============================================================
+# SSLCOMMERZ PAYMENT GATEWAY
+# =============================================================
+SSLCOMMERZ_STORE_ID = os.getenv('SSLCOMMERZ_STORE_ID', '')
+SSLCOMMERZ_STORE_PASSWD = os.getenv('SSLCOMMERZ_STORE_PASSWD', '')
+SSLCOMMERZ_IS_SANDBOX = _bool(os.getenv('SSLCOMMERZ_IS_SANDBOX'), True)
 
 REST_AUTH = {
     'USE_JWT': True,

@@ -51,7 +51,7 @@ const WebConfiguration = () => {
         telegram_url: '',
         tiktok_url: '',
         messenger_url: '',
-        dashboard_logo: null,
+        dashboard_logo: '/ge_main_logo.png',
         logo_dark: null,
         logo_light: null,
         favicon: null,
@@ -463,7 +463,7 @@ const WebConfiguration = () => {
                                         </div>
                                         <div>
                                             <div className="text-sm font-bold text-white uppercase tracking-tight">Direct Payments</div>
-                                            <div className="text-[10px] text-slate-500">Enable Stripe Gateway</div>
+                                            <div className="text-[10px] text-slate-500">Enable SSLCommerz Gateway (Cards & MFS)</div>
                                         </div>
                                     </div>
                                     <button
