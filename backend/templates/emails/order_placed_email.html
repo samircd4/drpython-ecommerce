@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Placed Successfully - Sarker Shop</title>
+    <title>Order Placed Successfully - {{ store_name }}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Inter', 'Segoe UI', Arial, sans-serif;">
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; padding: 20px 10px;">
@@ -14,7 +14,7 @@
                     <!-- Header -->
                     <tr>
                         <td align="center" style="background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); padding: 40px 20px;">
-                            <img src="{{ logo_url }}" alt="Sarker Shop" style="display: block; max-width: 180px; height: auto; margin-bottom: 24px;">
+                            <img src="{{ logo_url }}" alt="{{ store_name }}" style="display: block; max-width: 180px; height: auto; margin-bottom: 24px;">
                             <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px;">Order Placed</h1>
                             <p style="color: #e0e7ff; margin: 12px 0 0 0; font-size: 16px; font-weight: 500; opacity: 0.9;">Tracking ID: #{{ order.id }}</p>
                         </td>
@@ -82,7 +82,7 @@
                     <tr>
                         <td style="background-color: #f8fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
                             <p style="color: #64748b; font-size: 14px; margin: 0;">
-                                &copy; 2026 Sarker Shop. All rights reserved.<br>
+                                &copy; 2026 {{ store_name }}. All rights reserved.<br>
                                 Islami Super Market, Kishoreganj
                             </p>
                         </td>

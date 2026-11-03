@@ -7,11 +7,12 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         self.user_id = self.scope['url_route']['kwargs']['user_id']
         self.group_name = f'notifications_{self.user_id}'
 
-        if self.scope['user'].is_anonymous:
-            await self.close()
+        user = self.scope['user']
+        # Only the owner may listen to their own notification group
+        if user.is_anonymous or str(user.id) != str(self.user_id):
+            await self.close(code=4003)
             return
 
-        # Original connection logic, now executed only if not anonymous
         await self.channel_layer.group_add(
             self.group_name,
             self.channel_name

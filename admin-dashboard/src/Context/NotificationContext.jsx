@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import api from '../api/axiosConfig';
 import { useAuth } from './AuthContext';
 import useNotificationSocket from '../hooks/useNotificationSocket';
@@ -11,43 +11,51 @@ export const NotificationProvider = ({ children }) => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
+    const listenersRef = useRef(new Set());
+
+    const fetchUnreadCount = useCallback(async () => {
+        try {
+            const res = await api.get('/notifications/unread_count/');
+            setUnreadCount(res.data?.unread_count || 0);
+        } catch (err) {
+            console.error("NotificationContext: Error fetching unread count", err);
+        }
+    }, []);
 
     const fetchNotifications = useCallback(async () => {
-        if (!user) {
-            console.log("NotificationContext: No user yet, skipping fetch");
-            return;
-        }
+        if (!user) return;
         setLoading(true);
         try {
-            console.log("NotificationContext: Fetching notifications...");
             const res = await api.get('/notifications/');
-            console.log("NotificationContext Response:", res.data);
-            const data = Array.isArray(res.data) ? res.data : (res.data?.results || []);
-            setNotifications(data);
-            setUnreadCount(data.filter(n => !n.is_read).length);
+            setNotifications(Array.isArray(res.data) ? res.data : (res.data?.results || []));
+            await fetchUnreadCount();
         } catch (err) {
             console.error("NotificationContext: Error fetching", err);
-            toast.error("Alert system sync failed");
+            toast.error("Could not load notifications");
         } finally {
             setLoading(false);
         }
-    }, [user]);
+    }, [user, fetchUnreadCount]);
 
     useEffect(() => {
         fetchNotifications();
     }, [fetchNotifications]);
 
-    // WebSocket Integration
-    const accessToken = localStorage.getItem('access_token');
-    useNotificationSocket(accessToken, user?.id, (data) => {
-        // Refresh when a new notification comes in via socket
-        fetchNotifications();
-        
-        // Optional: show toast for specific types if not already handled
+    // Single WebSocket for the whole dashboard; components subscribe via hooks/useNotificationListener
+    const { isConnected } = useNotificationSocket(user?.id, (data) => {
+        setNotifications(prev => [data, ...prev.filter(n => n.id !== data.id)].slice(0, 50));
+        if (!data.is_read) setUnreadCount(prev => prev + 1);
+
         if (data.type === 'new_order') {
-            toast.success(`New Order Received!`, { icon: '🛒' });
+            toast.success(data.message || 'New order received', { icon: '🛒', duration: 5000 });
         }
+        listenersRef.current.forEach(listener => listener(data));
     });
+
+    const subscribe = useCallback((listener) => {
+        listenersRef.current.add(listener);
+        return () => listenersRef.current.delete(listener);
+    }, []);
 
     const markAsRead = async (id) => {
         try {
@@ -94,10 +102,12 @@ export const NotificationProvider = ({ children }) => {
             notifications,
             unreadCount,
             loading,
+            isConnected,
             markAsRead,
             markAsUnread,
             markAllAsRead,
             clearAll,
+            subscribe,
             refreshNotifications: fetchNotifications
         }}>
             {children}
@@ -112,3 +122,4 @@ export const useNotification = () => {
     }
     return context;
 };
+

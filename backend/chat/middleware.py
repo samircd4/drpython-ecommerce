@@ -1,3 +1,4 @@
+import logging
 import urllib.parse
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
@@ -8,6 +9,7 @@ from jwt import decode as jwt_decode
 from django.conf import settings
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 @database_sync_to_async
 def get_user(user_id):
@@ -30,8 +32,6 @@ class TokenAuthMiddleware:
         query_params = urllib.parse.parse_qs(query_string)
         token = query_params.get('token', [None])[0]
         scope['guest_id'] = query_params.get('guest_id', [None])[0]
-        
-        print(f"DEBUG: WS TokenAuthMiddleware - token: {'received' if token else 'missing'}, guest_id: {scope['guest_id']}")
 
         # Always ensure guest_id is in scope for the consumer
         scope['user'] = AnonymousUser()
@@ -52,12 +52,12 @@ class TokenAuthMiddleware:
                         scope['user'] = await get_user(user_id)
                         # If we have a user, we don't need guest_id
                         scope['guest_id'] = None
-                    except Exception as e:
-                        print(f"WS User Lookup Error: {str(e)}")
+                    except Exception:
+                        logger.warning("WS user lookup failed", exc_info=True)
                         scope['user'] = AnonymousUser()
             except (InvalidToken, TokenError, Exception) as e:
                 # Token is invalid, fallback to AnonymousUser (which is already set)
-                print(f"WS Auth Error: {str(e)}")
+                logger.info("WS auth rejected token: %s", e)
 
         return await self.inner(scope, receive, send)
 

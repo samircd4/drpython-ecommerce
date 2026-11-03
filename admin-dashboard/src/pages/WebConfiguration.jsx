@@ -62,6 +62,8 @@ const WebConfiguration = () => {
         bkash_number: '',
         nagad_number: '',
         rocket_number: '',
+        // Notifications
+        low_stock_threshold: 5,
     });
 
     const [dashboardLogoPreview, setDashboardLogoPreview] = useState(null);
@@ -103,6 +105,7 @@ const WebConfiguration = () => {
                 bkash_number: globalStoreConfig.bkash_number || '',
                 nagad_number: globalStoreConfig.nagad_number || '',
                 rocket_number: globalStoreConfig.rocket_number || '',
+                low_stock_threshold: globalStoreConfig.low_stock_threshold ?? 5,
             });
             if (globalStoreConfig.dashboard_logo) setDashboardLogoPreview(globalStoreConfig.dashboard_logo);
             if (globalStoreConfig.logo_dark) setLogoDarkPreview(globalStoreConfig.logo_dark);
@@ -296,6 +299,14 @@ const WebConfiguration = () => {
                                         type="text" name="support_phone" value={configFormData.support_phone} onChange={handleConfigChange}
                                         className="w-full bg-[#0b1a2a] border border-slate-700/60 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 transition-all"
                                     />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-400 ml-1">Low Stock Alert Threshold</label>
+                                    <input
+                                        type="number" min="0" name="low_stock_threshold" value={configFormData.low_stock_threshold} onChange={handleConfigChange}
+                                        className="w-full bg-[#0b1a2a] border border-slate-700/60 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 transition-all"
+                                    />
+                                    <span className="text-xs text-slate-500 ml-1">Staff are notified when stock drops to this level or below.</span>
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
                                     <label className="text-sm font-medium text-slate-400 ml-1">Shop Address / Location</label>

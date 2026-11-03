@@ -89,9 +89,10 @@ def send_order_email(order, template_name, subject):
         return False
 
     frontend_url = settings.FRONTEND_URL
-    logo_url = "https://sarker.shop/static/images/logo.png"
+    branding = get_store_branding()
 
     context = {
+        **branding,
         'order': order,
         'full_name': order.full_name or (order.customer.name if order.customer else 'Valued Customer'),
         'items': order.items.all(),
@@ -99,7 +100,6 @@ def send_order_email(order, template_name, subject):
         'tracking_url': f"{frontend_url}/order-tracking/{order.id}",
         'feedback_url': f"{frontend_url}/reviews/{order.id}",
         'frontend_url': frontend_url,
-        'logo_url': logo_url,
     }
 
     attachments = []
@@ -125,17 +125,30 @@ def send_order_email(order, template_name, subject):
     )
 
 
+def get_store_branding():
+    """Store name and absolute logo URL from StoreConfiguration (white-label)."""
+    from web.models import StoreConfiguration
+
+    store = StoreConfiguration.load()
+    logo = store.logo_dark or store.logo_light
+    if logo:
+        logo_url = f"{settings.BACKEND_URL.rstrip('/')}{logo.url}"
+    else:
+        logo_url = f"{settings.BACKEND_URL.rstrip('/')}/static/images/logo.png"
+    return {'store_name': store.website_name or 'Our Store', 'logo_url': logo_url}
+
+
 def send_order_placed_email(order):
-    subject = f"Order Placed Successfully - #{order.id} | Sarker Shop"
+    subject = f"Order Placed Successfully - #{order.id} | {get_store_branding()['store_name']}"
     return send_order_email(order, 'order_placed_email.html', subject)
 
 
 def send_order_status_update_email(order):
     status_name = order.order_status.display_name if order.order_status else "Updated"
-    subject = f"Order #{order.id} Status Update: {status_name} | Sarker Shop"
+    subject = f"Order #{order.id} Status Update: {status_name} | {get_store_branding()['store_name']}"
     return send_order_email(order, 'order_status_update_email.html', subject)
 
 
 def send_feedback_request_email(order):
-    subject = f"We'd love your feedback! Order #{order.id} | Sarker Shop"
+    subject = f"We'd love your feedback! Order #{order.id} | {get_store_branding()['store_name']}"
     return send_order_email(order, 'order_feedback_email.html', subject)

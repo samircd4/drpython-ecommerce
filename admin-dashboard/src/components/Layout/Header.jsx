@@ -27,8 +27,9 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import OrderPanel from "./OrderPanel";
 import NotificationPanel from "./NotificationPanel";
+import ConfirmModal from "./ConfirmModal";
 import { useNotification } from "../../Context/NotificationContext";
-import useNotificationSocket from "../../hooks/useNotificationSocket";
+import useNotificationListener from "../../hooks/useNotificationListener";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
@@ -70,6 +71,7 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
     const [showAddDropdown, setShowAddDropdown] = useState(false);
     const [showOrderPanel, setShowOrderPanel] = useState(false);
     const [showNotificationPanel, setShowNotificationPanel] = useState(false);
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
     
     const [recentOrders, setRecentOrders] = useState([]);
     const { 
@@ -140,21 +142,11 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
         }
     };
 
-    // WebSocket for True Real-Time Notifications
-    const accessToken = localStorage.getItem('access_token');
-    useNotificationSocket(accessToken, user?.id, (data) => {
+    // Live new-order alerts arrive on the shared notification socket (toast is shown by NotificationContext)
+    useNotificationListener((data) => {
         if (data.type === 'new_order') {
-            toast.success(`New Order: ${data.message || 'Received!'}`, {
-                duration: 5000,
-                position: 'top-right',
-                icon: '🛒'
-            });
-            // Optimistically increment badge
             setNewOrdersCount(prev => prev + 1);
-            // Refresh full state after a short delay
-            setTimeout(() => {
-                fetchHeaderData();
-            }, 1000);
+            fetchHeaderData();
         }
     });
 
@@ -289,13 +281,13 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                                 setShowAddDropdown(false);
                             }}
                             className={`relative p-2.5 cursor-pointer rounded-xl transition-colors ${
-                                showNotificationPanel ? 'bg-purple-600/20 text-purple-400' : 'text-slate-200 hover:bg-slate-800'
+                                showNotificationPanel ? 'bg-blue-600/20 text-blue-400' : 'text-slate-200 hover:bg-slate-800'
                             }`}
                         >
                             <Bell className="w-5 h-5" />
                             {notificationUnreadCount > 0 && (
-                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#071229]">
-                                    {notificationUnreadCount}
+                                <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#071229]">
+                                    {notificationUnreadCount > 99 ? '99+' : notificationUnreadCount}
                                 </span>
                             )}
                         </button>
@@ -303,9 +295,22 @@ const Header = ({ SidebarCollapsed, onToggleSidebar }) => {
                             open={showNotificationPanel}
                             onClose={() => setShowNotificationPanel(false)}
                             notifications={notifications}
+                            unreadCount={notificationUnreadCount}
                             onMarkRead={markAsRead}
                             onMarkAllRead={markAllAsRead}
-                            onClearAll={clearAll}
+                            onClearAll={() => setShowClearConfirm(true)}
+                        />
+                        <ConfirmModal
+                            isOpen={showClearConfirm}
+                            onClose={() => setShowClearConfirm(false)}
+                            onConfirm={async () => {
+                                await clearAll();
+                                setShowClearConfirm(false);
+                                toast.success("Notifications cleared");
+                            }}
+                            title="Clear all notifications?"
+                            message="This removes all of your notifications. It cannot be undone."
+                            confirmText="CLEAR ALL"
                         />
                     </div>
 

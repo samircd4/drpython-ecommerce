@@ -62,7 +62,7 @@ dev_feedback.DevFeedback ──▶ User (created_by, assigned_to)```
 `Review` (product, customer, rating 1–5, comment, image) → `ReviewImage`. `Question` (product, customer, question, answer).
 
 ### web
-`StoreConfiguration` (singleton: branding, currency and symbol, contact, socials, timezone, `is_cod_enabled`, `is_online_payment_enabled`, wallet numbers). `ContactMessage`. `NewsletterSubscription` (unique email). `Notification` (user, type `order_update`, `promotion` or `system`, title, message, link, is_read).
+`StoreConfiguration` (singleton: branding, currency and symbol, contact, socials, timezone, `is_cod_enabled`, `is_online_payment_enabled`, wallet numbers, `low_stock_threshold`). `ContactMessage`. `NewsletterSubscription` (unique email). `Notification` (user, type `order_update`, `new_order`, `payment`, `stock`, `review`, `message`, `promotion` or `system`, title, message, link (relative path or URL), `data` JSON, is_read). Create them only through `notifications/services.py` (`notify`, `notify_staff`).
 
 ### chat
 `Conversation` (customer or `guest_id`). `Message` (conversation, sender or `guest_id`, text, image, video, `message_type`, `parent_message` for replies, `reactions` JSON, `timestamp`, `is_read`).

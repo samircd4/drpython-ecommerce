@@ -1,19 +1,12 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, X, CheckCircle2, Trash2, Clock, Info, Package, Tag, Settings } from 'lucide-react';
+import { Bell, X, CheckCircle2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import NotificationIcon from './NotificationIcon';
+import { openNotificationTarget } from './notificationMeta';
 
-const NotificationPanel = ({ open, onClose, notifications = [], onMarkRead, onMarkAllRead, onClearAll }) => {
+const NotificationPanel = ({ open, onClose, notifications = [], unreadCount = 0, onMarkRead, onMarkAllRead, onClearAll }) => {
     const navigate = useNavigate();
-
-    const getIcon = (type) => {
-        switch (type) {
-            case 'order_update': return <Package className="w-4 h-4 text-blue-400" />;
-            case 'promotion': return <Tag className="w-4 h-4 text-orange-400" />;
-            case 'system': return <Info className="w-4 h-4 text-purple-400" />;
-            default: return <Bell className="w-4 h-4 text-slate-400" />;
-        }
-    };
 
     const formatTime = (dateString) => {
         const date = new Date(dateString);
@@ -29,8 +22,6 @@ const NotificationPanel = ({ open, onClose, notifications = [], onMarkRead, onMa
         const diffInDays = Math.floor(diffInHours / 24);
         return `${diffInDays}D`;
     };
-
-    const unreadCount = notifications.filter(n => !n.is_read).length;
 
     return (
         <AnimatePresence>
@@ -59,7 +50,7 @@ const NotificationPanel = ({ open, onClose, notifications = [], onMarkRead, onMa
                                 <h2 className="text-lg font-bold flex items-center gap-2">
                                     Notifications
                                     {unreadCount > 0 && (
-                                        <span className="bg-purple-600/20 text-purple-400 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-black">
+                                        <span className="bg-blue-600/20 text-blue-400 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-black">
                                             {unreadCount} New
                                         </span>
                                     )}
@@ -78,9 +69,6 @@ const NotificationPanel = ({ open, onClose, notifications = [], onMarkRead, onMa
                                     className="p-1.5 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 cursor-pointer sm:hidden"
                                 >
                                     <X className="w-5 h-5" />
-                                </button>
-                                <button className="p-1.5 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 cursor-pointer hidden sm:block">
-                                    <Settings className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
@@ -102,38 +90,21 @@ const NotificationPanel = ({ open, onClose, notifications = [], onMarkRead, onMa
                                                     }
                                                     onClose();
                                                     
-                                                    // Comprehensive Redirection Logic
-                                                    const trackMatch = notif.link?.match(/\/order-tracking\/(\d+)/);
-                                                    if (trackMatch) {
-                                                        navigate(`/orders?search=${trackMatch[1]}`);
-                                                    } else if (notif.link) {
-                                                        navigate(notif.link);
-                                                    } else if (notif.type === 'order_update') {
-                                                        const orderIdMatch = notif.message.match(/#(\d+)/);
-                                                        if (orderIdMatch) {
-                                                            navigate(`/orders?search=${orderIdMatch[1]}`);
-                                                        } else {
-                                                            navigate('/orders');
-                                                        }
-                                                    } else if (notif.type === 'promotion') {
-                                                        navigate('/coupons');
-                                                    } else {
-                                                        navigate('/notifications');
-                                                    }
+                                                    openNotificationTarget(notif, navigate);
                                                 }}
                                                 className={`p-4 transition-colors relative group cursor-pointer hover:bg-white/5 ${
-                                                    !notif.is_read ? 'bg-purple-600/5' : ''
+                                                    !notif.is_read ? 'bg-blue-600/5' : ''
                                                 }`}
                                             >
                                                 {!notif.is_read && (
-                                                    <div className="absolute top-0 right-0 w-1 h-full bg-purple-600" />
+                                                    <div className="absolute top-0 right-0 w-1 h-full bg-blue-600" />
                                                 )}
 
                                                 <div className="flex gap-3 sm:gap-4">
                                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-slate-700/50 ${
-                                                        notif.is_read ? 'bg-slate-800/50' : 'bg-purple-600/10 border-purple-500/20'
+                                                        notif.is_read ? 'bg-slate-800/50' : 'bg-blue-600/10 border-blue-500/20'
                                                     }`}>
-                                                        {getIcon(notif.type)}
+                                                        <NotificationIcon type={notif.type} />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex justify-between items-start mb-0.5">

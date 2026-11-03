@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from utils.pdf import generate_invoice_pdf
+from notifications.services import notify
 
 logger = logging.getLogger(__name__)
 
@@ -546,6 +547,16 @@ def sslcommerz_fail_view(request):
         order = Order.objects.filter(payment_info__transaction_id=tran_id).first()
     if not order and value_a and value_a.isdigit():
         order = Order.objects.filter(id=int(value_a)).first()
+
+    if order and order.customer and order.customer.user_id and not (order.payment_info and order.payment_info.is_paid):
+        notify(
+            order.customer.user_id,
+            type='payment',
+            title=f'Payment failed for order #{order.id}',
+            message='Your online payment did not go through. You can try again from the order page.',
+            link=f'/order-tracking/{order.id}',
+            data={'order_id': order.id},
+        )
 
     order_param = f"order_id={order.id}&" if order else ""
     return HttpResponseRedirect(f"{frontend_url}/payment/failed?{order_param}reason=payment_failed&tran_id={tran_id or ''}")

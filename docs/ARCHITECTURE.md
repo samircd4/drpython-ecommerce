@@ -84,8 +84,10 @@ Storefront                       Backend                                    SSLC
 
 ```
 Order.save() ─▶ orders/signals.py ─▶ channel_layer.group_send("order_<id>")            ─▶ OrderConsumer ─▶ tracking page
-                                  └▶ group_send("notifications_<staff_id>") (on create) ─▶ NotificationConsumer ─▶ admin bell
-                                  └▶ Notification.objects.create(...) (status change)   ─▶ customer notifications list
+                                  └▶ notify(customer) on status change                  ─┐
+OrderSerializer.create ─▶ notify_staff('orders.view_order') + notify(customer)          ├▶ Notification row + (on commit)
+products/reviews/web/orders signals ─▶ notify_staff(...) for stock, review, Q&A,        │   group_send("notifications_<user_id>")
+                                       contact message, payment                         ─┘   ─▶ NotificationConsumer ─▶ admin bell / storefront bell
 Chat: client WS (ws/chat/?token=… | ?guest_id=…) ─▶ TokenAuthMiddleware ─▶ ChatConsumer.receive ─▶ save_message ─▶ group_send ─▶ all participants
 ```
 
@@ -93,7 +95,9 @@ WebSocket auth: the JWT is passed as the `?token=` query parameter, decoded with
 
 ### 3.5 Background processing
 - Celery app: `ecommerce_api/celery.py` (autodiscovers `tasks.py`). Broker: Redis. Results: `django_celery_results`.
-- Today most side effects run synchronously in signals. Moving email, PDF and import work to Celery is on the [ROADMAP](ROADMAP.md).
+- Order emails run as Celery tasks (`orders/tasks.py`, queued on commit). The worker also runs an embedded beat (`celery_entrypoint.sh`) that prunes old notifications daily (`web/tasks.py`, `CELERY_BEAT_SCHEDULE`).
+- Account emails, PDF and import work still run synchronously. Moving them to Celery is on the [ROADMAP](ROADMAP.md).
+- All notifications go through `notifications/services.py` (`notify`, `notify_staff(perm)`). Staff alerts go to superusers and to staff holding the permission that gates the matching admin page.
 
 ## 4. Admin dashboard architecture
 

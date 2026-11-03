@@ -77,10 +77,11 @@ Auth key: 🌐 public · 👤 authenticated (own data) · 🛠 staff with the mo
 | GET, PUT, PATCH | `configuration/` | 🌐 read, admin write |
 | POST | `contact/` | 🌐 |
 | POST | `subscribe/` | 🌐 |
-| GET | `notifications/` | 👤 own |
-| POST | `notifications/<id>/mark_read/`, `notifications/<id>/mark_unread/` | 👤 |
-| POST | `notifications/mark_all_read/` | 👤 |
-| DELETE | `notifications/clear_all/` | 👤 |
+| GET | `notifications/` | 👤 own only (staff too). Plain array of the latest 50; with `?page=` it is paginated `{count, next, previous, results}`. Filters: `type`, `type__in`, `is_read` |
+| GET | `notifications/unread_count/` | 👤 `{unread_count}` |
+| POST | `notifications/<id>/mark_read/`, `notifications/<id>/mark_unread/` | 👤 own |
+| POST | `notifications/mark_all_read/` | 👤 own |
+| DELETE | `notifications/clear_all/` | 👤 own |
 
 ## Chat (REST)
 | Method | Path | Notes |
@@ -111,7 +112,7 @@ Connect to `VITE_WS_URL` (local `ws://localhost:8001/ws`, production `wss://<dom
 |---|---|---|
 | `ws/order/<order_id>/` | `{id, status, updated_at}` on every save | — |
 | `ws/product/<product_id>/` | product and variant status and stock updates | — |
-| `ws/notifications/<user_id>/` | `send_notification` payloads (e.g. `new_order`) | — |
+| `ws/notifications/<user_id>/` | Serialized `Notification` (same shape as `GET notifications/`), pushed after commit. Only the token's own user id may connect (close code 4003 otherwise) | — |
 | `ws/chat/` (alias `ws/`) | `chat_message`, `user_status`, `typing_status`, `reaction_update` | messages, typing, reactions, presence requests (see `chat/consumers.py` `receive`) |
 | `ws/live-insights/` | visitor updates (admin) | visitor heartbeats (storefront) |
 
