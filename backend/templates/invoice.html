@@ -130,11 +130,10 @@
       <!-- Header -->
       <div class="header">
         <div class="brand">
-          <h1>Sarker Shop</h1>
-          <p>Smart gadgets, Smarter prices</p>
-          <p>Islami Super Market, Kishoreganj</p>
-          <p>Phone/WhatsApp: 01708-601002</p>
-          <p>Email: support@sarker.shop</p>
+          <h1>{{ store_name }}</h1>
+          {% if store.location %}<p>{{ store.location }}</p>{% endif %}
+          {% if store.support_phone %}<p>Phone/WhatsApp: {{ store.support_phone }}</p>{% endif %}
+          {% if store.contact_email %}<p>Email: {{ store.contact_email }}</p>{% endif %}
         </div>
 
         <div class="invoice-title">
@@ -338,14 +337,15 @@
 
       <!-- Thank You -->
       <div class="thank-you">
-        <strong>Thank you for shopping with Sarker Shop!</strong><br />
-        We appreciate your trust in our electronic products.
+        <strong>Thank you for shopping with {{ store_name }}!</strong><br />
+        We appreciate your trust in our products.
       </div>
 
       <!-- Footer -->
       <div class="footer">
-        Website: www.sarker.shop | Facebook: facebook.com/shopsarker
-        <p>WhatsApp: 01708-601002</p>
+        {% if website %}Website: {{ website }}{% endif %}{% if website and store.facebook_url %} | {% endif %}{% if store.facebook_url %}Facebook: {{ store.facebook_url }}{% endif %}
+        {% if store.contact_email %}<p>Email: {{ store.contact_email }}</p>{% endif %}
+        {% if store.support_phone %}<p>WhatsApp: {{ store.support_phone }}</p>{% endif %}
       </div>
     </div>
   </body>

@@ -4,14 +4,24 @@ from django.template.loader import render_to_string
 
 def generate_invoice_pdf(order):
     import os
+    from urllib.parse import urlparse
     from django.conf import settings
+    from web.models import StoreConfiguration
+
     logo_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'logo.png')
     logo_url = f"file:///{logo_path.replace(os.sep, '/')}" if os.path.exists(logo_path) else None
+
+    # Branding comes from the client's Web Configuration, so every client gets its own invoice.
+    store = StoreConfiguration.load()
+    website = urlparse(getattr(settings, 'FRONTEND_URL', '') or '').netloc
 
     context = {
         "order": order,
         "items": order.items.all(),  # related_name="items"
         "logo_url": logo_url,
+        "store": store,
+        "store_name": store.website_name or "Our Store",
+        "website": website,
     }
     
     html = render_to_string("invoice.html", context)
