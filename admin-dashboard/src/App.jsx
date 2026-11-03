@@ -187,9 +187,9 @@ function AppContent() {
                             <Routes>
                                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                                <Route path="/analytics" element={<ProtectedRoute requiredPermission="orders.view_order"><Analytics /></ProtectedRoute>} />
-                                <Route path="/overview" element={<ProtectedRoute requiredPermission="orders.view_order"><Overview /></ProtectedRoute>} />
-                                <Route path="/insights" element={<ProtectedRoute requiredPermission="orders.view_order"><Insights /></ProtectedRoute>} />
+                                {/* <Route path="/analytics" element={<ProtectedRoute requiredPermission="orders.view_order"><Analytics /></ProtectedRoute>} /> */}
+                                {/* <Route path="/overview" element={<ProtectedRoute requiredPermission="orders.view_order"><Overview /></ProtectedRoute>} /> */}
+                                {/* <Route path="/insights" element={<ProtectedRoute requiredPermission="orders.view_order"><Insights /></ProtectedRoute>} /> */}
                                 
                                 <Route path="/users" element={<ProtectedRoute requiredPermission="auth.view_user"><Users /></ProtectedRoute>} />
                                 <Route path="/roles" element={<ProtectedRoute requiredPermission="auth.view_user"><Roles /></ProtectedRoute>} />
@@ -233,8 +233,8 @@ function AppContent() {
                                 <Route path="/users/edit/:id" element={<ProtectedRoute requiredPermission="auth.view_user"><UserEdit /></ProtectedRoute>} />
                                 <Route path="/users/add" element={<ProtectedRoute requiredPermission="auth.view_user"><UserAdd /></ProtectedRoute>} />
                                 <Route path="*" element={<div className="p-6 text-slate-300">Page Not Found</div>} />
-                                <Route path="/export-import" element={<ProtectedRoute requiredPermission="products.export_import"><DataManagement /></ProtectedRoute>} />
-                                <Route path="/dev-feedback" element={<ProtectedRoute><DevFeedback /></ProtectedRoute>} />
+                                {/* <Route path="/export-import" element={<ProtectedRoute requiredPermission="products.export_import"><DataManagement /></ProtectedRoute>} /> */}
+                                {/* <Route path="/dev-feedback" element={<ProtectedRoute><DevFeedback /></ProtectedRoute>} /> */}
                             </Routes>
                         </div>
                     </div>
