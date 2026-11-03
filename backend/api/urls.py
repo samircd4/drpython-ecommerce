@@ -34,5 +34,4 @@ urlpatterns = [
     path('', include('reviews.urls')),
     path('', include('web.urls')),
     path('', include('dev_feedback.urls')),
-    path('live-tv/', include('live_tv.urls')),
 ]

@@ -83,7 +83,6 @@ INSTALLED_APPS = [
     'chat',
     'dev_feedback',
     'tracking',
-    'live_tv',
 
     # Social Login
     'allauth',

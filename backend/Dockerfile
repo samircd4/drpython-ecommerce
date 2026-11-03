@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
     curl \
-    unzip \
     # Playwright dependencies
     libnss3 \
     libnspr4 \
@@ -27,13 +26,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libasound2 \
     && rm -rf /var/lib/apt/lists/*
 
-# Fix 1: Set DENO_INSTALL before running the install script
-ENV DENO_INSTALL="/root/.deno"
-
-# Install Deno for yt-dlp JavaScript runtime/n-challenge solver
-RUN curl -fsSL https://deno.land/install.sh | sh
-ENV PATH="$DENO_INSTALL/bin:$PATH"
-
 # Set working directory
 WORKDIR /app
 
@@ -46,7 +38,7 @@ COPY pyproject.toml uv.lock ./
 # Install dependencies using uv
 RUN uv sync --frozen --no-install-project
 
-# Fix 2: Copy entrypoint scripts explicitly BEFORE copying the whole app
+# Copy entrypoint scripts explicitly BEFORE copying the whole app
 # This ensures docker layer caching works perfectly for app changes
 COPY entrypoint.sh /entrypoint.sh
 COPY celery_entrypoint.sh /celery_entrypoint.sh
@@ -54,9 +46,6 @@ RUN chmod +x /entrypoint.sh /celery_entrypoint.sh
 
 # Copy the rest of the application
 COPY . .
-
-# Fix 3: Grant read permissions to youtube_cookies.txt if it exists in the build context
-RUN if [ -f youtube_cookies.txt ]; then chmod 644 youtube_cookies.txt; fi
 
 # Install the project itself (if applicable)
 RUN uv sync --frozen

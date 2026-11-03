@@ -36,5 +36,4 @@ dependencies = [
     "django-anymail[brevo]>=10.0",
     "user-agents>=2.2.0",
     "piexif>=1.1.3",
-    "yt-dlp>=2026.6.9",
 ]
