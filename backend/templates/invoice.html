@@ -326,13 +326,15 @@
       <div class="address">
         <strong>Shipping Address:</strong><br />
 
-        {% if order.address %} {{ order.address.full_name }}<br />
+        {% if order.address %} 
+        {{ order.address.full_name }}<br />
         {{ order.address.phone }}<br />
         {{ order.address.address }}<br />
-        {{ order.address.sub_district }}, {{ order.address.district }}, {{
-        order.address.division }} {% else %} {{ order.shipping_address }}<br />
+        {{ order.address.sub_district }}, {{ order.address.district }}, {{ order.address.division }}
+        {% else %} 
+        {{ order.shipping_address }}<br />
         {{ order.sub_district }}, {{ order.district }}, {{ order.division }}
-        {%endif %}
+        {% endif %}
       </div>
 
       <!-- Thank You -->
@@ -343,7 +345,7 @@
 
       <!-- Footer -->
       <div class="footer">
-        {% if website %}Website: {{ website }}{% endif %}{% if website and store.facebook_url %} | {% endif %}{% if store.facebook_url %}Facebook: {{ store.facebook_url }}{% endif %}
+        {% if website %}Website: www.{{ website }}{% endif %}{% if website and store.facebook_url %} | {% endif %}{% if store.facebook_url %}Facebook: {{ store.facebook_url }}{% endif %}
         {% if store.contact_email %}<p>Email: {{ store.contact_email }}</p>{% endif %}
         {% if store.support_phone %}<p>WhatsApp: {{ store.support_phone }}</p>{% endif %}
       </div>
