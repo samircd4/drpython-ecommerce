@@ -267,6 +267,7 @@ class CustomerSerializer(serializers.ModelSerializer):
                 'id': order.id,
                 'created_at': order.created_at,
                 'status': order.order_status.display_name if order.order_status else 'Pending',
+                'status_code': order.order_status.status_code if order.order_status else 'pending',
                 'total_amount': order.total_amount
             }
             for order in recent

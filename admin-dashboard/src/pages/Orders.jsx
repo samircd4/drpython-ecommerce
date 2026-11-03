@@ -11,6 +11,7 @@ import useProductLink from '../hooks/useProductLink';
 import useNotificationSocket from '../hooks/useNotificationSocket';
 import { useAuth } from '../Context/AuthContext';
 import { useStoreConfig } from '../hooks/useStoreConfig';
+import { ORDER_STATUSES, getOrderStatusCode, getOrderStatusMeta } from '../constants/orderStatus';
 
 const SortArrow = ({ column, sortColumn, sortDirection }) => {
     if (sortColumn !== column) return <span className="opacity-20 ml-1 inline-flex flex-col leading-[0] align-middle"><ChevronUp className="w-2.5 h-2.5" /><ChevronDown className="w-2.5 h-2.5 -mt-1" /></span>;
@@ -20,18 +21,10 @@ const SortArrow = ({ column, sortColumn, sortDirection }) => {
 };
 
 const StatusBadge = ({ status }) => {
-    const map = {
-        'Delivered': 'bg-green-500/10 text-green-400 ring-green-500/20',
-        'Pending': 'bg-yellow-500/10 text-yellow-400 ring-yellow-500/20',
-        'Processing': 'bg-blue-500/10 text-blue-400 ring-blue-500/20',
-        'Cancelled': 'bg-red-500/10 text-red-400 ring-red-500/20',
-        'Shipped': 'bg-purple-500/10 text-purple-400 ring-purple-500/20',
-        'Returned': 'bg-gray-500/10 text-gray-400 ring-gray-500/20',
-        'Failed': 'bg-rose-500/10 text-rose-400 ring-rose-500/20',
-    };
+    const meta = getOrderStatusMeta(status);
     return (
-        <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ring-1 ${map[status] || 'bg-slate-500/10 text-slate-400 ring-slate-500/20'}`}>
-            {status}
+        <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ring-1 ${meta.badge}`}>
+            {meta.label}
         </span>
     );
 };
@@ -123,7 +116,9 @@ const Orders = () => {
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const response = await api.get(`/orders/`, { params: { page: page } });
+            const params = { page };
+            if (statusFilter !== 'Status') params.order_status__status_code = statusFilter;
+            const response = await api.get(`/orders/`, { params });
             const orderData = Array.isArray(response.data.results) ? response.data.results : [];
             setOrders(orderData);
             setTotalCount(response.data.count || orderData.length);
@@ -138,7 +133,12 @@ const Orders = () => {
 
     React.useEffect(() => {
         fetchOrders();
-    }, [page]);
+
+        // Refresh after an order is changed in the global order modal
+        const handleRefresh = () => fetchOrders();
+        window.addEventListener('refreshData', handleRefresh);
+        return () => window.removeEventListener('refreshData', handleRefresh);
+    }, [page, statusFilter]);
 
     const handleOpenModal = (order, mode) => {
         openOrderModal(order, mode);
@@ -185,15 +185,12 @@ const Orders = () => {
             const matchesPayment = paymentFilter === 'Payment' || pMethod === paymentFilter;
             const pStatus = o.payment?.is_paid ? 'Paid' : 'Unpaid';
             const matchesPaymentStatus = paymentStatusFilter === 'Payment Status' || pStatus === paymentStatusFilter;
-            const matchesStatus = statusFilter === 'Status' || o.status === statusFilter;
-            return matchesSearch && matchesPayment && matchesPaymentStatus && matchesStatus;
+            return matchesSearch && matchesPayment && matchesPaymentStatus;
         });
-    }, [orders, searchQuery, paymentFilter, paymentStatusFilter, statusFilter]);
+    }, [orders, searchQuery, paymentFilter, paymentStatusFilter]);
 
     const totalPages = Math.ceil(totalCount / showBy) || 1;
     const visible = filtered;
-
-    const orderStatuses = [...new Set(orders.map(o => o.status).filter(Boolean))];
 
     return (
         <div className="p-0 sm:p-6 min-h-screen">
@@ -219,9 +216,9 @@ const Orders = () => {
                         {['Paid', 'Unpaid'].map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
 
-                    <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none min-w-[120px] cursor-pointer font-sans">
-                        <option>Status</option>
-                        {orderStatuses.map(s => <option key={s} value={s}>{s}</option>)}
+                    <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} className="bg-[#0b1a2a] text-slate-200 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none min-w-[120px] cursor-pointer font-sans">
+                        <option value="Status">Status</option>
+                        {ORDER_STATUSES.map(s => <option key={s.code} value={s.code}>{s.label}</option>)}
                     </select>
 
                     <div className="flex-1 min-w-[200px]">
@@ -293,7 +290,7 @@ const Orders = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-100 font-bold text-sm">{symbol}{Number(o.grand_total).toLocaleString()}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-400 uppercase text-[10px] font-bold">{o.payment?.payment_method || 'N/A'}</td>
                                 <td className="px-6 py-4 whitespace-nowrap"><PaymentBadge ps={o.payment?.is_paid ? 'Paid' : 'Unpaid'} /></td>
-                                <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={o.status || 'Pending'} /></td>
+                                <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={getOrderStatusCode(o)} /></td>
                                 <td className="px-6 py-4 whitespace-nowrap text-slate-500 text-xs font-mono">{new Date(o.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</td>
                                 <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                                     {hasPermission('orders.view_order') && (

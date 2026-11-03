@@ -1,10 +1,10 @@
 from django.db.models import Q
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.utils.timesince import timesince
-from .models import Order
+from .models import Order, OrderStatus
 from django.contrib.auth import get_user_model
 from web.models import Notification
 from utils.emails import send_order_placed_email, send_order_status_update_email
@@ -12,22 +12,41 @@ from utils.emails import send_order_placed_email, send_order_status_update_email
 User = get_user_model()
 
 
+@receiver(pre_save, sender=Order, dispatch_uid='order_remember_previous_status')
+def remember_previous_status(sender, instance, **kwargs):
+    """Remember the stored status so post_save can tell whether it actually changed."""
+    if instance.pk:
+        instance._previous_status_id = (
+            Order.objects.filter(pk=instance.pk).values_list('order_status_id', flat=True).first()
+        )
+    else:
+        instance._previous_status_id = None
+
+
 @receiver(post_save, sender=Order, dispatch_uid='order_status_changed_signal')
 def order_status_changed(sender, instance, **kwargs):
     channel_layer = get_channel_layer()
+    status_changed = (
+        not kwargs.get('created', False)
+        and instance.order_status_id != getattr(instance, '_previous_status_id', None)
+    )
 
     # 1. Broadcast to the order tracking page (existing)
-    async_to_sync(channel_layer.group_send)(
-        f'order_{instance.id}',
-        {
-            'type': 'order_status_update',
-            'message': {
-                'id': instance.id,
-                'status': str(instance.order_status) if instance.order_status else 'Pending',
-                'updated_at': str(instance.updated_at),
+    try:
+        async_to_sync(channel_layer.group_send)(
+            f'order_{instance.id}',
+            {
+                'type': 'order_status_update',
+                'message': {
+                    'id': instance.id,
+                    'status': str(instance.order_status) if instance.order_status else 'Pending',
+                    'status_code': instance.order_status.status_code if instance.order_status else OrderStatus.PENDING,
+                    'updated_at': str(instance.updated_at),
+                }
             }
-        }
-    )
+        )
+    except Exception:
+        pass
 
     # 2. Notify Admins on New Order
     if kwargs.get('created', False):
@@ -62,10 +81,9 @@ def order_status_changed(sender, instance, **kwargs):
                 pass
 
     # 3. Status Update Notifications
-    if not kwargs.get('created', False):
-        # Status Update
-        # Only send if the status was explicitly changed or if it's not the initial 'pending' save
-        if instance.order_status and instance.order_status.status_code != 'pending':
+    if status_changed:
+        # Only notify when the status actually changed (not on every save), and never for a move back to pending
+        if instance.order_status and instance.order_status.status_code != OrderStatus.PENDING:
             send_order_status_update_email(instance)
 
             # Push notification for status updates
@@ -83,17 +101,20 @@ def order_status_changed(sender, instance, **kwargs):
                 )
 
                 # Push it live via WebSocket
-                async_to_sync(channel_layer.group_send)(
-                    f'notifications_{user_id}',
-                    {
-                        'type': 'send_notification',
-                        'notification': {
-                            'id': notif.id,
-                            'type': notif.type,
-                            'title': notif.title,
-                            'message': notif.message,
-                            'time': 'Just now',
-                            'is_read': False,
+                try:
+                    async_to_sync(channel_layer.group_send)(
+                        f'notifications_{user_id}',
+                        {
+                            'type': 'send_notification',
+                            'notification': {
+                                'id': notif.id,
+                                'type': notif.type,
+                                'title': notif.title,
+                                'message': notif.message,
+                                'time': 'Just now',
+                                'is_read': False,
+                            }
                         }
-                    }
-                )
+                    )
+                except Exception:
+                    pass

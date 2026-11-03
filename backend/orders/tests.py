@@ -1,4 +1,6 @@
 from django.test import TestCase
+from unittest.mock import patch
+from django.test import override_settings
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.contrib.auth.models import User
@@ -62,8 +64,7 @@ class OrderAPITest(TestCase):
 
     def test_list_orders(self):
         # Create a dummy order
-        status_pending = OrderStatus.objects.create(
-            status_code='pending', display_name='Pending')
+        status_pending = OrderStatus.get_by_code(OrderStatus.PENDING)
         payment = PaymentInfo.objects.create()
         Order.objects.create(
             customer=self.customer,
@@ -218,3 +219,52 @@ class CartAnonAPITest(TestCase):
         self.assertEqual(first['ram'], 8)
         self.assertEqual(first['storage'], 128)
         self.assertEqual(first['color'], 'Black')
+
+
+@override_settings(CHANNEL_LAYERS={'default': {'BACKEND': 'channels.layers.InMemoryChannelLayer'}})
+class OrderStatusTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.staff = User.objects.create_superuser(
+            username='admin', password='password', email='admin@example.com')
+        self.client.force_authenticate(user=self.staff)
+        self.order = Order.objects.create(
+            full_name='Guest Buyer',
+            email='buyer@example.com',
+            order_status=OrderStatus.get_by_code(OrderStatus.PENDING),
+            payment_info=PaymentInfo.objects.create(),
+        )
+
+    def test_canonical_statuses_seeded_in_order(self):
+        codes = list(OrderStatus.objects.values_list('status_code', flat=True))
+        self.assertEqual(codes, [code for code, _, _ in OrderStatus.CANONICAL])
+
+    def test_order_response_includes_status_code(self):
+        response = self.client.get(f'/orders/{self.order.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['status'], 'Pending')
+        self.assertEqual(response.data['status_code'], 'pending')
+
+    def test_status_action_accepts_every_canonical_code(self):
+        for code, display_name, _ in OrderStatus.CANONICAL:
+            response = self.client.patch(f'/orders/{self.order.id}/status/', {'status': code}, format='json')
+            self.assertEqual(response.status_code, status.HTTP_200_OK, code)
+            self.assertEqual(response.data['status_code'], code)
+            self.order.refresh_from_db()
+            self.assertEqual(self.order.order_status.display_name, display_name)
+
+    def test_status_action_rejects_unknown_code(self):
+        response = self.client.patch(f'/orders/{self.order.id}/status/', {'status': 'packed'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    @patch('orders.signals.send_order_status_update_email')
+    def test_status_email_only_sent_when_status_changes(self, send_email):
+        self.order.order_status = OrderStatus.get_by_code(OrderStatus.SHIPPED)
+        self.order.save()
+        self.assertEqual(send_email.call_count, 1)
+
+        # Saving unrelated fields must not re-send the status email
+        self.order.full_name = 'Renamed Buyer'
+        self.order.save()
+        self.order.update_total_amount()
+        self.assertEqual(send_email.call_count, 1)

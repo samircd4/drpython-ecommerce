@@ -142,11 +142,25 @@ class OrderSerializer(serializers.ModelSerializer):
     status = serializers.CharField(required=False)
     payment = PaymentInfoSerializer(source='payment_info', read_only=True)
 
+    @staticmethod
+    def _resolve_status(value):
+        """Map a status code or display name to an OrderStatus row."""
+        st_obj = OrderStatus.objects.filter(status_code__iexact=value).first()
+        if not st_obj:
+            st_obj = OrderStatus.objects.filter(display_name__iexact=value).first()
+        if not st_obj:
+            raise serializers.ValidationError({"status": f"Invalid status: {value}"})
+        return st_obj
+
     def to_representation(self, instance):
-        """Show Display Name for status in responses."""
+        """Expose the status as both a display name (`status`) and a stable code (`status_code`)."""
         ret = super().to_representation(instance)
         if instance.order_status:
             ret['status'] = instance.order_status.display_name
+            ret['status_code'] = instance.order_status.status_code
+        else:
+            ret['status'] = 'Pending'
+            ret['status_code'] = OrderStatus.PENDING
         if hasattr(instance, '_payment_url'):
             ret['payment_url'] = instance._payment_url
         if hasattr(instance, '_payment_error'):
@@ -157,15 +171,7 @@ class OrderSerializer(serializers.ModelSerializer):
         """Handle status update and other fields."""
         status_name = validated_data.pop('status', None)
         if status_name:
-            # Map display name or code back to OrderStatus object
-            st_obj = OrderStatus.objects.filter(display_name__iexact=status_name).first()
-            if not st_obj:
-                st_obj = OrderStatus.objects.filter(status_code__iexact=status_name).first()
-            
-            if st_obj:
-                instance.order_status = st_obj
-            else:
-                raise serializers.ValidationError({"status": f"Invalid status: {status_name}"})
+            instance.order_status = self._resolve_status(status_name)
 
         # Save other fields
         for attr, value in validated_data.items():
@@ -311,11 +317,12 @@ class OrderSerializer(serializers.ModelSerializer):
                     )
                 except Exception as e:
                     print(f"Error saving address during checkout: {e}")
-            # Create Default Status if needed (or fetch 'pending')
-            pending_status, _ = OrderStatus.objects.get_or_create(
-                status_code='pending',
-                defaults={'display_name': 'Pending'}
-            )
+            # New orders start as pending; staff creating a manual order may pick the status.
+            requested_status = validated_data.get('status')
+            if requested_status and request.user.is_staff:
+                initial_status = self._resolve_status(requested_status)
+            else:
+                initial_status = OrderStatus.get_by_code(OrderStatus.PENDING)
 
             # Create Payment Info
             p_method = validated_data.pop('payment_method', 'cod')
@@ -366,7 +373,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
             order = Order.objects.create(
                 customer=customer,
-                order_status=pending_status,
+                order_status=initial_status,
                 payment_info=payment_info,
                 delivery_charge=delivery_charge,
                 tax=tax,

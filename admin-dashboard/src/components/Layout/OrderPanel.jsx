@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, X, ChevronRight, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useStoreConfig } from '../../hooks/useStoreConfig';
+import { getOrderStatusCode, getOrderStatusMeta } from '../../constants/orderStatus';
 
 const OrderPanel = ({ open, onClose, orders, onOrderClick }) => {
     const navigate = useNavigate();
@@ -113,12 +114,8 @@ const OrderPanel = ({ open, onClose, orders, onOrderClick }) => {
                                                     </div>
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <span className="text-[10px] font-mono text-blue-400 font-bold">#{order.id}</span>
-                                                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-tighter ${
-                                                            order.status === 'Delivered' ? 'bg-emerald-500/10 text-emerald-400' :
-                                                            order.status === 'Cancelled' ? 'bg-red-500/10 text-red-400' :
-                                                            'bg-amber-500/10 text-amber-400'
-                                                        }`}>
-                                                            {order.status}
+                                                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-tighter ${getOrderStatusMeta(getOrderStatusCode(order)).badge}`}>
+                                                            {getOrderStatusMeta(getOrderStatusCode(order)).label}
                                                         </span>
                                                     </div>
                                                     <div className="flex items-center justify-between">

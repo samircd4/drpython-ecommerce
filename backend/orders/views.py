@@ -156,11 +156,13 @@ class OrderViewSet(viewsets.ModelViewSet):
 
             return Response({
                 'status': 'updated',
-                'new_status': new_status.display_name
+                'new_status': new_status.display_name,
+                'status_code': new_status.status_code,
             })
         except OrderStatus.DoesNotExist:
             return Response(
-                {'error': 'Invalid status code'},
+                {'error': 'Invalid status code',
+                 'valid_codes': list(OrderStatus.objects.values_list('status_code', flat=True))},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -513,10 +515,7 @@ def sslcommerz_success_view(request):
             order.payment_info.payment_date = timezone.now()
             order.payment_info.save()
 
-        processing_status, _ = OrderStatus.objects.get_or_create(
-            status_code='processing', defaults={'display_name': 'Processing'}
-        )
-        order.order_status = processing_status
+        order.order_status = OrderStatus.get_by_code(OrderStatus.PROCESSING)
         order.save(update_fields=['order_status'])
 
         # Clear cart for user if authenticated
@@ -606,10 +605,7 @@ def sslcommerz_ipn_view(request):
             order.payment_info.payment_date = timezone.now()
             order.payment_info.save()
 
-            processing_status, _ = OrderStatus.objects.get_or_create(
-                status_code='processing', defaults={'display_name': 'Processing'}
-            )
-            order.order_status = processing_status
+            order.order_status = OrderStatus.get_by_code(OrderStatus.PROCESSING)
             order.save(update_fields=['order_status'])
 
         return JsonResponse({"status": "SUCCESS", "message": "IPN validated and order updated."})

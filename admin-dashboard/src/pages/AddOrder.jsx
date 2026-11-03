@@ -10,6 +10,7 @@ import api from '../api/axiosConfig';
 import Breadcrumb from '../components/Layout/Breadcrumb';
 import SearchableSelect from '../components/AddOrder/SearchableSelect';
 import { useStoreConfig } from '../hooks/useStoreConfig';
+import { ORDER_STATUSES, getOrderStatusMeta } from '../constants/orderStatus';
 
 const AddOrder = () => {
     const navigate = useNavigate();
@@ -23,7 +24,6 @@ const AddOrder = () => {
     const [divisions, setDivisions] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [subDistricts, setSubDistricts] = useState([]);
-    const [statuses, setStatuses] = useState([]);
 
     // Selection states
     const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -62,9 +62,6 @@ const AddOrder = () => {
                     api.get('/divisions/'),
                 ]);
                 setDivisions(divRes.data.results || divRes.data);
-                
-                // Fetch order statuses if possible or hardcode defaults
-                // We'll use defaults for now based on Orders.jsx
             } catch (error) {
                 console.error('Error fetching initial data:', error);
             }
@@ -643,25 +640,11 @@ const AddOrder = () => {
                             
                             <SearchableSelect
                                 label="Order Status"
-                                value={formData.status}
-                                options={[
-                                    { label: 'Pending', name: 'pending' },
-                                    { label: 'Processing', name: 'processing' },
-                                    { label: 'Shipped', name: 'shipped' },
-                                    { label: 'Delivered', name: 'delivered' },
-                                    { label: 'Cancelled', name: 'cancelled' },
-                                    { label: 'Returned', name: 'returned' }
-                                ]}
+                                value={getOrderStatusMeta(formData.status).label}
+                                options={ORDER_STATUSES.map(s => ({ label: s.label }))}
                                 onChange={(val) => {
-                                    const opt = [
-                                        { label: 'Pending', name: 'pending' },
-                                        { label: 'Processing', name: 'processing' },
-                                        { label: 'Shipped', name: 'shipped' },
-                                        { label: 'Delivered', name: 'delivered' },
-                                        { label: 'Cancelled', name: 'cancelled' },
-                                        { label: 'Returned', name: 'returned' }
-                                    ].find(o => o.label === val);
-                                    setFormData({...formData, status: opt.name});
+                                    const opt = ORDER_STATUSES.find(s => s.label === val);
+                                    if (opt) setFormData({...formData, status: opt.code});
                                 }}
                             />
                         </div>

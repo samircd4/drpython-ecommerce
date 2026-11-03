@@ -186,7 +186,7 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(OrderStatus)
 class OrderStatusAdmin(admin.ModelAdmin):
-    list_display = ('status_code', 'display_name')
+    list_display = ('status_code', 'display_name', 'sort_order')
     search_fields = ('status_code', 'display_name')
 
 

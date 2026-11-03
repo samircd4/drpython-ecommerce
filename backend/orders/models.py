@@ -9,15 +9,55 @@ from products.models import Product, ProductVariant
 
 class OrderStatus(models.Model):
     """
-    Tracks lifecycle states: Pending, Confirmed, Shipped, Delivered, Cancelled.
+    Order lifecycle states.
+
+    CANONICAL is the single source of truth for every status the platform uses.
+    The admin dashboard (src/constants/orderStatus.js) and storefront
+    (src/utils/orderStatus.js) mirror these codes, so keep them in sync.
     """
+    PENDING = 'pending'
+    CONFIRMED = 'confirmed'
+    PROCESSING = 'processing'
+    SHIPPED = 'shipped'
+    DELIVERED = 'delivered'
+    CANCELLED = 'cancelled'
+    RETURNED = 'returned'
+
+    # (status_code, display_name, description) in lifecycle order
+    CANONICAL = [
+        (PENDING, 'Pending', 'Order placed, awaiting confirmation'),
+        (CONFIRMED, 'Confirmed', 'Order confirmed by the shop'),
+        (PROCESSING, 'Processing', 'Order is being prepared and packed'),
+        (SHIPPED, 'Shipped', 'Order handed to the courier'),
+        (DELIVERED, 'Delivered', 'Order delivered to the customer'),
+        (CANCELLED, 'Cancelled', 'Order was cancelled'),
+        (RETURNED, 'Returned', 'Order was returned by the customer'),
+    ]
+
     status_code = models.CharField(
         max_length=20, unique=True)  # e.g., 'pending'
     display_name = models.CharField(max_length=50)  # e.g., 'Pending'
     description = models.TextField(blank=True, null=True)
+    sort_order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ['sort_order', 'id']
+        verbose_name_plural = 'Order statuses'
 
     def __str__(self) -> str:
         return str(self.display_name)
+
+    @classmethod
+    def get_by_code(cls, code):
+        """Fetch a canonical status, creating it with its canonical defaults if missing."""
+        for index, (status_code, display_name, description) in enumerate(cls.CANONICAL):
+            if status_code == code:
+                status, _ = cls.objects.get_or_create(
+                    status_code=code,
+                    defaults={'display_name': display_name, 'description': description, 'sort_order': index},
+                )
+                return status
+        return cls.objects.get(status_code=code)
 
 
 # 2. Coupon Model

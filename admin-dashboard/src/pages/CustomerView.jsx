@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { getOrderStatusCode, getOrderStatusMeta } from "../constants/orderStatus";
 import { 
     User, 
     Mail, 
@@ -226,7 +227,7 @@ const CustomerView = () => {
                                                 >
                                                     <div className="flex justify-between items-start mb-2">
                                                         <span className="text-xs font-mono font-bold text-blue-400">#{order.id}</span>
-                                                        <span className={`text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full ${order.status === 'Completed' || order.status === 'Delivered' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-blue-500/10 text-blue-400'}`}>{order.status}</span>
+                                                        <span className={`text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full ${getOrderStatusMeta(getOrderStatusCode(order)).badge}`}>{getOrderStatusMeta(getOrderStatusCode(order)).label}</span>
                                                     </div>
                                                     <div className="flex justify-between items-end">
                                                         <span className="text-[10px] text-slate-500 font-bold">{new Date(order.created_at).toLocaleDateString()}</span>

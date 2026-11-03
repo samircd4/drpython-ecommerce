@@ -29,7 +29,13 @@
                                 <strong style="color: #7c3aed; font-size: 18px; display: block; margin-top: 10px;">{{ order.order_status.display_name }}</strong>
                             </p>
 
-                            {% if order.order_status.status_code == 'processing' %}
+                            {% if order.order_status.status_code == 'confirmed' %}
+                            <div style="background-color: #f5f3ff; border-left: 4px solid #7c3aed; padding: 15px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+                                <p style="color: #5b21b6; margin: 0; font-size: 15px;">
+                                    <strong>Order confirmed!</strong> We've verified your order and will start preparing it shortly.
+                                </p>
+                            </div>
+                            {% elif order.order_status.status_code == 'processing' %}
                             <div style="background-color: #fefce8; border-left: 4px solid #eab308; padding: 15px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
                                 <p style="color: #854d0e; margin: 0; font-size: 15px;">
                                     <strong>We're on it!</strong> Your order is currently being prepared and packed with care.
@@ -38,7 +44,7 @@
                             {% elif order.order_status.status_code == 'shipped' %}
                             <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
                                 <p style="color: #1e40af; margin: 0; font-size: 15px;">
-                                    <strong>Out for delivery!</strong> Your package is on its way to you. Make sure someone is available to receive it.
+                                    <strong>Shipped!</strong> Your package is on its way to you. Make sure someone is available to receive it.
                                 </p>
                             </div>
                             {% elif order.order_status.status_code == 'delivered' %}

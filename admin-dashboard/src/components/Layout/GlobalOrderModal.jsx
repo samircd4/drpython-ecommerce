@@ -6,17 +6,11 @@ import api from '../../api/axiosConfig';
 import useProductLink from '../../hooks/useProductLink';
 import { useModals } from '../../Context/ModalContext';
 import { useStoreConfig } from '../../hooks/useStoreConfig';
+import { ORDER_STATUSES, getOrderStatusCode, getOrderStatusMeta } from '../../constants/orderStatus';
 
 const StatusBadge = ({ status }) => {
-    const map = {
-        Pending: 'bg-pink-500/10 text-pink-400 ring-pink-500/20',
-        Confirmed: 'bg-blue-500/10 text-blue-400 ring-blue-500/20',
-        Shipped: 'bg-indigo-500/10 text-indigo-400 ring-indigo-500/20',
-        Cancelled: 'bg-red-500/10 text-red-400 ring-red-500/20',
-        Delivered: 'bg-emerald-500/10 text-emerald-400 ring-emerald-500/20',
-        Returned: 'bg-orange-500/10 text-orange-400 ring-orange-500/20',
-    };
-    return <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ring-1 ring-inset ${map[status] || 'bg-slate-600'}`}>{status}</span>;
+    const meta = getOrderStatusMeta(status);
+    return <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ring-1 ring-inset ${meta.badge}`}>{meta.label}</span>;
 };
 
 const PaymentBadge = ({ ps }) => {
@@ -127,14 +121,14 @@ const GlobalOrderModal = () => {
     const { isOpen, order, mode } = orderModal;
     const { config } = useStoreConfig();
     const symbol = config?.currency_symbol || "৳";
-    const [status, setStatus] = useState(order?.status || 'Pending');
+    const [status, setStatus] = useState(getOrderStatusCode(order));
     const [copied, setCopied] = useState(false);
     const [isSavingStatus, setIsSavingStatus] = useState(false);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const { copyToClipboard } = useProductLink();
 
     useEffect(() => {
-        if (order) setStatus(order.status);
+        if (order) setStatus(getOrderStatusCode(order));
     }, [order]);
 
     if (!isOpen || !order) return null;
@@ -153,13 +147,13 @@ const GlobalOrderModal = () => {
     const handleUpdateStatus = async () => {
         try {
             setIsSavingStatus(true);
-            await api.patch(`/orders/${order.id}/`, { status: status });
-            toast.success(`Order status updated to ${status}`);
+            await api.patch(`/orders/${order.id}/status/`, { status });
+            toast.success(`Order status updated to ${getOrderStatusMeta(status).label}`);
             setIsSavingStatus(false);
             closeOrderModal();
-            // Note: In a real app we'd refresh the parent data too
+            window.dispatchEvent(new CustomEvent('refreshData'));
         } catch (error) {
-            toast.error("Update failed.");
+            toast.error(error.response?.data?.error || "Update failed.");
             setIsSavingStatus(false);
         }
     };
@@ -187,7 +181,7 @@ const GlobalOrderModal = () => {
                                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
                                     Order #{order.id}
                                 </h2>
-                                <StatusBadge status={order.status} />
+                                <StatusBadge status={getOrderStatusCode(order)} />
                                 {order.payment?.transaction_id && (
                                     <div className="flex items-center gap-2 bg-slate-800/50 px-2 py-1 rounded border border-slate-700 ml-2 group relative">
                                         <span className="text-[10px] font-mono text-slate-400 capitalize">TXID:</span>
@@ -266,8 +260,8 @@ const GlobalOrderModal = () => {
                                                 disabled={!isEdit}
                                                 className="w-full bg-[#071229] text-slate-200 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 disabled:opacity-50 font-sans cursor-pointer"
                                             >
-                                                {['Pending', 'Confirmed', 'Shipped', 'Cancelled', 'Delivered', 'Returned'].map(s => (
-                                                    <option key={s} value={s}>{s}</option>
+                                                {ORDER_STATUSES.map(s => (
+                                                    <option key={s.code} value={s.code}>{s.label}</option>
                                                 ))}
                                             </select>
                                         </div>
