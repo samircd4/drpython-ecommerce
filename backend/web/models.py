@@ -24,6 +24,11 @@ class NewsletterSubscription(models.Model):
 class Notification(models.Model):
     NOTIFICATION_TYPES = (
         ('order_update', 'Order Update'),
+        ('new_order', 'New Order'),
+        ('payment', 'Payment'),
+        ('stock', 'Stock'),
+        ('review', 'Review'),
+        ('message', 'Message'),
         ('promotion', 'Promotion'),
         ('system', 'System'),
     )
@@ -34,12 +39,17 @@ class Notification(models.Model):
     type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='system')
     title = models.CharField(max_length=255)
     message = models.TextField()
-    link = models.URLField(max_length=500, blank=True, null=True, help_text="Action URL for the notification")
+    # Relative app path (e.g. /order-tracking/5) or absolute URL
+    link = models.CharField(max_length=500, blank=True, null=True, help_text="Action path or URL for the notification")
+    data = models.JSONField(default=dict, blank=True, help_text="Extra payload, e.g. order_id and amount")
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'is_read', '-created_at'], name='notif_user_read_created_idx'),
+        ]
 
     def __str__(self):
         return f"{self.title} → {self.user.email}"
@@ -74,7 +84,12 @@ class StoreConfiguration(models.Model):
     bkash_number = models.CharField(max_length=20, blank=True, null=True)
     nagad_number = models.CharField(max_length=20, blank=True, null=True)
     rocket_number = models.CharField(max_length=20, blank=True, null=True)
-    
+
+    # Notifications
+    low_stock_threshold = models.PositiveIntegerField(
+        default=5, help_text="Notify staff when a product or variant's stock drops to this level or below"
+    )
+
 
     def save(self, *args, **kwargs):
         self.pk = 1

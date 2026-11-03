@@ -14,13 +14,13 @@ Severity: 🔴 high · 🟠 medium · 🟡 low
 | S4 | 🟠 | `ALLOWED_HOSTS` default includes `*`. | settings | Require it from env in production. |
 | S5 | 🟠 | Admin JWTs live in `localStorage` (XSS-exposed). Refresh tokens don't rotate and aren't blacklisted. | `admin-dashboard/src/api/axiosConfig.js`, `SIMPLE_JWT` | Consider rotation and blacklist. Keep a strict dependency policy. |
 | S6 | 🟡 | `orders/<id>/initiate-payment/` is AllowAny with sequential IDs, so anyone can start a payment session for any unpaid order. | `orders/views.py` | Require an ownership token (order UUID or guest token) or authentication. |
-| S7 | 🟡 | The WebSocket middleware `print`s token presence and guest IDs to logs. | `chat/middleware.py`, `chat/consumers.py`, `asgi.py` | Use `logging` at DEBUG level. |
+| S7 | 🟡 | Chat WebSocket code still `print`s to logs (`chat/middleware.py` now uses `logging`). | `chat/consumers.py`, `asgi.py` | Use `logging` at DEBUG level. |
 
 ## Multi-client and branding
 
 | # | Sev | Issue | Where |
 |---|---|---|---|
-| B1 | 🟠 | "Sarker Shop" is hardcoded: `DEFAULT_FROM_EMAIL`, `SERVER_EMAIL`, `SPECTACULAR_SETTINGS.TITLE`, `REST_AUTH` cookie names, WebP EXIF artist, CORS and CSRF defaults. | `settings.py`, `utils/images.py` |
+| B1 | 🟠 | "Sarker Shop" is hardcoded in the account email templates (`password_reset_email`, `verification_email`, `welcome_email`; order emails use `StoreConfiguration`) and in: `DEFAULT_FROM_EMAIL`, `SERVER_EMAIL`, `SPECTACULAR_SETTINGS.TITLE`, `REST_AUTH` cookie names, WebP EXIF artist, CORS and CSRF defaults. | `settings.py`, `utils/images.py` |
 | B2 | 🟠 | Delivery charge rules are hardcoded for Kishoreganj. | `orders/models.py` `Order.get_delivery_charge` |
 | B3 | 🟡 | The SSLCommerz fallback customer email uses `@gurudebenterprise.com`, and `BACKEND_URL` falls back to `gurudebenterprise.com`. | `orders/sslcommerz.py`, settings |
 | B4 | 🟡 | The admin's axios fallback base URL is `https://sarker.shop`. | `admin-dashboard/src/api/axiosConfig.js` |
@@ -41,7 +41,7 @@ Severity: 🔴 high · 🟠 medium · 🟡 low
 | C1 | 🟡 | `payments` router is registered twice with different basenames. | `orders/urls.py` |
 | C2 | 🟡 | `ProductViewSet` defines the queryset twice (class attribute and `get_queryset`). | `products/views.py` |
 | C3 | 🟠 | Tests are stale and fail: `products`, `orders` and `accounts` tests call `/api/...` URLs (no such prefix), look up products by ID instead of slug, and pass divisions as strings. They also need Redis, or an in-memory channel layer, because signals broadcast. `api`, `chat`, `reviews` and `web` have placeholder tests only. There are no frontend tests. | `*/tests.py` |
-| C4 | 🟡 | Emails are sent synchronously in signals even though Celery is available. | `orders/signals.py`, `utils/emails.py` |
+| C4 | 🟡 | Order emails run as Celery tasks (`orders/tasks.py`), but account emails (verification, password reset, welcome) are still sent synchronously. | `accounts/adapters.py`, `accounts/views.py` |
 | C5 | 🟡 | Several admin pages are built but their routes are commented out (Analytics, Overview, Insights, DataManagement, DevFeedback). | `admin-dashboard/src/App.jsx`, `Sidebar.jsx` |
 | C6 | 🟡 | Duplicate location JSON files exist at both `backend/*.json` and `backend/data/*.json`. | |
 | C7 | 🟡 | Stray files: `admin-dashboard/original_orders*.txt`, `backend/profile_fix_tasks.md`, `backend/products.json`. | |

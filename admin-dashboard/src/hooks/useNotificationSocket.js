@@ -1,12 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
+import api from '../api/axiosConfig';
+
+// Server closes with 4003 when the token is missing/expired or the user id does not match
+const AUTH_REJECTED = 4003;
 
 /**
- * Custom hook for managing Notification WebSockets
- * @param {string} token - JWT Access Token
+ * Custom hook for managing the Notification WebSocket.
+ * Use it once (NotificationContext); other components subscribe through that context.
  * @param {number} userId - ID of the current user
  * @param {function} onNotification - Callback for incoming notifications
  */
-const useNotificationSocket = (token, userId, onNotification) => {
+const useNotificationSocket = (userId, onNotification) => {
     const [isConnected, setIsConnected] = useState(false);
     const socketRef = useRef(null);
     const reconnectTimeoutRef = useRef(null);
@@ -19,10 +23,7 @@ const useNotificationSocket = (token, userId, onNotification) => {
     });
 
     useEffect(() => {
-        if (!token || !userId) {
-            console.log("WS Notification: Missing token or userId, skipping connection", { token: !!token, userId });
-            return;
-        }
+        if (!userId) return;
 
         isUnmountedRef.current = false;
         const BASE_WS = (import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8000').trim();
@@ -35,29 +36,36 @@ const useNotificationSocket = (token, userId, onNotification) => {
             WS_URL = WS_URL.replace('/ws/ws/', '/ws/'); // Deduplicate /ws/
         }
 
+        const scheduleReconnect = () => {
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 30000);
+            reconnectTimeoutRef.current = setTimeout(() => {
+                reconnectAttemptsRef.current += 1;
+                connect();
+            }, delay);
+        };
+
         const connect = () => {
             if (isUnmountedRef.current) return;
+
+            // Read the token at connect time so reconnects pick up refreshed tokens
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
 
             if (socketRef.current) {
                 socketRef.current.close(1000);
             }
 
-            const fullWsUrl = `${WS_URL}?token=${token}`;
-            console.log(`WS Notification: Connecting to ${WS_URL}...`);
-            
-            const socket = new WebSocket(fullWsUrl);
+            const socket = new WebSocket(`${WS_URL}?token=${token}`);
             socketRef.current = socket;
 
             socket.onopen = () => {
                 if (isUnmountedRef.current) return;
-                console.log("WS Notification: Connected! ✅");
                 setIsConnected(true);
                 reconnectAttemptsRef.current = 0;
             };
 
             socket.onmessage = (event) => {
                 if (isUnmountedRef.current) return;
-                console.log("WS Notification: Message received 📩", event.data);
                 try {
                     const data = JSON.parse(event.data);
                     if (onNotificationRef.current) onNotificationRef.current(data);
@@ -68,20 +76,17 @@ const useNotificationSocket = (token, userId, onNotification) => {
 
             socket.onclose = (event) => {
                 if (isUnmountedRef.current) return;
-                console.log(`WS Notification: Disconnected ❌ (Code: ${event.code})`);
                 setIsConnected(false);
-                if (event.code !== 1000) {
-                    const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 10000);
-                    console.log(`WS Notification: Reconnecting in ${delay}ms... (Attempt ${reconnectAttemptsRef.current + 1})`);
-                    reconnectTimeoutRef.current = setTimeout(() => {
-                        reconnectAttemptsRef.current += 1;
-                        connect();
-                    }, delay);
-                }
-            };
+                if (event.code === 1000) return;
 
-            socket.onerror = (err) => {
-                console.error("WS Notification: Socket error", err);
+                if (event.code === AUTH_REJECTED) {
+                    // Any authenticated request lets the axios interceptor refresh an expired token
+                    api.get('/notifications/unread_count/')
+                        .then(scheduleReconnect)
+                        .catch(() => { /* refresh failed: user is logged out, stop reconnecting */ });
+                } else {
+                    scheduleReconnect();
+                }
             };
         };
 
@@ -93,7 +98,7 @@ const useNotificationSocket = (token, userId, onNotification) => {
             if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
             if (socketRef.current) socketRef.current.close(1000);
         };
-    }, [token, userId]);
+    }, [userId]);
 
     return { isConnected };
 };

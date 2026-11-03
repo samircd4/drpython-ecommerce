@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import serializers
 from django.db import transaction
 from django.utils import timezone
@@ -6,12 +8,12 @@ from accounts.serializers import AddressSerializer
 from products.models import Product, ProductVariant
 from accounts.models import Address
 from .models import Order, OrderItem, Cart, CartItem, Checkout, PaymentInfo, OrderStatus, Coupon
-from web.models import Notification
-from utils.emails import send_order_placed_email
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
+from .tasks import enqueue_after_commit, send_order_placed_email_task
+from notifications.services import notify, notify_staff
 
 from drf_spectacular.utils import extend_schema_field
+
+logger = logging.getLogger(__name__)
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
@@ -504,42 +506,32 @@ class OrderSerializer(serializers.ModelSerializer):
                 order.total_amount = total
                 order.save()
 
-            # 🔥 NEW: Send "Order Placed" Email & Notification AFTER everything is saved
-            # This ensures items are included and totals are correct.
+            # "Order placed" email and notifications AFTER items and totals are saved,
+            # delivered once the transaction commits.
             try:
-                # 1. Send Email
-                send_order_placed_email(order)
+                enqueue_after_commit(send_order_placed_email_task, order.id)
 
-                # 2. Push Notification
+                customer_name = order.full_name or 'Guest'
+                notify_staff(
+                    'orders.view_order',
+                    type='new_order',
+                    title='New Order Received',
+                    message=f'Order #{order.id} from {customer_name} — ৳{order.total_amount}',
+                    link=f'/orders?search={order.id}',
+                    data={'order_id': order.id, 'customer': customer_name, 'amount': str(order.total_amount)},
+                )
+
                 if order.customer and order.customer.user_id:
-                    user_id = order.customer.user_id
-                    channel_layer = get_channel_layer()
-                    
-                    notif = Notification.objects.create(
-                        user_id=user_id,
+                    notify(
+                        order.customer.user_id,
                         type='order_update',
                         title=f'Order #{order.id} — Placed',
                         message=f'Your order #{order.id} has been placed successfully.',
-                        link=f'/order-tracking/{order.id}'
+                        link=f'/order-tracking/{order.id}',
+                        data={'order_id': order.id},
                     )
-
-                    async_to_sync(channel_layer.group_send)(
-                        f'notifications_{user_id}',
-                        {
-                            'type': 'send_notification',
-                            'notification': {
-                                'id': notif.id,
-                                'type': notif.type,
-                                'title': notif.title,
-                                'message': notif.message,
-                                'time': 'Just now',
-                                'is_read': False,
-                                'link': notif.link,
-                            }
-                        }
-                    )
-            except Exception as e:
-                print(f"Error in post-order triggers: {e}")
+            except Exception:
+                logger.exception('Error in post-order triggers', extra={'order_id': order.id})
 
             # If payment method is sslcommerz, initiate SSLCommerz payment session
             if p_method == 'sslcommerz':

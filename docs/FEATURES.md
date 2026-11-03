@@ -69,7 +69,7 @@ Code pointers are relative to the repo root.
 | Live chat (guest or customer and staff), text, image, video, replies, reactions, presence, typing, read receipts | ✅ | `chat` app, `ws/chat/` | `pages/Messages.jsx` (`/chats`), `ChatContext`, `useChatSocket` |
 | Contact form | ✅ | `ContactMessage` | `pages/ContactMessages.jsx` |
 | Newsletter subscription | ✅ | `NewsletterSubscription` | — |
-| In-app notifications (DB and real-time), mark read, read all, clear | ✅ | `web.Notification`, `ws/notifications/<user_id>/` | `NotificationPanel`, `pages/Notifications.jsx` |
+| In-app notifications (DB and real-time), mark read, read all, clear. Events: new order, order status, online payment received/failed, low/out of stock, new review, new question and answer, contact message. Daily retention prune | ✅ | `notifications/services.py`, `web.Notification`, `ws/notifications/<user_id>/`, signals in `orders`, `products`, `reviews`, `web` | `NotificationPanel`, `pages/Notifications.jsx`; storefront header bell (live) |
 
 ## 6. Analytics and operations
 

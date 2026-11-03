@@ -3,9 +3,11 @@ from unittest.mock import patch
 from django.test import override_settings
 from rest_framework.test import APIClient
 from rest_framework import status
-from django.contrib.auth.models import User
+from decimal import Decimal
+from django.contrib.auth.models import User, Permission
 from accounts.models import Address
 from products.models import Product, Category, Brand
+from web.models import Notification
 from .models import Order, OrderStatus, PaymentInfo, Cart
 
 
@@ -257,14 +259,100 @@ class OrderStatusTest(TestCase):
         response = self.client.patch(f'/orders/{self.order.id}/status/', {'status': 'packed'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    @patch('orders.signals.send_order_status_update_email')
-    def test_status_email_only_sent_when_status_changes(self, send_email):
-        self.order.order_status = OrderStatus.get_by_code(OrderStatus.SHIPPED)
-        self.order.save()
-        self.assertEqual(send_email.call_count, 1)
+    @patch('orders.signals.send_order_status_email_task')
+    def test_status_email_only_sent_when_status_changes(self, email_task):
+        with self.captureOnCommitCallbacks(execute=True):
+            self.order.order_status = OrderStatus.get_by_code(OrderStatus.SHIPPED)
+            self.order.save()
+        self.assertEqual(email_task.delay.call_count, 1)
 
         # Saving unrelated fields must not re-send the status email
-        self.order.full_name = 'Renamed Buyer'
+        with self.captureOnCommitCallbacks(execute=True):
+            self.order.full_name = 'Renamed Buyer'
+            self.order.save()
+            self.order.update_total_amount()
+        self.assertEqual(email_task.delay.call_count, 1)
+
+    @patch('orders.signals.send_order_status_email_task')
+    def test_status_change_notifies_customer_once(self, email_task):
+        customer_user = User.objects.create_user(username='buyer', password='password', email='buyer2@example.com')
+        self.order.customer = customer_user.customer
         self.order.save()
-        self.order.update_total_amount()
-        self.assertEqual(send_email.call_count, 1)
+
+        self.order.order_status = OrderStatus.get_by_code(OrderStatus.SHIPPED)
+        self.order.save()
+        self.order.save()
+
+        notifs = Notification.objects.filter(user=customer_user, type='order_update')
+        self.assertEqual(notifs.count(), 1)
+        self.assertEqual(notifs.first().link, f'/order-tracking/{self.order.id}')
+
+
+@override_settings(CHANNEL_LAYERS={'default': {'BACKEND': 'channels.layers.InMemoryChannelLayer'}})
+class NewOrderNotificationTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username='shopper', password='password', email='s@example.com')
+        self.client.force_authenticate(user=self.user)
+        self.address = Address.objects.create(
+            customer=self.user.customer, full_name='Shopper', address='1 Road', phone='01700000000',
+        )
+        category = Category.objects.create(name='Audio', slug='audio')
+        brand = Brand.objects.create(name='Acme', slug='acme')
+        self.product = Product.objects.create(name='Speaker', slug='speaker', price=150, category=category, brand=brand)
+
+        self.admin = User.objects.create_superuser(username='boss', password='password', email='boss@example.com')
+        self.order_viewer = User.objects.create_user(username='clerk', password='password', email='clerk@example.com', is_staff=True)
+        self.order_viewer.user_permissions.add(Permission.objects.get(codename='view_order'))
+        self.other_staff = User.objects.create_user(username='writer', password='password', email='writer@example.com', is_staff=True)
+
+    @patch('orders.serializers.send_order_placed_email_task')
+    def test_new_order_notifies_permitted_staff_with_final_total(self, email_task):
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post('/orders/', {
+                'items_input': [{'product_id': self.product.id, 'quantity': 2}],
+                'address_id': self.address.id,
+            }, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        email_task.delay.assert_called_once()
+
+        staff_notifs = Notification.objects.filter(type='new_order')
+        self.assertEqual(set(staff_notifs.values_list('user', flat=True)), {self.admin.id, self.order_viewer.id})
+        order = Order.objects.get()
+        self.assertGreaterEqual(order.total_amount, Decimal('300.00'))  # final total, not the 0 seen in post_save
+        self.assertEqual(Decimal(staff_notifs.first().data['amount']), order.total_amount)
+
+        self.assertTrue(Notification.objects.filter(user=self.user, type='order_update').exists())
+
+
+@override_settings(CHANNEL_LAYERS={'default': {'BACKEND': 'channels.layers.InMemoryChannelLayer'}})
+class PaymentNotificationTest(TestCase):
+    def setUp(self):
+        self.admin = User.objects.create_superuser(username='boss', password='password', email='boss@example.com')
+        self.buyer = User.objects.create_user(username='payer', password='password', email='payer@example.com')
+        self.payment = PaymentInfo.objects.create(payment_method='sslcommerz', amount=Decimal('500.00'))
+        self.order = Order.objects.create(
+            customer=self.buyer.customer,
+            order_status=OrderStatus.get_by_code(OrderStatus.PENDING),
+            payment_info=self.payment,
+        )
+
+    def test_online_payment_notifies_once(self):
+        self.payment.is_paid = True
+        self.payment.save()
+        # Success callback and IPN can both save the paid record
+        self.payment.save()
+
+        self.assertEqual(Notification.objects.filter(type='payment', user=self.admin).count(), 1)
+        self.assertEqual(Notification.objects.filter(type='payment', user=self.buyer).count(), 1)
+
+    def test_cod_marked_paid_does_not_notify(self):
+        self.payment.payment_method = 'cod'
+        self.payment.is_paid = True
+        self.payment.save()
+        self.assertFalse(Notification.objects.filter(type='payment').exists())
+
+    def test_failed_payment_notifies_customer(self):
+        self.client.get('/payment/sslcommerz/fail/', {'value_a': str(self.order.id)})
+        notif = Notification.objects.get(type='payment', user=self.buyer)
+        self.assertIn('failed', notif.title)

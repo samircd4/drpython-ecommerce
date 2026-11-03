@@ -8,7 +8,7 @@ import ConfirmModal from '../components/Layout/ConfirmModal';
 import api from '../api/axiosConfig';
 import { useModals } from '../Context/ModalContext';
 import useProductLink from '../hooks/useProductLink';
-import useNotificationSocket from '../hooks/useNotificationSocket';
+import useNotificationListener from '../hooks/useNotificationListener';
 import { useAuth } from '../Context/AuthContext';
 import { useStoreConfig } from '../hooks/useStoreConfig';
 import { ORDER_STATUSES, getOrderStatusCode, getOrderStatusMeta } from '../constants/orderStatus';
@@ -62,20 +62,14 @@ const Orders = () => {
     const [isDeleting, setIsDeleting] = React.useState(false);
     
     const { openOrderModal } = useModals();
-    const { user, hasPermission } = useAuth();
+    const { hasPermission } = useAuth();
     const { config } = useStoreConfig();
     const symbol = config?.currency_symbol || "৳";
     
     // Real-Time Table Refresh
-    const accessToken = localStorage.getItem('access_token');
-    useNotificationSocket(accessToken, user?.id, (data) => {
-        if (data.type === 'new_order') {
-            toast.loading("Refreshening orders...", { id: 'order-refresh', duration: 1000 });
-            // Optimistically refresh after a short delay to allow backend to finish
-            setTimeout(() => {
-                fetchOrders();
-            }, 1000);
-        }
+    // The notification is pushed after the order commits, so the new row is already readable
+    useNotificationListener((data) => {
+        if (data.type === 'new_order') fetchOrders();
     });
 
     React.useEffect(() => {

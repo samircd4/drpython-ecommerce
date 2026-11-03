@@ -62,7 +62,8 @@ The full annotated list is in [../.env.example](../.env.example).
 ## 6. Operations cheatsheet
 ```bash
 docker compose ps
-docker compose logs -f backend_api            # or backend_ws, celery_worker
+docker compose logs -f backend_api            # or backend_ws, celery_worker (also runs beat)
+docker compose exec backend_api uv run python manage.py prune_notifications --days 90   # manual cleanup
 docker compose exec backend_api uv run python manage.py shell
 docker compose restart backend_api backend_ws
 docker compose exec db psql -U $POSTGRES_USER $POSTGRES_DB

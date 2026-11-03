@@ -440,6 +440,16 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Dhaka'
 
+NOTIFICATION_RETENTION_DAYS = int(os.getenv('NOTIFICATION_RETENTION_DAYS', '90'))
+
+# Run by the embedded beat in the celery_worker container (see celery_entrypoint.sh)
+CELERY_BEAT_SCHEDULE = {
+    'prune-old-notifications': {
+        'task': 'web.tasks.prune_notifications_task',
+        'schedule': 60 * 60 * 24,
+    },
+}
+
 # ========================
 # Real-time Configuration
 # ========================

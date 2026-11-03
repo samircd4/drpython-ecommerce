@@ -30,4 +30,4 @@ while True:
 END
 
 echo "Starting Celery worker..."
-exec uv run celery -A ecommerce_api worker --loglevel=info
+exec uv run celery -A ecommerce_api worker --beat --schedule=/tmp/celerybeat-schedule --loglevel=info
